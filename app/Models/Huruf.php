@@ -32,5 +32,10 @@ class Huruf extends Model
         return $this->hasMany(Gambar_Huruf::class);
     }
 
+    public function soalQuisHurufs()
+    {
+        return $this->hasMany(SoalQuisHuruf::class);
+    }
+
  
 }

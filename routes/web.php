@@ -73,7 +73,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/pilih-huruf-quis',[QuisController::class,'pilihHurufQuisShow'])->name('pilih-huruf-quis');
     Route::get('/dashboard/pilih-level-quis/{jenis}',[QuisController::class,'pilihLevelQuisShow'])->name('pilih-level-quis');
     Route::get('/dashboard/pilih-list-huruf-quis',[QuisController::class,'pilihListHurufQuis'])->name('pilih-list-huruf-quis');
-    Route::get('/dashboard/quis',[QuisController::class,'QuisShow'])->name('quis');
+    Route::post('/dashboard/start-quis',[QuisController::class,'startQuis'])->name('start-quis');
+    Route::get('/dashboard/quis/{sessionId}',[QuisController::class,'QuisShow'])->name('quis');
     Route::get('/dashboard/review-quis',[QuisController::class,'ReviewQuisShow'])->name('review-quis');
 
     // route progress uses

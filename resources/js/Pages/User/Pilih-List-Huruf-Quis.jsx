@@ -9,7 +9,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogFooter, AlertDialogAction } from "@/components/ui/alert-dialog"
 import { CheckIcon, ChevronRight, AlertCircle, BookOpen, Zap, Volume2, Info, Shuffle, GraduationCap } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { Link, usePage } from "@inertiajs/react"
+import { Link, usePage,router } from "@inertiajs/react"
 import { Loading } from "../../components/Loading"
 
 // Dummy data - hanya huruf yang sudah dipelajari
@@ -181,7 +181,7 @@ export default function QuizLetterSelect() {
   const [activeFilter, setActiveFilter] = useState("all")
   const [showTip, setShowTip] = useState(true)
   const { letters, letterGroups, jenis, level } = usePage().props
-  const requiredLetters = level === 'beginner' ? 10 : level === 'intermediate' ? 15 : 20
+  const requiredLetters = 10
 
   // Simulate initial page load
   useEffect(() => {
@@ -208,14 +208,35 @@ export default function QuizLetterSelect() {
     })
   }
 
-  
-
   const selectionProgress = (selectedLetters.length / requiredLetters) * 100
 
   const autoSelectLetters = () => {
     const availableLetters = filteredLetters.map((letter) => letter.id)
     const randomLetters = [...availableLetters].sort(() => Math.random() - 0.5)
     setSelectedLetters(randomLetters.slice(0, requiredLetters))
+  }
+
+  const handleStartQuis = () => {
+    if(selectedLetters.length !== requiredLetters){
+      alert("Pilih tepat " + requiredLetters + " huruf untuk memulai")
+      return
+    }
+    
+    const request = {
+      letters: selectedLetters,
+      jenis: jenis,
+      level: level,
+    }
+    
+    router.post(route("start-quis"), request, {
+      preserveScroll: true,
+      onSuccess: () => {
+        // Redirect will be handled by the backend
+      },
+      onError: (errors) => {
+        alert("Gagal memulai kuis: " + (errors.message || "Terjadi kesalahan"))
+      }
+    })
   }
 
   return (
@@ -466,16 +487,17 @@ export default function QuizLetterSelect() {
                       </div>
 
                       <div className="flex flex-col items-center gap-4">
-                        <Link href={route("quis")}>
+                      
                         <Button
                           size="lg"
                           className="px-8 py-6 text-lg"
                           disabled={selectedLetters.length !== requiredLetters}
+                          onClick={handleStartQuis}
                         >
                           Mulai Kuis
                           <Zap size={18} className="ml-2" />
                         </Button>
-                        </Link>
+                       
                         {selectedLetters.length !== requiredLetters && (
                           <p className="text-sm text-muted-foreground flex items-center gap-1">
                             <AlertCircle size={14} />

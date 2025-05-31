@@ -49,6 +49,16 @@ public function riwayatExp()
     return $this->hasMany(RiwayatExp::class);
 }
 
+public function quisHurufSessions()
+{
+    return $this->hasMany(QuisHurufSession::class, 'id_user');
+}
+
+public function quisHurufSessionSoals()
+{
+    return $this->hasMany(QuisHurufSessionSoal::class, 'id_user');
+}
+
     protected static function boot()
     {
         parent::boot();
