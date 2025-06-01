@@ -776,7 +776,7 @@ function VocabularyContent({ vocabulary }) {
                                     </div>
 
                                     {/* Bagian kanan: Contoh kalimat dengan kanji di atas, furigana di bawah */}
-                                    <div className="bg-white/50 backdrop-blur-sm rounded-xl p-5 border border-primary/10 shadow-sm">
+                                    <div className="bg-transparent dark:bg-slate-900/50 backdrop-blur-sm rounded-xl p-5 border border-primary/10 shadow-sm">
                                         <div className="flex items-center justify-center gap-2 mb-4">
                                             <MessageSquareQuote
                                                 className="text-primary"
@@ -823,7 +823,7 @@ function VocabularyContent({ vocabulary }) {
                                                         variant="outline"
                                                         className="rounded-full bg-primary/5 border-primary/20"
                                                     >
-                                                        Level {todayVocab.level}
+                                                        kosakata
                                                     </Badge>
                                                     <div className="flex items-center gap-1">
                                                         <Button
@@ -1383,8 +1383,7 @@ function VocabularyContent({ vocabulary }) {
                                                             )}`}
                                                         ></div>
                                                         <div className="bg-gradient-to-r from-muted/50 to-transparent px-2 py-1 rounded-full">
-                                                            Level{" "}
-                                                            {item.level || "N5"}
+                                                            kosakata
                                                         </div>
                                                     </div>
                                                     <span className="flex items-center gap-1">

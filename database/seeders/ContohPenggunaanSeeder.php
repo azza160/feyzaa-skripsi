@@ -19,7 +19,7 @@ class ContohPenggunaanSeeder extends Seeder
             'kata' => 'ありがとう',
             'romaji' => 'arigatou',
             'arti' => 'Terima kasih',
-            'audio' => 'https://res.cloudinary.com/dzozxilf6/video/upload/v1747371319/hiragana-a-contoh_penggunaan-arigatou-audio_l310z5.wav',
+            'audio' => 'https://res.cloudinary.com/dzozxilf6/video/upload/v1748784323/a-1_ha8yha.wav',
             'huruf_id' => 'H-GO-A', // Sesuaikan dengan id dari huruf
         ]);
 
@@ -27,7 +27,7 @@ class ContohPenggunaanSeeder extends Seeder
             'kata' => 'あいさつ',
             'romaji' => 'aisatsu',
             'arti' => 'Salam',
-            'audio' => null,
+            'audio' => 'https://res.cloudinary.com/dzozxilf6/video/upload/v1748784338/a-2_qah8pc.wav',
             'huruf_id' => 'H-GO-A',
         ]);
         
@@ -35,7 +35,7 @@ class ContohPenggunaanSeeder extends Seeder
             'kata' => 'あお',
             'romaji' => 'ao',
             'arti' => 'Biru',
-            'audio' => null,
+            'audio' => 'https://res.cloudinary.com/dzozxilf6/video/upload/v1748784349/a-3_c91tqf.wav',
             'huruf_id' => 'H-GO-A',
         ]);
         //end a
@@ -45,7 +45,7 @@ class ContohPenggunaanSeeder extends Seeder
             'kata' => 'いぬ',
             'romaji' => 'inu',
             'arti' => 'Anjing',
-            'audio' => null,
+            'audio' => 'https://res.cloudinary.com/dzozxilf6/video/upload/v1748784385/i-1_yr3sie.wav',
             'huruf_id' => 'H-GO-I',
         ]);
         
@@ -53,7 +53,7 @@ class ContohPenggunaanSeeder extends Seeder
             'kata' => 'いえ',
             'romaji' => 'ie',
             'arti' => 'Rumah',
-            'audio' => null,
+            'audio' => 'https://res.cloudinary.com/dzozxilf6/video/upload/v1748784398/i-2_fzqzgl.wav',
             'huruf_id' => 'H-GO-I',
         ]);
         
@@ -61,7 +61,7 @@ class ContohPenggunaanSeeder extends Seeder
             'kata' => 'いちご',
             'romaji' => 'ichigo',
             'arti' => 'Stroberi',
-            'audio' => null,
+            'audio' => 'https://res.cloudinary.com/dzozxilf6/video/upload/v1748784410/i-3_b1e0lf.wav',
             'huruf_id' => 'H-GO-I',
         ]);
         //end i
@@ -71,7 +71,7 @@ class ContohPenggunaanSeeder extends Seeder
             'kata' => 'うみ',
             'romaji' => 'umi',
             'arti' => 'Laut',
-            'audio' => null,
+            'audio' => 'https://res.cloudinary.com/dzozxilf6/video/upload/v1748784436/u-1_jannou.wav',
             'huruf_id' => 'H-GO-U',
         ]);
         
@@ -79,7 +79,7 @@ class ContohPenggunaanSeeder extends Seeder
             'kata' => 'うた',
             'romaji' => 'uta',
             'arti' => 'Lagu',
-            'audio' => null,
+            'audio' => 'https://res.cloudinary.com/dzozxilf6/video/upload/v1748784448/u-2_egm2jh.wav',
             'huruf_id' => 'H-GO-U',
         ]);
         
@@ -87,7 +87,7 @@ class ContohPenggunaanSeeder extends Seeder
             'kata' => 'うし',
             'romaji' => 'ushi',
             'arti' => 'Sapi',
-            'audio' => null,
+            'audio' => 'https://res.cloudinary.com/dzozxilf6/video/upload/v1748784462/u-3_rfq6ws.wav',
             'huruf_id' => 'H-GO-U',
         ]);
         //end u
@@ -97,7 +97,7 @@ class ContohPenggunaanSeeder extends Seeder
             'kata' => 'えんぴつ',
             'romaji' => 'enpitsu',
             'arti' => 'Pensil',
-            'audio' => null,
+            'audio' => 'https://res.cloudinary.com/dzozxilf6/video/upload/v1748784482/e-1_asjpky.wav',
             'huruf_id' => 'H-GO-E',
         ]);
         
@@ -105,7 +105,7 @@ class ContohPenggunaanSeeder extends Seeder
             'kata' => 'えき',
             'romaji' => 'eki',
             'arti' => 'Stasiun',
-            'audio' => null,
+            'audio' => 'https://res.cloudinary.com/dzozxilf6/video/upload/v1748784495/e-2_ydbtc4.wav',
             'huruf_id' => 'H-GO-E',
         ]);
         
@@ -113,7 +113,7 @@ class ContohPenggunaanSeeder extends Seeder
             'kata' => 'えがお',
             'romaji' => 'egao',
             'arti' => 'Senyum',
-            'audio' => null,
+            'audio' => 'https://res.cloudinary.com/dzozxilf6/video/upload/v1748784508/e-3_u4a5ro.wav',
             'huruf_id' => 'H-GO-E',
         ]);
         //end e
@@ -123,7 +123,7 @@ class ContohPenggunaanSeeder extends Seeder
             'kata' => 'おはよう',
             'romaji' => 'ohayou',
             'arti' => 'Selamat pagi',
-            'audio' => null,
+            'audio' => 'https://res.cloudinary.com/dzozxilf6/video/upload/v1748784530/o-1_ocop4s.wav',
             'huruf_id' => 'H-GO-O',
         ]);
         
@@ -131,7 +131,7 @@ class ContohPenggunaanSeeder extends Seeder
             'kata' => 'おちゃ',
             'romaji' => 'ocha',
             'arti' => 'Teh',
-            'audio' => null,
+            'audio' => 'https://res.cloudinary.com/dzozxilf6/video/upload/v1748784544/o-2_uhepuc.wav',
             'huruf_id' => 'H-GO-O',
         ]);
         
@@ -139,7 +139,7 @@ class ContohPenggunaanSeeder extends Seeder
             'kata' => 'おかね',
             'romaji' => 'okane',
             'arti' => 'Uang',
-            'audio' => null,
+            'audio' => 'https://res.cloudinary.com/dzozxilf6/video/upload/v1748784556/o-3_uyc7nl.wav',
             'huruf_id' => 'H-GO-O',
         ]);
         //ond o
@@ -149,7 +149,7 @@ class ContohPenggunaanSeeder extends Seeder
             'kata' => 'かさ',
             'romaji' => 'kasa',
             'arti' => 'Payung',
-            'audio' => null,
+            'audio' => 'https://res.cloudinary.com/dzozxilf6/video/upload/v1748784647/ka-1_y5kxmr.wav',
             'huruf_id' => 'H-GO-KA',
         ]);
         
@@ -157,7 +157,7 @@ class ContohPenggunaanSeeder extends Seeder
             'kata' => 'かみ',
             'romaji' => 'kami',
             'arti' => 'Kertas / Rambut (tergantung konteks)',
-            'audio' => null,
+            'audio' => 'https://res.cloudinary.com/dzozxilf6/video/upload/v1748784660/ka-2_ig0nm2.wav',
             'huruf_id' => 'H-GO-KA',
         ]);
         
@@ -165,7 +165,7 @@ class ContohPenggunaanSeeder extends Seeder
             'kata' => 'かぞく',
             'romaji' => 'kazoku',
             'arti' => 'Keluarga',
-            'audio' => null,
+            'audio' => 'https://res.cloudinary.com/dzozxilf6/video/upload/v1748784671/ka-3_gggo2x.wav',
             'huruf_id' => 'H-GO-KA',
         ]);       
         //end ka
