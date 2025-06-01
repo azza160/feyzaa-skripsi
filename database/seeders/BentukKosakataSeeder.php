@@ -35,7 +35,7 @@ class BentukKosakataSeeder extends Seeder
                 'romaji' => 'tabenai',
                 'arti' => 'tidak makan',
                 'deskripsi' => 'Bentuk negatif informal dari 食べる (taberu). Digunakan dalam percakapan santai untuk menyatakan bahwa seseorang tidak makan atau tidak akan makan. Sering digunakan oleh teman sebaya atau orang yang akrab.',
-                'audio' => 'https://res.cloudinary.com/dzozxilf6/video/upload/v1748801523/bentuk-sopan-tabemasu_hpwdgx.mp3',
+                'audio' => 'https://res.cloudinary.com/dzozxilf6/video/upload/v1748801602/bentuk-sopan-tabenai_j4rqdt.mp3',
             ],
             [
                 'id' => 'BENTUK-003',
@@ -46,7 +46,7 @@ class BentukKosakataSeeder extends Seeder
                 'romaji' => 'tabemasen',
                 'arti' => 'tidak makan (sopan)',
                 'deskripsi' => 'Bentuk negatif sopan dari 食べます (tabemasu). Digunakan dalam situasi formal untuk menyatakan penolakan atau ketidakinginan untuk makan dengan nada yang sopan dan hormat.',
-                'audio' => 'https://res.cloudinary.com/dzozxilf6/video/upload/v1748801523/bentuk-sopan-tabemasu_hpwdgx.mp3',
+                'audio' => 'https://res.cloudinary.com/dzozxilf6/video/upload/v1748801678/ttsMP3.com_VoiceText_2025-6-2_1-14-47_m6n3hm.mp3',
             ],
             [
                 'id' => 'BENTUK-004',

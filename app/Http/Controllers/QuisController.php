@@ -391,6 +391,7 @@ class QuisController extends Controller
                 'attempt' => $attempt,
                 'is_correct' => $sessionSoal->is_correct,
                 'user_answer' => $sessionSoal->user_answer,
+               
             ];
 
             // Jika soal ini sudah dijawab, tambahkan ke counter

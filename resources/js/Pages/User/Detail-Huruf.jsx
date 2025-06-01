@@ -506,13 +506,7 @@ export default function HiraganaDetailPage() {
                                                             }`}>
                                                                 {huruf.kategori}
                                                             </div>
-                                                            <div className={`px-3 py-1 rounded-full text-sm font-medium ${
-                                                                status 
-                                                                ? 'bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300' 
-                                                                : 'bg-primary/10 text-primary/80'
-                                                            }`}>
-                                                                Level: 1
-                                                            </div>
+                                                          
                                                             {status && (
                                                                 <motion.div
                                                                     initial={{ scale: 0, opacity: 0 }}

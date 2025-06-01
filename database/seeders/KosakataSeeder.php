@@ -77,7 +77,7 @@ class KosakataSeeder extends Seeder
                 'romaji' => 'taberu',
                 'arti' => 'makan',
                 'deskripsi' => 'Digunakan untuk menyatakan tindakan makan atau memakan sesuatu.',
-                'catatan' => '',
+                'catatan' => 'Sering digunakan dalam konteks makan atau minum. Contoh: 食べる (makan), 飲む (minum).',
                 'audio' => 'https://res.cloudinary.com/dzozxilf6/video/upload/v1748799322/taberu-6_xjxan6.mp3',
             ],
           // iku

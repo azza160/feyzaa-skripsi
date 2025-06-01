@@ -192,6 +192,127 @@ class ContohKalimatSeeder extends Seeder
                 'arti' => 'Dia berusaha makan banyak sayuran demi kesehatan',
                 'audio' => 'https://res.cloudinary.com/dzozxilf6/video/upload/v1748799463/ck-taberu-3_qmk9sy.mp3',
             ],
+            [
+                'kosakata_id' => 'KOSA-006',
+                'bentuk_kosakata_id' => null,
+                'kanji' => '彼女はよくチョコレートを食べる。',
+                'furigana' => 'かのじょはよくちょこれーとをたべる',
+                'romaji' => 'kanojo wa yoku chokoreeto o taberu',
+                'arti' => 'Dia sering makan cokelat.',
+                'audio' => 'https://res.cloudinary.com/dzozxilf6/video/upload/v1748803882/ck-taberu-4_b56gho.mp3',
+            ],
+            // contoh kaliamt bentuk sopan
+            [
+                'kosakata_id' => null,
+                'bentuk_kosakata_id' => 'BENTUK-001', // ID bentuk sopan yang sebelumnya kita buat
+                'kanji' => '私は毎日りんごを食べます。',
+                'furigana' => 'わたしはまいにちりんごをたべます',
+                'romaji' => 'watashi wa mainichi ringo o tabemasu',
+                'arti' => 'Saya makan apel setiap hari.',
+                'audio' => 'https://res.cloudinary.com/dzozxilf6/video/upload/v1748804172/ck-tabemasu_xrte26.mp3',
+            ],
+            //contoh kalimat bentuk negatif
+            [
+                'kosakata_id' => null,
+                'bentuk_kosakata_id' => 'BENTUK-002', // ID bentuk negatif yang udah kita buat
+                'kanji' => '彼女は夜遅くには食べないようにしています。',
+                'furigana' => 'かのじょはよるおそくにはたべないようにしています',
+                'romaji' => 'kanojo wa yoru osoku ni wa tabenai you ni shiteimasu',
+                'arti' => 'Dia berusaha untuk tidak makan larut malam.',
+                'audio' => 'https://res.cloudinary.com/dzozxilf6/video/upload/v1748804283/ck-tabenai_onnf7j.mp3',
+            ],
+            //contoh kalimat bentuk negatif sopan
+            [
+                'kosakata_id' => null,
+                'bentuk_kosakata_id' => 'BENTUK-003', // ID untuk bentuk negatif sopan
+                'kanji' => '私は朝ごはんを食べませんでしたが、コーヒーを飲みました',
+                'furigana' => 'わたしはあさごはんをたべませんでしたが、こーひーをのみました',
+                'romaji' => 'watashi wa asagohan o tabemasen deshita ga, koohii o nomimashita',
+                'arti' => 'Saya tidak makan sarapan, tapi saya minum kopi.',
+                'audio' => 'https://res.cloudinary.com/dzozxilf6/video/upload/v1748804435/ck-negatif-sopan-tabemasendeshita_yrmapo.mp3',
+            ],
+            //contoh kalimat bentuk lampau
+            [
+                'kosakata_id' => null,
+                'bentuk_kosakata_id' => 'BENTUK-004', // ID untuk bentuk lampau (informal/past)
+                'kanji' => '昨日、友だちと一緒に寿司を食べた。',
+                'furigana' => 'きのう、ともだちといっしょにすしをたべた',
+                'romaji' => 'kinou, tomodachi to issho ni sushi o tabeta',
+                'arti' => 'Kemarin, aku makan sushi bersama teman.',
+                'audio' => 'https://res.cloudinary.com/dzozxilf6/video/upload/v1748804573/ck-tabeta_mkljq1.mp3',
+            ],
+            //contoh kalimat bentuk lampau sopan
+            [
+                'kosakata_id' => null,
+                'bentuk_kosakata_id' => 'BENTUK-005', // ID untuk bentuk lampau sopan
+                'kanji' => '今朝、パンと卵を食べました。',
+                'furigana' => 'けさ、ぱんとたまごをたべました',
+                'romaji' => 'kesa, pan to tamago o tabemashita',
+                'arti' => 'Tadi pagi saya makan roti dan telur.',
+                'audio' => 'https://res.cloudinary.com/dzozxilf6/video/upload/v1748804739/ck-tabemashita_vlequj.mp3',
+            ],
+            //contoh kalimat bentuk lampau negatif
+            [
+                'kosakata_id' => null,
+                'bentuk_kosakata_id' => 'BENTUK-006', // ID untuk bentuk negatif lampau informal
+                'kanji' => '昨日は忙しくて昼ごはんを食べなかった。',
+                'furigana' => 'きのうはいそがしくてひるごはんをたべなかった',
+                'romaji' => 'kinou wa isogashikute hirugohan o tabenakatta',
+                'arti' => 'Kemarin aku sibuk jadi tidak makan siang.',
+                'audio' => 'https://res.cloudinary.com/dzozxilf6/video/upload/v1748804824/ck-tabenakatta_yfisdp.mp3',
+            ],
+            //contoh kalimat bentuk lampau negatif sopan
+            [
+                'kosakata_id' => null,
+                'bentuk_kosakata_id' => 'BENTUK-007', // ID untuk bentuk negatif lampau sopan
+                'kanji' => '朝は時間がなくて朝ごはんを食べませんでした。',
+                'furigana' => 'あさはじかんがなくてあさごはんをたべませんでした',
+                'romaji' => 'asa wa jikan ga nakute asagohan o tabemasen deshita',
+                'arti' => 'Pagi tadi saya tidak sarapan karena tidak punya waktu.',
+                'audio' => 'https://res.cloudinary.com/dzozxilf6/video/upload/v1748805071/ttsMP3.com_VoiceText_2025-6-2_2-9-4_ry5a8z.mp3',
+            ],
+            // contoh kalimat bentuk potensial
+            [
+                'kosakata_id' => null,
+                'bentuk_kosakata_id' => 'BENTUK-008', // ID untuk bentuk potensial
+                'kanji' => '私は辛い食べ物を食べられます。',
+                'furigana' => 'わたしはからいたべものをたべられます',
+                'romaji' => 'watashi wa karai tabemono o taberaremasu',
+                'arti' => 'Saya bisa makan makanan pedas.',
+                'audio' => 'https://res.cloudinary.com/dzozxilf6/video/upload/v1748805262/ck-taberaremasu_b445ij.mp3',
+            ],
+
+            //contoh kalimat bentuk perintah
+            [
+                'kosakata_id' => null,
+                'bentuk_kosakata_id' => 'BENTUK-009', // ID untuk bentuk perintah
+                'kanji' => 'もっと食べろ！',
+                'furigana' => 'もっとたべろ！',
+                'romaji' => 'motto tabero!',
+                'arti' => 'Makanlah lebih banyak!',
+                'audio' => 'https://res.cloudinary.com/dzozxilf6/video/upload/v1748806485/ck-tabero_nwfnwt.mp3',
+            ],
+            
+            // contoh kalimat bentuk larangan
+            [
+                'kosakata_id' => null,
+                'bentuk_kosakata_id' => 'BENTUK-010', // ID untuk bentuk larangan
+                'kanji' => 'これは食べるな！',
+                'furigana' => 'これはたべるな！',
+                'romaji' => 'kore wa taberu na!',
+                'arti' => 'Jangan makan ini!',
+                'audio' => 'https://res.cloudinary.com/dzozxilf6/video/upload/v1748807133/ttsMP3.com_VoiceText_2025-6-2_2-16-15_htb04o.mp3',
+            ],
+            //contoh kalimat bentuk て
+            [
+                'kosakata_id' => null,
+                'bentuk_kosakata_id' => 'BENTUK-011', // ID untuk bentuk te
+                'kanji' => '朝ごはんを食べて、学校に行きました。',
+                'furigana' => 'あさごはんをたべて、がっこうにいきました。',
+                'romaji' => 'asagohan o tabete, gakkou ni ikimashita.',
+                'arti' => 'Setelah makan sarapan, saya pergi ke sekolah.',
+                'audio' => 'https://res.cloudinary.com/dzozxilf6/video/upload/v1748805452/ck-tabete_fhsg29.mp3',
+            ], 
             //end taberu
 
             // iku
@@ -315,61 +436,7 @@ class ContohKalimatSeeder extends Seeder
 
             //end suru
 
-            // Bentuk kosakata only (6 data)
-            [
-                'kosakata_id' => null,
-                'bentuk_kosakata_id' => 'BENTUK-001',
-                'kanji' => '私はりんごを食べます',
-                'furigana' => 'わたしはりんごをたべます',
-                'romaji' => 'watashi wa ringo o tabemasu',
-                'arti' => 'Saya makan apel (sopan)',
-                'audio' => null,
-            ],
-            [
-                'kosakata_id' => null,
-                'bentuk_kosakata_id' => 'BENTUK-002',
-                'kanji' => '私はりんごを食べない',
-                'furigana' => 'わたしはりんごをたべない',
-                'romaji' => 'watashi wa ringo o tabenai',
-                'arti' => 'Saya tidak makan apel',
-                'audio' => null,
-            ],
-            [
-                'kosakata_id' => null,
-                'bentuk_kosakata_id' => 'BENTUK-003',
-                'kanji' => '彼は学校へ行きます',
-                'furigana' => 'かれはがっこうへいきます',
-                'romaji' => 'kare wa gakkou e ikimasu',
-                'arti' => 'Dia pergi ke sekolah (sopan)',
-                'audio' => null,
-            ],
-            [
-                'kosakata_id' => null,
-                'bentuk_kosakata_id' => 'BENTUK-004',
-                'kanji' => '彼は学校へ行かない',
-                'furigana' => 'かれはがっこうへいかない',
-                'romaji' => 'kare wa gakkou e ikanai',
-                'arti' => 'Dia tidak pergi ke sekolah',
-                'audio' => null,
-            ],
-            [
-                'kosakata_id' => null,
-                'bentuk_kosakata_id' => 'BENTUK-005',
-                'kanji' => '私は映画を見ます',
-                'furigana' => 'わたしはえいがをみます',
-                'romaji' => 'watashi wa eiga o mimasu',
-                'arti' => 'Saya menonton film (sopan)',
-                'audio' => null,
-            ],
-            [
-                'kosakata_id' => null,
-                'bentuk_kosakata_id' => 'BENTUK-006',
-                'kanji' => '私は映画を見ない',
-                'furigana' => 'わたしはえいがをみない',
-                'romaji' => 'watashi wa eiga o minai',
-                'arti' => 'Saya tidak menonton film',
-                'audio' => null,
-            ],
+           
         ]);
     }
 }

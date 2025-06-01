@@ -294,7 +294,7 @@ class HurufController extends Controller
       
       
         //hitung presentase progress dengan maximal nilai 100%
-        $presentase = ($progress / $max) * 100;
+        $presentase = floor(($progress / $max) * 100)   ;
 
        
 

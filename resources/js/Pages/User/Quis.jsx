@@ -93,7 +93,7 @@ const QuizCompletion = ({ isTimeUp, correctAnswers, totalQuestions, onViewReview
                 onClick={onExitQuis}
               >
                 <Eye className="w-5 h-5 mr-2" />
-                Lihat Review Jawaban
+                Selesai Kuis  Dan Lihat Review Jawaban
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
              
@@ -259,34 +259,7 @@ export default function QuizHurufPage() {
     <DashboardLayout>
       <div className="text-foreground">
         <div className="max-w-6xl mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-            className="flex items-center space-x-2 text-sm bg-gradient-to-r from-background to-muted/50 dark:from-slate-950 dark:to-slate-900/50 p-3 rounded-lg shadow-sm border border-border/50 dark:border-slate-800/50 mb-[50px] w-fit"
-          >
-            <div className="flex flex-wrap items-center space-x-2">
-              <Link href={route("dashboard")}>
-                <span className="text-muted-foreground dark:text-slate-400 hover:text-violet-800 dark:hover:text-violet-300 transition-all duration-300">
-                  Dashboard
-                </span>
-              </Link>
-              <span className="text-primary dark:text-violet-400">/</span>
-              <Link href={route("huruf")}>
-                <span className="text-violet-400 dark:text-violet-600">Huruf Jepang</span>
-              </Link>
-              <span className="text-primary dark:text-violet-400">/</span>
-              <span className="text-violet-400 dark:text-violet-600">Kuis</span>
-            </div>
-            <motion.div
-              className="h-1 w-1 rounded-full bg-primary/50 dark:bg-violet-500/50"
-              animate={{ scale: [1, 1.5, 1] }}
-              transition={{
-                duration: 2,
-                repeat: Number.POSITIVE_INFINITY,
-              }}
-            />
-          </motion.div>
+         
 
           <div className="mb-8">
             <Accordion type="single" collapsible className="w-full">
@@ -321,7 +294,7 @@ export default function QuizHurufPage() {
                 <div className="flex flex-col md:flex-row items-center justify-between">
                   <div>
                     <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                      Kuis Hiragana – Beginner
+                      Kuis {jenis} – {level}
                     </h1>
                     <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                       Soal {currentQuestion + 1} dari {quizData.length}
@@ -449,7 +422,7 @@ export default function QuizHurufPage() {
                             initial={{ scale: 0.8, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
                             transition={{ delay: 0.4, type: "spring", stiffness: 200 }}
-                            className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-indigo-500 to-purple-600 dark:from-indigo-600 dark:to-purple-700 rounded-2xl shadow-xl text-white text-4xl font-bold relative"
+                            className="inline-flex items-center justify-center w-[300px] h-24 bg-gradient-to-br from-indigo-500 to-purple-600 dark:from-indigo-600 dark:to-purple-700 rounded-2xl shadow-xl text-white text-4xl font-bold relative"
                           >
                             {quizData[currentQuestion].character}
                             <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent rounded-2xl"></div>

@@ -123,6 +123,7 @@ class KosakataController extends Controller
                     'romaji' => $bentuk->romaji,
                     'meaning' => $bentuk->arti,
                     'audio' => $bentuk->audio,
+                    'deskripsi' => $bentuk->deskripsi,
                     'examples' => $bentuk->contohKalimats->map(function ($kalimat) {
                         return [
                             'kanji' => $kalimat->kanji,

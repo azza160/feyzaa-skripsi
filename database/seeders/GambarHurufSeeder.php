@@ -21,13 +21,13 @@ class GambarHurufSeeder extends Seeder
         ]);
 
         Gambar_Huruf::create([
-            'link' => 'https://res.cloudinary.com/dzozxilf6/image/upload/v1747056100/a_2_lp1her.png',
+            'link' => 'https://res.cloudinary.com/dzozxilf6/image/upload/v1748771485/a_2_o06tmh.png',
             'urutan' => 2,
             'huruf_id' => 'H-GO-A',
         ]);
 
         Gambar_Huruf::create([
-            'link' => 'https://res.cloudinary.com/dzozxilf6/image/upload/v1747056302/a_3_o9dhz8.png',
+            'link' => 'https://res.cloudinary.com/dzozxilf6/image/upload/v1748771494/a_3_w6nr0h.png',
             'urutan' => 3,
             'huruf_id' => 'H-GO-A',
         ]);

@@ -275,8 +275,8 @@ export default function Dashboard({ children }) {
                 <SidebarLink icon={<LayoutDashboard className="h-5 w-5" />} label="Dashboard" isActive={route().current('dashboard')} isOpen={sidebarOpen} href={route('dashboard')}/>
                 <SidebarLink icon={<Type className="h-5 w-5" />} label="Huruf Jepang" isActive={['huruf', 'kategori-huruf-hiragana', 'huruf-hiragana','huruf-hiragana-detail'].some(name => route().current(name))}
                 isOpen={sidebarOpen} href={route('huruf')} />
-                <SidebarLink icon={<BookOpenText className="h-5 w-5" />} label="Kosakata" isActive={['list-kosakata', 'detail-kosakata', 'kosakata-flashcard'].some(name => route().current(name))} isOpen={sidebarOpen} href={route('list-kosakata')} />
-                <SidebarLink icon={<FlipVertical className="h-5 w-5" />} label="Flashcard" isActive={['flashcard'].some(name => route().current(name))} isOpen={sidebarOpen} href={route('flashcard')} />
+                <SidebarLink icon={<BookOpenText className="h-5 w-5" />} label="Kosakata" isActive={['list-kosakata', 'detail-kosakata', 'kosakata-flashcard'].some(name => route().current(name))} isOpen={sidebarOpen} href={route('list-kosakata')} locked={currentLevel < 3} />
+                <SidebarLink icon={<FlipVertical className="h-5 w-5" />} label="Flashcard" isActive={['flashcard'].some(name => route().current(name))} isOpen={sidebarOpen} href={route('flashcard')} locked={currentLevel < 3} />
               
               
               </nav>
@@ -289,8 +289,8 @@ export default function Dashboard({ children }) {
               {!sidebarOpen && <div className="my-6 border-t border-border dark:border-slate-800"></div>}
               <nav className="space-y-1">
                 <SidebarLink icon={<PencilLine className="h-5 w-5" />} label="Kuis Huruf" isOpen={sidebarOpen} isActive={['pilih-huruf-quis','pilih-list-huruf-quis','pilih-level-quis'].some(name => route().current(name))} href={route('pilih-huruf-quis')} />
-                <SidebarLink icon={<ListChecks className="h-5 w-5" />} label="Kuis Kosakata" isOpen={sidebarOpen} />
-                <SidebarLink icon={<Trophy className="h-5 w-5" />} label="Leaderboard" isOpen={sidebarOpen} />
+                <SidebarLink icon={<ListChecks className="h-5 w-5" />} label="Kuis Kosakata" isOpen={sidebarOpen} locked={currentLevel < 3} />
+                <SidebarLink icon={<Trophy className="h-5 w-5" />} label="Leaderboard" isOpen={sidebarOpen} locked={currentLevel < 3} />
                 <SidebarLink
                   icon={<Award className="h-5 w-5" />}
                   label="Achievements"

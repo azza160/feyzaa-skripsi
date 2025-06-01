@@ -1404,6 +1404,20 @@ const VocabularyDetailContent = ({vocabularyData}) => {
                                                                 </motion.div>
                                                             </div>
 
+                                                            {conj.deskripsi && (
+                                                                <div className="mt-3 mb-3 pt-3 border-t border-primary/10">
+                                                                    <div className="flex items-center gap-2 mb-2">
+                                                                        <Info className="h-4 w-4 text-primary" />
+                                                                        <div className="text-sm font-medium text-muted-foreground">
+                                                                            Deskripsi:
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="text-sm bg-primary/5 p-3 rounded-lg">
+                                                                        {conj.deskripsi}
+                                                                    </div>
+                                                                </div>
+                                                            )}
+
                                                             <div className="mt-3 pt-3 border-t border-primary/10">
                                                                 <div className="text-sm font-medium mb-2">
                                                                     Contoh:
@@ -1419,29 +1433,51 @@ const VocabularyDetailContent = ({vocabularyData}) => {
                                                                             }
                                                                             className="mb-3 bg-primary/10 p-3 rounded-lg"
                                                                         >
-                                                                            <div className="text-base font-medium mb-1">
-                                                                                {
-                                                                                    example.kanji
-                                                                                }
-                                                                            </div>
-                                                                            {showFurigana && (
-                                                                                <div className="text-sm text-muted-foreground mb-1">
-                                                                                    {
-                                                                                        example.furigana
-                                                                                    }
+                                                                            <div className="flex justify-between items-start">
+                                                                                <div className="flex-1">
+                                                                                    <div className="text-base font-medium mb-1">
+                                                                                        {
+                                                                                            example.kanji
+                                                                                        }
+                                                                                    </div>
+                                                                                    {showFurigana && (
+                                                                                        <div className="text-sm text-muted-foreground mb-1">
+                                                                                            {
+                                                                                                example.furigana
+                                                                                            }
+                                                                                        </div>
+                                                                                    )}
+                                                                                    <div className="text-sm mb-1">
+                                                                                        {
+                                                                                            example.romaji
+                                                                                        }
+                                                                                    </div>
+                                                                                    <div className="text-sm text-muted-foreground">
+                                                                                        "
+                                                                                        {
+                                                                                            example.meaning
+                                                                                        }
+                                                                                        "
+                                                                                    </div>
                                                                                 </div>
-                                                                            )}
-                                                                            <div className="text-sm mb-1">
-                                                                                {
-                                                                                    example.romaji
-                                                                                }
-                                                                            </div>
-                                                                            <div className="text-sm text-muted-foreground">
-                                                                                "
-                                                                                {
-                                                                                    example.meaning
-                                                                                }
-                                                                                "
+                                                                                <motion.div
+                                                                                    whileHover={{
+                                                                                        scale: 1.1,
+                                                                                        rotate: 10,
+                                                                                    }}
+                                                                                    whileTap={{
+                                                                                        scale: 0.9,
+                                                                                    }}
+                                                                                >
+                                                                                    <Button
+                                                                                        variant="ghost"
+                                                                                        size="icon"
+                                                                                        onClick={() => handleClick(example.audio)}
+                                                                                        className="rounded-full h-8 w-8 bg-primary/10 hover:bg-primary/20 border border-primary/30"
+                                                                                    >
+                                                                                        <Volume2 className="h-3 w-3" />
+                                                                                    </Button>
+                                                                                </motion.div>
                                                                             </div>
                                                                         </div>
                                                                     )
