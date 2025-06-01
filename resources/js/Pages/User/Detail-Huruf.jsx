@@ -244,7 +244,8 @@ export default function HiraganaDetailPage() {
                     setExpData({
                         currentExp: response.data.data.currentExp,
                         expGained: response.data.data.expGained,
-                        nextLevelExp: response.data.data.nextLevelExp
+                        nextLevelExp: response.data.data.nextLevelExp,
+                        textAlert1: ' Selamat! Anda telah menyelesaikan latihan Hiragana dan mendapatkan poin pengalaman.'
                     });
                     // Delay reload until alert is shown
                     setTimeout(() => {

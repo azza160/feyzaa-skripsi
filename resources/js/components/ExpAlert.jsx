@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { X, Award, Star, Sparkles, Plus } from "lucide-react"
 import confetti from "canvas-confetti"
 
-export default function ExpAlert({ onClose, currentExp, expGained, nextLevelExp }) {
+export default function ExpAlert({ onClose, currentExp, expGained, nextLevelExp,textAlert1 }) {
   const [isVisible, setIsVisible] = useState(true)
   const [showConfetti, setShowConfetti] = useState(false)
 
@@ -169,7 +169,8 @@ export default function ExpAlert({ onClose, currentExp, expGained, nextLevelExp 
                         className="mb-4"
                       >
                         <p className="text-slate-600 dark:text-slate-300">
-                          Selamat! Anda telah menyelesaikan latihan Hiragana dan mendapatkan poin pengalaman.
+                          {textAlert1}
+                         
                         </p>
                       </motion.div>
 

@@ -21,120 +21,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
-
-// Simplified quiz data
-const quizData = [
-  {
-    id: 1,
-    question: "Bagaimana pelafalan karakter berikut?",
-    character: "あ",
-    options: [
-      { id: "A", text: "a", isCorrect: true },
-      { id: "B", text: "i", isCorrect: false },
-      { id: "C", text: "u", isCorrect: false },
-      { id: "D", text: "e", isCorrect: false },
-    ],
-  },
-  {
-    id: 2,
-    question: "Bagaimana pelafalan karakter berikut?",
-    character: "か",
-    options: [
-      { id: "A", text: "sa", isCorrect: false },
-      { id: "B", text: "ka", isCorrect: true },
-      { id: "C", text: "ta", isCorrect: false },
-      { id: "D", text: "na", isCorrect: false },
-    ],
-  },
-  {
-    id: 3,
-    question: "Bagaimana pelafalan karakter berikut?",
-    character: "さ",
-    options: [
-      { id: "A", text: "ka", isCorrect: false },
-      { id: "B", text: "ta", isCorrect: false },
-      { id: "C", text: "sa", isCorrect: true },
-      { id: "D", text: "na", isCorrect: false },
-    ],
-  },
-  {
-    id: 4,
-    question: "Bagaimana pelafalan karakter berikut?",
-    character: "た",
-    options: [
-      { id: "A", text: "ta", isCorrect: true },
-      { id: "B", text: "ka", isCorrect: false },
-      { id: "C", text: "sa", isCorrect: false },
-      { id: "D", text: "na", isCorrect: false },
-    ],
-  },
-  {
-    id: 5,
-    question: "Bagaimana pelafalan karakter berikut?",
-    character: "な",
-    options: [
-      { id: "A", text: "ma", isCorrect: false },
-      { id: "B", text: "ha", isCorrect: false },
-      { id: "C", text: "na", isCorrect: true },
-      { id: "D", text: "ra", isCorrect: false },
-    ],
-  },
-  {
-    id: 6,
-    question: "Bagaimana pelafalan karakter berikut?",
-    character: "は",
-    options: [
-      { id: "A", text: "ha", isCorrect: true },
-      { id: "B", text: "ma", isCorrect: false },
-      { id: "C", text: "ya", isCorrect: false },
-      { id: "D", text: "ra", isCorrect: false },
-    ],
-  },
-  {
-    id: 7,
-    question: "Bagaimana pelafalan karakter berikut?",
-    character: "ま",
-    options: [
-      { id: "A", text: "ya", isCorrect: false },
-      { id: "B", text: "ma", isCorrect: true },
-      { id: "C", text: "ra", isCorrect: false },
-      { id: "D", text: "wa", isCorrect: false },
-    ],
-  },
-  {
-    id: 8,
-    question: "Bagaimana pelafalan karakter berikut?",
-    character: "や",
-    options: [
-      { id: "A", text: "ra", isCorrect: false },
-      { id: "B", text: "wa", isCorrect: false },
-      { id: "C", text: "ya", isCorrect: true },
-      { id: "D", text: "ma", isCorrect: false },
-    ],
-  },
-  {
-    id: 9,
-    question: "Bagaimana pelafalan karakter berikut?",
-    character: "ら",
-    options: [
-      { id: "A", text: "ra", isCorrect: true },
-      { id: "B", text: "wa", isCorrect: false },
-      { id: "C", text: "ya", isCorrect: false },
-      { id: "D", text: "na", isCorrect: false },
-    ],
-  },
-  {
-    id: 10,
-    question: "Bagaimana pelafalan karakter berikut?",
-    character: "わ",
-    options: [
-      { id: "A", text: "ya", isCorrect: false },
-      { id: "B", text: "ra", isCorrect: false },
-      { id: "C", text: "wa", isCorrect: true },
-      { id: "D", text: "wo", isCorrect: false },
-    ],
-  },
-]
+import axios from "axios"
+import { usePage } from "@inertiajs/react"
 
 // Floating particles component
 const FloatingParticles = () => {
@@ -164,7 +52,7 @@ const FloatingParticles = () => {
 }
 
 // Quiz completion component
-const QuizCompletion = ({ isTimeUp, correctAnswers, totalQuestions, onViewReview }) => {
+const QuizCompletion = ({ isTimeUp, correctAnswers, totalQuestions, onViewReview, onExitQuis }) => {
   return (
     <div className="flex items-center justify-center p-4">
       <motion.div
@@ -198,16 +86,17 @@ const QuizCompletion = ({ isTimeUp, correctAnswers, totalQuestions, onViewReview
             </div>
 
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Link href={route("review-quis")}>
+             
               <Button
                 size="lg"
                 className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold py-4 rounded-xl shadow-lg"
+                onClick={onExitQuis}
               >
                 <Eye className="w-5 h-5 mr-2" />
                 Lihat Review Jawaban
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
-              </Link>
+             
             </motion.div>
           </motion.div>
         </div>
@@ -217,10 +106,11 @@ const QuizCompletion = ({ isTimeUp, correctAnswers, totalQuestions, onViewReview
 }
 
 export default function QuizHurufPage() {
-  const [currentQuestion, setCurrentQuestion] = useState(0)
+  const { quizData, remainingTime: initialTime, sessionId, jenis, level, currentQuestionIndex } = usePage().props
+  const [currentQuestion, setCurrentQuestion] = useState(currentQuestionIndex)
   const [selectedAnswer, setSelectedAnswer] = useState(null)
   const [answers, setAnswers] = useState([])
-  const [timeLeft, setTimeLeft] = useState(120) // 2 minutes
+  const [timeLeft, setTimeLeft] = useState(initialTime)
   const [isAnswered, setIsAnswered] = useState(false)
   const [showFeedback, setShowFeedback] = useState(false)
   const [isQuizComplete, setIsQuizComplete] = useState(false)
@@ -255,7 +145,7 @@ export default function QuizHurufPage() {
 
   // Progress bar color
   const getProgressColor = () => {
-    const percentage = (timeLeft / 120) * 100
+    const percentage = (timeLeft / initialTime) * 100
     if (percentage > 60) return "from-green-400 to-green-600"
     if (percentage > 30) return "from-orange-400 to-orange-600"
     return "from-red-400 to-red-600"
@@ -269,7 +159,7 @@ export default function QuizHurufPage() {
   }
 
   // Handle answer selection
-  const handleAnswerSelect = (optionId) => {
+  const handleAnswerSelect = async (optionId) => {
     if (isAnswered) return
 
     const selectedOption = quizData[currentQuestion].options.find((opt) => opt.id === optionId)
@@ -277,38 +167,50 @@ export default function QuizHurufPage() {
     setIsAnswered(true)
     setShowFeedback(true)
 
-    // Save answer
-    const newAnswer = {
-      questionId: quizData[currentQuestion].id,
-      selectedOption: optionId,
-      isCorrect: selectedOption.isCorrect,
-      question: quizData[currentQuestion].question,
-      character: quizData[currentQuestion].character,
-      correctAnswer: quizData[currentQuestion].options.find((opt) => opt.isCorrect).text,
-      selectedText: selectedOption.text,
-    }
-
-    setAnswers((prev) => [...prev, newAnswer])
-
-    // Character shake animation for wrong answer
-    if (!selectedOption.isCorrect) {
-      controls.start({
-        x: [-8, 8, -8, 8, 0],
-        transition: { duration: 0.4 },
+    // Save answer to database
+    try {
+      const response = await axios.post(route('save-quiz-answer'), {
+        sessionId: sessionId,
+        soalId: quizData[currentQuestion].id,
+        answer: optionId.toLowerCase()
       })
-    }
 
-    // Auto advance after feedback
-    setTimeout(() => {
-      if (currentQuestion < quizData.length - 1) {
-        setCurrentQuestion((prev) => prev + 1)
-        setSelectedAnswer(null)
-        setIsAnswered(false)
-        setShowFeedback(false)
-      } else {
-        handleQuizComplete()
+      // Save answer locally
+      const newAnswer = {
+        questionId: quizData[currentQuestion].id,
+        selectedOption: optionId,
+        isCorrect: response.data.is_correct,
+        question: quizData[currentQuestion].question,
+        character: quizData[currentQuestion].character,
+        correctAnswer: quizData[currentQuestion].options.find((opt) => opt.isCorrect).text,
+        selectedText: selectedOption.text,
       }
-    }, 1500)
+
+      setAnswers((prev) => [...prev, newAnswer])
+
+      // Character shake animation for wrong answer
+      if (!response.data.is_correct) {
+        controls.start({
+          x: [-8, 8, -8, 8, 0],
+          transition: { duration: 0.4 },
+        })
+      }
+
+      // Auto advance after feedback
+      setTimeout(() => {
+        if (currentQuestion < quizData.length - 1) {
+          setCurrentQuestion((prev) => prev + 1)
+          setSelectedAnswer(null)
+          setIsAnswered(false)
+          setShowFeedback(false)
+        } else {
+          handleQuizComplete()
+        }
+      }, 1500)
+    } catch (error) {
+      console.error('Error saving answer:', error)
+      // Handle error appropriately
+    }
   }
 
   // Complete quiz
@@ -319,8 +221,11 @@ export default function QuizHurufPage() {
 
   // View review
   const handleViewReview = () => {
-    console.log("Navigating to review page with answers:", answers)
-    // Here you would navigate to review page
+    console.log('View review')
+  }
+
+  const handleExitQuis = () => {
+    router.visit(route('review-quis', { sessionId: sessionId }))
   }
 
   // Toggle pause
@@ -331,20 +236,21 @@ export default function QuizHurufPage() {
   // Exit quiz
   const handleExitQuiz = () => {
     setExitDialogOpen(false)
-    console.log("Exiting quiz...")
+    router.visit(route('dashboard'))
   }
 
   // Show completion screen
   if (showCompletion) {
     const correctAnswers = answers.filter((answer) => answer.isCorrect).length
     return (
-        <DashboardLayout>
-      <QuizCompletion
-        isTimeUp={isTimeUp}
-        correctAnswers={correctAnswers}
-        totalQuestions={quizData.length}
-        onViewReview={handleViewReview}
-      />
+      <DashboardLayout>
+        <QuizCompletion
+          isTimeUp={isTimeUp}
+          correctAnswers={correctAnswers}
+          totalQuestions={quizData.length}
+          onViewReview={handleViewReview}
+          onExitQuis={handleExitQuis}
+        />
       </DashboardLayout>
     )
   }
@@ -391,11 +297,11 @@ export default function QuizHurufPage() {
                 <AccordionContent className="text-gray-600 dark:text-gray-400">
                   <div className="space-y-4">
                     <p>
-                      Selamat datang di Kuis Hiragana! Berikut adalah beberapa panduan untuk mengikuti kuis:
+                      Selamat datang di Kuis {jenis} - {level}! Berikut adalah beberapa panduan untuk mengikuti kuis:
                     </p>
                     <ul className="list-disc pl-5 space-y-2">
-                      <li>Kuis terdiri dari 10 soal pilihan ganda</li>
-                      <li>Waktu pengerjaan adalah 2 menit</li>
+                      <li>Kuis terdiri dari {quizData.length} soal pilihan ganda</li>
+                      <li>Waktu pengerjaan adalah {Math.floor(initialTime / 60)} menit</li>
                       <li>Setiap jawaban benar akan mendapatkan poin</li>
                       <li>Jawaban salah tidak akan mengurangi poin</li>
                       <li>Kamu dapat melihat hasil kuis setelah selesai</li>
@@ -484,7 +390,7 @@ export default function QuizHurufPage() {
                       <motion.div
                         className={`h-2 rounded-full bg-gradient-to-r ${getProgressColor()}`}
                         initial={{ width: "100%" }}
-                        animate={{ width: `${(timeLeft / 120) * 100}%` }}
+                        animate={{ width: `${(timeLeft / initialTime) * 100}%` }}
                         transition={{ duration: 0.5 }}
                       />
                     </div>

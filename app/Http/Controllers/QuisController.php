@@ -30,6 +30,29 @@ class QuisController extends Controller
         return $levelConfigs[$currentLevel]['max_exp'] ?? null;
     }
 
+    private function getUnlockedFeatures($level)
+    {
+        $features = [];
+        
+        switch ($level) {
+            case 2:
+                $features = ['Akses ke Kuis Level 2', 'Fitur Latihan Tambahan'];
+                break;
+            case 3:
+                $features = ['Akses ke Kuis Level 3', 'Fitur Flashcard'];
+                break;
+            case 4:
+                $features = ['Akses ke Kuis Level 4', 'Fitur Review Otomatis'];
+                break;
+            case 5:
+                $features = ['Akses ke Kuis Level 5', 'Fitur Statistik Belajar'];
+                break;
+            default:
+                $features = ['Fitur Baru Terbuka!'];
+        }
+        
+        return $features;
+    }
 
     public function pilihHurufQuisShow(){
         $user = Auth::user();
@@ -180,8 +203,11 @@ class QuisController extends Controller
             'total_benar' => 0,
         ]);
 
-        //ambil semua soal sesuai hruuf,level dan jenis
-        $soalList = SoalQuisHuruf::whereIn('huruf_id', $letters)->where('jenis', $jenis)->where('level', $level)->get();
+        //ambil semua soal sesuai huruf,level dan jenis
+        $soalList = SoalQuisHuruf::whereIn('huruf_id', $letters)
+            ->where('jenis', $jenis)
+            ->where('level', $level)
+            ->get();
 
         //acak urutan soal
         $soalList = $soalList->shuffle();
@@ -192,7 +218,7 @@ class QuisController extends Controller
         $idSoal = [];
 
         foreach($soalList as $soal){
-            //skip jika huruf_id sudah diperoses
+            //skip jika huruf_id sudah diproses
             if(in_array($soal->huruf_id, $processedHurufIds)){
                 continue;
             }
@@ -286,8 +312,8 @@ class QuisController extends Controller
         ->where('id_user', $user->id)
         ->firstOrFail();
 
-        //check apakaah session masih aktif
-        if(now()->isAfter($session->ended_at)){
+        //check apakah session masih aktif
+        if($session->ended_at !== null && now()->isAfter($session->ended_at)){
             return redirect()->route('review-quis');
         }
 
@@ -299,104 +325,221 @@ class QuisController extends Controller
 
         //transform data pivot menjadi format yang sama dengan transformedSoal
         $transformedSoal = [];
-        foreach($sessionSoals as $sessionSoal){
+        $currentQuestionIndex = 0;
+        $answeredQuestions = 0;
+
+        foreach($sessionSoals as $index => $sessionSoal){
             $soal = $sessionSoal->soal;
-           $options = [
-            [
-                'id' => 'A',
-                'text' => $soal->option_a,
-                'isCorrect' => $soal->correct_answer == 'a'
-            ],
-            [
-                'id' => 'B',
-                'text' => $soal->option_b,
-                'isCorrect' => $soal->correct_answer == 'b'
-            ],
-            [
-                'id' => 'C',
-                'text' => $soal->option_c,
-                'isCorrect' => $soal->correct_answer == 'c'
-            ],
-            [
-                'id' => 'D',
-                'text' => $soal->option_d,
-                'isCorrect' => $soal->correct_answer == 'd'
-            ],
-           ];
+            $options = [
+                [
+                    'id' => 'A',
+                    'text' => $soal->option_a,
+                    'isCorrect' => $soal->correct_answer == 'a'
+                ],
+                [
+                    'id' => 'B',
+                    'text' => $soal->option_b,
+                    'isCorrect' => $soal->correct_answer == 'b'
+                ],
+                [
+                    'id' => 'C',
+                    'text' => $soal->option_c,
+                    'isCorrect' => $soal->correct_answer == 'c'
+                ],
+                [
+                    'id' => 'D',
+                    'text' => $soal->option_d,
+                    'isCorrect' => $soal->correct_answer == 'd'
+                ],
+            ];
 
-           //tentukan exp berdasarkan level dan attempt
-           $attempt = $sessionSoal->attempt;
-           $level = $session->level;
-           $exp = match($level){
-            'beginner' => match($attempt){
-                1 => 9,
-                2 => 6,
-                3 => 3,
+            //tentukan exp berdasarkan level dan attempt
+            $attempt = $sessionSoal->attempt;
+            $level = $session->level;
+            $exp = match($level){
+                'beginner' => match($attempt){
+                    1 => 9,
+                    2 => 6,
+                    3 => 3,
+                    default => 0,
+                },
+                'intermediate' => match($attempt){
+                    1 => 15,
+                    2 => 10,
+                    3 => 5,
+                    default => 0,
+                },
+                'advanced' => match($attempt){
+                    1 => 21,
+                    2 => 14,
+                    3 => 7,
+                    default => 0,
+                },
                 default => 0,
-            },
-            'intermediate' => match($attempt){
-                1 => 15,
-                2 => 10,
-                3 => 5,
-                default => 0,
-            },
-            'advanced' => match($attempt){
-                1 => 21,
-                2 => 14,
-                3 => 7,
-                default => 0,
-            },
-            default => 0,
-           };
+            };
 
-           $sessionSoal->update([
-            'exp' => $exp,
-           ]);
+            $sessionSoal->update([
+                'exp' => $exp,
+            ]);
 
-           $transformedSoal[] = [
-            'id' => $soal->id,
-            'question' => $soal->question,
-            'character' => $soal->character,
-            'options' => $options,
-            'exp' => $exp,
-            'attempt' => $attempt,
-            'is_correct' => $sessionSoal->is_correct,
-            'user_answer' => $sessionSoal->user_answer,
-           ];
-           
+            $transformedSoal[] = [
+                'id' => $soal->id,
+                'question' => $soal->question,
+                'character' => $soal->character,
+                'options' => $options,
+                'exp' => $exp,
+                'attempt' => $attempt,
+                'is_correct' => $sessionSoal->is_correct,
+                'user_answer' => $sessionSoal->user_answer,
+            ];
+
+            // Jika soal ini sudah dijawab, tambahkan ke counter
+            if ($sessionSoal->user_answer !== null) {
+                $answeredQuestions++;
+            }
         }
 
+        // Set current question index ke soal yang belum dijawab
+        $currentQuestionIndex = $answeredQuestions;
 
-        //hitung siswa waktu
-        $remainingTime = now()->diffInSeconds($session->started_at,false);
+        //hitung sisa waktu
+        $remainingTime = $session->waktu_max - now()->diffInSeconds($session->started_at);
 
         return Inertia::render('User/Quis',[
-          'quizData' => $transformedSoal,
-          'remainingTime' => $remainingTime,
-          'sessionId' => $sessionId,
-          'jenis' => $session->jenis_huruf,
-          'level' => $session->level,
-          'currentLevel' => $user->level,
-          'currentExp' => $user->exp,
-          'maxExp' => $this->calculateNextLevelExp($user->level),
-          'user' => $user,
+            'quizData' => $transformedSoal,
+            'remainingTime' => $remainingTime,
+            'sessionId' => $sessionId,
+            'jenis' => $session->jenis_huruf,
+            'level' => $session->level,
+            'currentLevel' => $user->level,
+            'currentExp' => $user->exp,
+            'maxExp' => $this->calculateNextLevelExp($user->level),
+            'user' => $user,
+            'currentQuestionIndex' => $currentQuestionIndex,
         ]);
-        
-        
-    
     }
 
-    public function ReviewQuisShow(){
+    public function ReviewQuisShow($sessionId){
         $user = Auth::user();
+       
+        //ambil session quis
+        $session = QuisHurufSession::with('sessionSoals')->where('id', $sessionId)
+        ->where('id_user', $user->id)
+        ->firstOrFail();
+
+        //ambil semua data pivot untuk sesi ini
+        $sessionSoals = QuisHurufSessionSoal::with('soal')
+        ->where('session_id', $sessionId)
+        ->where('id_user', $user->id)
+        ->get();
+
+        //hitung total exp berdasarkan soal yang dijawab benar
+        $totalExp = $sessionSoals->where('is_correct', true)->sum('exp');
+
+        // Transform data untuk frontend
+        $answers = $sessionSoals->map(function($sessionSoal) {
+            $soal = $sessionSoal->soal;
+            return [
+                'id' => $soal->id,
+                'question' => $soal->question,
+                'character' => $soal->character,
+                'userAnswer' => $sessionSoal->user_answer,
+                'correctAnswer' => $soal->correct_answer,
+                'isCorrect' => $sessionSoal->is_correct,
+                'options' => [
+                    ['id' => 'a', 'text' => $soal->option_a],
+                    ['id' => 'b', 'text' => $soal->option_b],
+                    ['id' => 'c', 'text' => $soal->option_c],
+                    ['id' => 'd', 'text' => $soal->option_d],
+                ],
+                'expGained' => $sessionSoal->exp,
+            ];
+        })->values()->toArray();
+
+        // Hitung statistik
+        $totalQuestions = count($answers);
+        $correctAnswers = count(array_filter($answers, fn($a) => $a['isCorrect']));
+        $percentage = $totalQuestions > 0 ? round(($correctAnswers / $totalQuestions) * 100) : 0;
+        $timeSpent = $session->ended_at ? now()->diffInSeconds($session->started_at) : 0;
+
+        // Check level up
+        $oldLevel = $user->level;
+        $oldExp = $user->exp;
+        $newExp = $oldExp + $totalExp;
+        $nextLevelExp = $this->calculateNextLevelExp($oldLevel);
+        $leveledUp = false;
+        $newLevel = $oldLevel;
+        $unlockedFeatures = [];
+
+        if ($newExp >= $nextLevelExp) {
+            $leveledUp = true;
+            $newLevel = $oldLevel + 1;
+            $unlockedFeatures = $this->getUnlockedFeatures($newLevel);
+            $user->level = $newLevel;
+        }
+        $user->exp = $newExp;
+        $user->save();
+
+        // Update session with total exp
+        $session->update([
+            'total_exp' => $totalExp,
+            'total_benar' => $correctAnswers,
+            'ended_at' => now()
+        ]);
+
+        // Prepare quiz results data
+        $quizResults = [
+            'totalQuestions' => $totalQuestions,
+            'correctAnswers' => $correctAnswers,
+            'timeSpent' => $timeSpent,
+            'percentage' => $percentage,
+            'totalScore' => $totalExp,
+            'answers' => $answers,
+            'expGained' => $totalExp,
+            'currentExp' => $user->exp,
+            'nextLevelExp' => $nextLevelExp,
+            'leveledUp' => $leveledUp,
+            'newLevel' => $newLevel,
+            'unlockedFeatures' => $unlockedFeatures
+        ];
+        
         return Inertia::render('User/Review-Quis',[
             'user' => $user,
             'currentLevel' => $user->level,
             'currentExp' => $user->exp,
             'maxExp' => $this->calculateNextLevelExp($user->level),
+            'nextLevelExp' => $nextLevelExp,
+            'quizResults' => $quizResults,
         ]);
     }
-        
-        
 
+    public function saveAnswer(Request $request)
+    {
+        $user = Auth::user();
+        
+        $request->validate([
+            'sessionId' => 'required',
+            'soalId' => 'required',
+            'answer' => 'required|in:a,b,c,d'
+        ]);
+
+        $sessionSoal = QuisHurufSessionSoal::where('session_id', $request->sessionId)
+            ->where('soal_id', $request->soalId)
+            ->where('id_user', $user->id)
+            ->firstOrFail();
+
+        $soal = SoalQuisHuruf::findOrFail($request->soalId);
+        $isCorrect = $soal->correct_answer === $request->answer;
+
+        $sessionSoal->update([
+            'user_answer' => $request->answer,
+            'is_correct' => $isCorrect
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'is_correct' => $isCorrect
+        ]);
+    }
 
 }

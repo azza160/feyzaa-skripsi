@@ -75,7 +75,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/pilih-list-huruf-quis',[QuisController::class,'pilihListHurufQuis'])->name('pilih-list-huruf-quis');
     Route::post('/dashboard/start-quis',[QuisController::class,'startQuis'])->name('start-quis');
     Route::get('/dashboard/quis/{sessionId}',[QuisController::class,'QuisShow'])->name('quis');
-    Route::get('/dashboard/review-quis',[QuisController::class,'ReviewQuisShow'])->name('review-quis');
+    Route::post('/dashboard/quis/save-answer',[QuisController::class,'saveAnswer'])->name('save-quiz-answer');
+    Route::get('/dashboard/review-quis/{sessionId}',[QuisController::class,'ReviewQuisShow'])->name('review-quis');
 
     // route progress uses
     Route::post('/user/belajar/update', [UserBelajarController::class, 'updateProgress'])->name('user.belajar.update');

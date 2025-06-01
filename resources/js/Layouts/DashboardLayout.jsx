@@ -145,6 +145,7 @@ export default function Dashboard({ children }) {
   const isMobile = useIsMobile()
   const sidebarRef = useRef(null)
   const [showMobileMenu, setShowMobileMenu] = useState(false)
+  const isQuizPage = route().current('quis')
 
   // This is to prevent hydration mismatch
   useEffect(() => {
@@ -236,6 +237,7 @@ export default function Dashboard({ children }) {
             className={cn(
               "fixed top-0 left-0 h-screen flex flex-col border-r border-border dark:border-slate-800 bg-background dark:bg-slate-950 transition-all duration-300 ease-in-out z-20",
               sidebarOpen ? "w-80" : "w-20",
+              isQuizPage && "pointer-events-none opacity-50"
             )}
           >
             {/* Toggle Button */}
@@ -341,7 +343,7 @@ export default function Dashboard({ children }) {
 
         {/* Mobile Sidebar Overlay */}
         <AnimatePresence>
-          {isMobile && showMobileMenu && (
+          {isMobile && showMobileMenu && !isQuizPage && (
             <>
               <motion.div
                 initial={{ opacity: 0 }}
@@ -449,7 +451,7 @@ export default function Dashboard({ children }) {
             <div className="flex w-full justify-between items-center gap-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
               {/* Left Section */}
               <div className="flex items-center gap-4">
-                {isMobile && (
+                {isMobile && !isQuizPage && (
                   <Button
                     variant="ghost"
                     size="icon"
@@ -481,7 +483,10 @@ export default function Dashboard({ children }) {
               {/* Right Section */}
               <div className="flex items-center gap-3">
                 {/* Theme Toggle */}
-                <div className="fixed bottom-[80px] right-5 z-20 flex h-[48px] w-[48px] items-center justify-center rounded-full bg-primary dark:bg-violet-600 text-white shadow-lg">
+                <div className={cn(
+                  "fixed bottom-[80px] right-5 z-20 flex h-[48px] w-[48px] items-center justify-center rounded-full bg-primary dark:bg-violet-600 text-white shadow-lg",
+                  isQuizPage && "pointer-events-none opacity-50"
+                )}>
                   {theme === "dark" ? (
                     <Sun className="h-5 w-5 cursor-pointer" onClick={toggleTheme} />
                   ) : (
@@ -490,13 +495,27 @@ export default function Dashboard({ children }) {
                 </div>
 
                 {/* Notification */}
-                <Button variant="ghost" size="icon" className="relative text-muted-foreground dark:text-slate-400">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className={cn(
+                    "relative text-muted-foreground dark:text-slate-400",
+                    isQuizPage && "pointer-events-none opacity-50"
+                  )}
+                >
                   <Bell className="h-5 w-5" />
                   <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-primary dark:bg-violet-500"></span>
                 </Button>
 
                 {/* Messages */}
-                <Button variant="ghost" size="icon" className="relative text-muted-foreground dark:text-slate-400">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className={cn(
+                    "relative text-muted-foreground dark:text-slate-400",
+                    isQuizPage && "pointer-events-none opacity-50"
+                  )}
+                >
                   <MessageSquare className="h-5 w-5" />
                   <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-primary dark:bg-violet-500"></span>
                 </Button>
@@ -504,7 +523,13 @@ export default function Dashboard({ children }) {
                 {/* Profile Dropdown */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="relative h-10 w-10 rounded-full p-0 transition-all hover:ring-2 hover:ring-primary/50 dark:hover:ring-violet-500/50">
+                    <Button 
+                      variant="ghost" 
+                      className={cn(
+                        "relative h-10 w-10 rounded-full p-0 transition-all hover:ring-2 hover:ring-primary/50 dark:hover:ring-violet-500/50",
+                        isQuizPage && "pointer-events-none opacity-50"
+                      )}
+                    >
                       <Avatar className="border-2 border-primary/20 dark:border-violet-500/20 transition-all hover:border-primary dark:hover:border-violet-500">
                         <AvatarImage src={user.foto} />
                         <AvatarFallback>{user.nama_pengguna.charAt(0)}</AvatarFallback>

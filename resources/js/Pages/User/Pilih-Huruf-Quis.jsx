@@ -17,6 +17,7 @@ import {
   BookOpen,
   GraduationCap,
   ArrowRight,
+  Lock,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Link,usePage, router } from "@inertiajs/react"
@@ -79,7 +80,9 @@ export default function QuizStartPage() {
     return () => clearTimeout(timer)
   }, [])
 
-  const {jumlahHiragana, jumlahKatakana} = usePage().props;
+  const {jumlahHiragana, jumlahKatakana, user} = usePage().props;
+  const userLevel = user?.level || 1;
+
 // Dummy data
 const quizModes = [
   {
@@ -92,6 +95,7 @@ const quizModes = [
     color: "from-pink-500 to-purple-600",
     icon: Cherry,
     examples: ["あ", "い", "う", "え", "お"],
+    locked: false,
   },
   {
     id: "katakana",
@@ -103,10 +107,14 @@ const quizModes = [
     color: "from-blue-500 to-cyan-600",
     icon: Sakura,
     examples: ["ア", "イ", "ウ", "エ", "オ"],
+    locked: userLevel < 2,
   },
 ]
 
 const handleStartQuiz = (jenis) => {
+  if (jenis === "katakana" && userLevel < 2) {
+    return; // Don't proceed if Katakana is locked
+  }
   router.get(route('pilih-level-quis', jenis));
 };
 
@@ -208,15 +216,53 @@ const handleStartQuiz = (jenis) => {
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: index * 0.1 }}
-                        className="group"
+                        className="group relative"
                       >
                         <div
                           className={cn(
                             "relative overflow-hidden rounded-2xl bg-gradient-to-br transition-all duration-300",
                             mode.color,
-                            "hover:scale-[1.02] hover:shadow-xl",
+                            mode.locked ? "opacity-75" : "hover:scale-[1.02] hover:shadow-xl",
                           )}
                         >
+                          {mode.locked && (
+                            <div className="absolute inset-0 bg-gradient-to-br from-slate-900/40 to-slate-800/40 backdrop-blur-[2px] z-10 flex flex-col items-center justify-center p-6">
+                              <motion.div
+                                initial={{ scale: 0, rotate: -180 }}
+                                animate={{ scale: 1, rotate: 0 }}
+                                transition={{ type: "spring", stiffness: 200, damping: 20 }}
+                                className="mb-4 bg-gradient-to-br from-slate-700/80 to-slate-800/80 p-4 rounded-xl shadow-lg relative overflow-hidden"
+                              >
+                                <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.05),transparent_60%)]"></div>
+                                <Lock className="w-12 h-12 text-white/90 relative z-10" />
+                              </motion.div>
+                              <motion.div
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.2 }}
+                                className="text-center"
+                              >
+                                <h3 className="text-xl font-bold text-white/90 mb-2">Terkunci</h3>
+                                <p className="text-slate-300/90 text-sm mb-4">
+                                  Naikkan level kamu ke level 2 untuk membuka quiz Katakana
+                                </p>
+                                <div className="flex items-center gap-2 bg-slate-800/30 px-4 py-2 rounded-full border border-slate-700/30">
+                                  <div className="w-2 h-2 rounded-full bg-yellow-500/80 animate-pulse"></div>
+                                  <span className="text-yellow-400/90 text-sm font-medium">Level {userLevel}/2</span>
+                                </div>
+                              </motion.div>
+                              <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: 0.4 }}
+                                className="absolute top-4 right-4"
+                              >
+                                <div className="bg-slate-800/30 px-3 py-1 rounded-full border border-slate-700/30">
+                                  <span className="text-slate-400/90 text-xs">Level {userLevel}</span>
+                                </div>
+                              </motion.div>
+                            </div>
+                          )}
                           <CardContent className="p-8 h-full">
                             <div className="flex flex-col h-full">
                               <div className="flex items-center gap-3 mb-4">
@@ -256,11 +302,24 @@ const handleStartQuiz = (jenis) => {
 
                               {/* Start Button */}
                               <Button
-                                className="w-full bg-white/20 hover:bg-white/30 text-white border-0 backdrop-blur-sm"
+                                className={cn(
+                                  "w-full bg-white/20 hover:bg-white/30 text-white border-0 backdrop-blur-sm",
+                                  mode.locked && "opacity-50 cursor-not-allowed"
+                                )}
                                 onClick={() => handleStartQuiz(mode.id)}
+                                disabled={mode.locked}
                               >
-                                Mulai Quiz
-                                <ArrowRight size={20} className="ml-2" />
+                                {mode.locked ? (
+                                  <>
+                                    <Lock className="w-4 h-4 mr-2" />
+                                    Terkunci
+                                  </>
+                                ) : (
+                                  <>
+                                    Mulai Quiz
+                                    <ArrowRight size={20} className="ml-2" />
+                                  </>
+                                )}
                               </Button>
                             </div>
                           </CardContent>
