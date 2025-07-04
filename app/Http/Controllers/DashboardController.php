@@ -31,6 +31,7 @@ class DashboardController extends Controller
 
     public function DashboardUser()
     {
+        $this->cleanupActiveQuisSession();
         $user = auth()->user();
 
         $hurufStats = $this->getHurufStats($user);

@@ -60,6 +60,7 @@ import {
     AlertDialogAction,
     AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
+import axios from "axios";
 
 
 // Sample data - in a real app, this would come from props or API
@@ -174,6 +175,11 @@ const VocabularyDetailContent = ({vocabularyData}) => {
     const audioRef = useRef(null);
     const containerRef = useRef(null);
     const [showDialog, setShowDialog] = useState(false);
+    const [audioInstance, setAudioInstance] = useState(null);
+    const [alertMessage, setAlertMessage] = useState(null);
+    const [alertTitle, setAlertTitle] = useState('');
+    const [alertDesc, setAlertDesc] = useState('');
+    const [isButtonLoading, setIsButtonLoading] = useState(false);
 
 
 
@@ -278,19 +284,52 @@ const VocabularyDetailContent = ({vocabularyData}) => {
     };
 
 
-    const toggleFavorite = () => {
-        setIsFavorite(!isFavorite);
-        if (!isFavorite) {
-            triggerConfetti();
+    const toggleFavorite = async () => {
+        setIsButtonLoading(true);
+        try {
+            const response = await axios.post(route('user.belajar.update-user-kosakata-favorite'), { id: vocabularyData.id });
+            if (response.data.success) {
+                setIsFavorite((prev) => !prev);
+                setAlertMessage('Kosakata berhasil ditandai sebagai favorit');
+                setAlertTitle('Berhasil!');
+                setAlertDesc(isFavorite ? 'Kosakata dihapus dari favorit.' : 'Kosakata ditambahkan ke favorit.');
+            }
+        } catch (error) {
+            setAlertMessage('Gagal mengubah status favorit');
+            setAlertTitle('Gagal!');
+            setAlertDesc('Terjadi kesalahan saat memperbarui status favorit.');
+        } finally {
+            setIsButtonLoading(false);
         }
     };
 
-    const markAsLearned = () => {
-        setIsLearned(true);
-        setProgress(100);
-        triggerConfetti();
+    const toggleLearned = async () => {
+        setIsButtonLoading(true);
+        try {
+            const response = await axios.post(route('user.belajar.update-user-kosakata'), { id: vocabularyData.id });
+            if (response.data.success) {
+                setIsLearned((prev) => !prev);
+                setAlertMessage('Status belajar berhasil diperbarui');
+                setAlertTitle('Berhasil!');
+                setAlertDesc(isLearned ? 'Kosakata dihapus dari daftar dipelajari.' : 'Kosakata ditandai sudah dipelajari.');
+            }
+        } catch (error) {
+            setAlertMessage('Gagal memperbarui status belajar');
+            setAlertTitle('Gagal!');
+            setAlertDesc('Terjadi kesalahan saat memperbarui status belajar.');
+        } finally {
+            setIsButtonLoading(false);
+        }
     };
 
+    const handleAlertClose = () => {
+        setAlertMessage(null);
+        setAlertTitle('');
+        setAlertDesc('');
+        window.location.reload();
+    };
+
+  
     const triggerConfetti = () => {
         setShowConfetti(true);
         setTimeout(() => setShowConfetti(false), 3000);
@@ -438,18 +477,25 @@ const VocabularyDetailContent = ({vocabularyData}) => {
        //audio method
        const playAudio = (url) => {
         if (!url) return;
+        if (audioInstance) {
+            audioInstance.pause();
+            audioInstance.currentTime = 0;
+        }
         const audio = new Audio(url);
+        setAudioInstance(audio);
         audio.play().catch((e) => console.error("Gagal memutar audio:", e));
+        audio.onended = () => setAudioInstance(null);
     };
 
     const handleClick = (audio) => {
         if (audio) {
             playAudio(audio);
         } else {
-            setShowDialog(true);
+            setAlertMessage('Audio belum tersedia');
+            setAlertTitle('Audio belum tersedia');
+            setAlertDesc('Maaf, audio untuk kosakata ini belum tersedia.');
         }
     };
-
 
     return (
         <>
@@ -545,6 +591,7 @@ const VocabularyDetailContent = ({vocabularyData}) => {
                                                 size="icon"
                                                 onClick={toggleFavorite}
                                                 className="rounded-full transition-all duration-300 hover:bg-primary/10"
+                                                disabled={isButtonLoading}
                                             >
                                                 {isFavorite ? (
                                                     <BookmarkCheck className="h-4 w-4" />
@@ -693,7 +740,10 @@ const VocabularyDetailContent = ({vocabularyData}) => {
 
                             <motion.div
                                 className="w-full h-[350px] perspective-1000 cursor-pointer relative z-10"
-                                onClick={toggleFlashcard}
+                                onClick={(e) => {
+                                    // Hanya putar flashcard jika klik di luar tombol audio
+                                    if (!e.target.closest('.audio-btn')) toggleFlashcard();
+                                }}
                                 whileHover={{ scale: 1.02 }}
                                 transition={{ type: "spring", stiffness: 300 }}
                             >
@@ -737,8 +787,8 @@ const VocabularyDetailContent = ({vocabularyData}) => {
                                             <Button
                                                 variant="outline"
                                                 size="sm"
-                                                onClick={() => handleClick(vocabularyData.audio)}
-                                                className="rounded-full hover:bg-primary/20 transition-all duration-300 border-primary/30"
+                                                onClick={(e) => { e.stopPropagation(); handleClick(vocabularyData.audio); }}
+                                                className="rounded-full hover:bg-primary/20 transition-all duration-300 border-primary/30 audio-btn"
                                             >
                                                 <Volume2 className="h-4 w-4 mr-2" />
                                                 <span>Dengarkan</span>
@@ -801,8 +851,8 @@ const VocabularyDetailContent = ({vocabularyData}) => {
                                                 <Button
                                                     variant="outline"
                                                     size="sm"
-                                                    onClick={() => handleClick(vocabularyData.audio)}
-                                                    className="rounded-full hover:bg-primary/20 transition-all duration-300 border-primary/30"
+                                                    onClick={(e) => { e.stopPropagation(); handleClick(vocabularyData.audio); }}
+                                                    className="rounded-full hover:bg-primary/20 transition-all duration-300 border-primary/30 audio-btn"
                                                 >
                                                     <Volume2 className="h-4 w-4 mr-2" />
                                                     <span>Dengarkan</span>
@@ -879,6 +929,7 @@ const VocabularyDetailContent = ({vocabularyData}) => {
                                                             size="icon"
                                                             onClick={toggleFavorite}
                                                             className="rounded-full transition-all duration-300 hover:bg-primary/10"
+                                                            disabled={isButtonLoading}
                                                         >
                                                             {isFavorite ? (
                                                                 <BookmarkCheck className="h-4 w-4" />
@@ -940,7 +991,7 @@ const VocabularyDetailContent = ({vocabularyData}) => {
                                                 <Button
                                                     variant="outline"
                                                     size="sm"
-                                                    onClick={() => handleClick(vocabularyData.audio)}
+                                                    onClick={(e) => { e.stopPropagation(); handleClick(vocabularyData.audio); }}
                                                     className={`rounded-full transition-all duration-300 ${
                                                         isPlaying
                                                             ? "bg-primary text-primary-foreground animate-pulse"
@@ -998,50 +1049,7 @@ const VocabularyDetailContent = ({vocabularyData}) => {
                                         </div>
                                     </div>
 
-                                    <div className="mt-6 mb-2">
-                                        <div className="flex justify-between items-center mb-3">
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-sm font-medium">
-                                                    Progress Pembelajaran
-                                                </span>
-                                                <Badge
-                                                    variant="outline"
-                                                    className={`${
-                                                        isFavorite
-                                                            ? "bg-amber-100/50 border-amber-200"
-                                                            : "bg-primary/10 border-primary/20"
-                                                    }`}
-                                                >
-                                                    {progress}%
-                                                </Badge>
-                                            </div>
-
-                                            {progress < 100 && (
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    onClick={markAsLearned}
-                                                    className="text-xs rounded-full hover:bg-primary/10"
-                                                >
-                                                    <Check className="h-3 w-3 mr-1" />
-                                                    <span>Tandai Selesai</span>
-                                                </Button>
-                                            )}
-                                        </div>
-
-                                        <div className="relative h-4 rounded-full overflow-hidden">
-                                            <div className="absolute inset-0 bg-primary/10 rounded-full"></div>
-                                            <motion.div
-                                                className="absolute top-0 left-0 h-full bg-primary rounded-full"
-                                                initial={{ width: 0 }}
-                                                animate={{ width: `${progress}%` }}
-                                                transition={{
-                                                    duration: 1,
-                                                    delay: 0.5,
-                                                }}
-                                            ></motion.div>
-                                        </div>
-                                    </div>
+                                    
 
                                     <div className="flex flex-wrap items-center justify-between gap-3 mt-6 pt-4 border-t border-primary/10">
                                         <div className="flex items-center gap-4">
@@ -1093,24 +1101,20 @@ const VocabularyDetailContent = ({vocabularyData}) => {
                                         </div>
 
                                         <Button
-                                            variant={
-                                                isLearned ? "outline" : "default"
-                                            }
-                                            onClick={markAsLearned}
-                                            disabled={isLearned}
+                                            variant={isLearned ? "outline" : "default"}
+                                            onClick={toggleLearned}
+                                            disabled={isButtonLoading}
                                             className="gap-2 rounded-full px-4"
                                         >
                                             {isLearned ? (
                                                 <>
                                                     <Star className="h-4 w-4 text-amber-500" />
-                                                    <span>Sudah Dipelajari</span>
+                                                    <span>Tandai belum dipelajari</span>
                                                 </>
                                             ) : (
                                                 <>
                                                     <GraduationCap className="h-4 w-4" />
-                                                    <span>
-                                                        Tandai Sudah Dipelajari
-                                                    </span>
+                                                    <span>Tandai sudah dipelajari</span>
                                                 </>
                                             )}
                                         </Button>
@@ -1166,7 +1170,7 @@ const VocabularyDetailContent = ({vocabularyData}) => {
                                                         <div className="text-base mb-3">
                                                             {example.romaji}
                                                         </div>
-                                                        <div className="text-base text-muted-foreground font-medium bg-primary/5 p-2 rounded-md">
+                                                        <div className="w-full block text-base text-muted-foreground font-medium bg-primary/5 p-2 rounded-md">
                                                             "{example.meaning}"
                                                         </div>
                                                     </div>
@@ -1181,7 +1185,7 @@ const VocabularyDetailContent = ({vocabularyData}) => {
                                                         <Button
                                                             variant="ghost"
                                                             size="icon"
-                                                            onClick={() => handleClick  (example.audio)}
+                                                            onClick={(e) => { e.stopPropagation(); handleClick(example.audio); }}
                                                             className={`rounded-full h-10 w-10 ${
                                                                 isPlaying
                                                                     ? "bg-primary text-primary-foreground"
@@ -1195,44 +1199,6 @@ const VocabularyDetailContent = ({vocabularyData}) => {
                                                             )}
                                                         </Button>
                                                     </motion.div>
-                                                </div>
-
-                                                <div className="flex justify-end gap-2 mt-3">
-                                                    <TooltipProvider>
-                                                        <Tooltip>
-                                                            <TooltipTrigger asChild>
-                                                                <Button
-                                                                    variant="ghost"
-                                                                    size="sm"
-                                                                    className="rounded-full text-xs"
-                                                                >
-                                                                    <Heart className="h-3 w-3 mr-1" />
-                                                                    <span>Simpan</span>
-                                                                </Button>
-                                                            </TooltipTrigger>
-                                                            <TooltipContent>
-                                                                Simpan contoh kalimat ini
-                                                            </TooltipContent>
-                                                        </Tooltip>
-                                                    </TooltipProvider>
-
-                                                    <TooltipProvider>
-                                                        <Tooltip>
-                                                            <TooltipTrigger asChild>
-                                                                <Button
-                                                                    variant="ghost"
-                                                                    size="sm"
-                                                                    className="rounded-full text-xs"
-                                                                >
-                                                                    <Repeat className="h-3 w-3 mr-1" />
-                                                                    <span>Ulangi</span>
-                                                                </Button>
-                                                            </TooltipTrigger>
-                                                            <TooltipContent>
-                                                                Ulangi audio
-                                                            </TooltipContent>
-                                                        </Tooltip>
-                                                    </TooltipProvider>
                                                 </div>
                                             </motion.div>
                                         ))}
@@ -1278,18 +1244,7 @@ const VocabularyDetailContent = ({vocabularyData}) => {
                                     </h2>
                                 </div>
 
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() =>
-                                        setShowEmptyState(!showEmptyState)
-                                    }
-                                    className="rounded-full text-xs"
-                                >
-                                    {showEmptyState
-                                        ? "Tampilkan Data"
-                                        : "Lihat Tanpa Data"}
-                                </Button>
+                                
                             </div>
 
                             <Tabs
@@ -1396,7 +1351,7 @@ const VocabularyDetailContent = ({vocabularyData}) => {
                                                                     <Button
                                                                         variant="ghost"
                                                                         size="icon"
-                                                                        onClick={() => handleClick(conj.audio)}
+                                                                        onClick={(e) => { e.stopPropagation(); handleClick(conj.audio); }}
                                                                         className="rounded-full h-9 w-9 bg-primary/10 hover:bg-primary/20 border border-primary/30"
                                                                     >
                                                                         <Volume2 className="h-4 w-4" />
@@ -1457,7 +1412,6 @@ const VocabularyDetailContent = ({vocabularyData}) => {
                                                                                         {
                                                                                             example.meaning
                                                                                         }
-                                                                                        "
                                                                                     </div>
                                                                                 </div>
                                                                                 <motion.div
@@ -1472,7 +1426,7 @@ const VocabularyDetailContent = ({vocabularyData}) => {
                                                                                     <Button
                                                                                         variant="ghost"
                                                                                         size="icon"
-                                                                                        onClick={() => handleClick(example.audio)}
+                                                                                        onClick={(e) => { e.stopPropagation(); handleClick(example.audio); }}
                                                                                         className="rounded-full h-8 w-8 bg-primary/10 hover:bg-primary/20 border border-primary/30"
                                                                                     >
                                                                                         <Volume2 className="h-3 w-3" />
@@ -1496,195 +1450,28 @@ const VocabularyDetailContent = ({vocabularyData}) => {
 
                     
 
-                        {/* Community Section - Replacing Practice Section */}
-                        <motion.div
-                            variants={itemVariants}
-                            className="mb-10"
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.4 }}
-                        >
-                            <div className="flex items-center gap-3 mb-6 bg-gradient-to-r from-primary/20 to-transparent p-3 rounded-lg">
-                                <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center">
-                                    <Users className="h-5 w-5 text-primary" />
-                                </div>
-                                <h2 className="text-2xl font-bold">
-                                    Komunitas Belajar
-                                </h2>
-                            </div>
-
-                            <div className="border-2 border-primary/20 rounded-xl overflow-hidden shadow-lg">
-                                <div className="bg-gradient-to-r from-primary/20 to-transparent p-4">
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-3">
-                                            <div className="h-10 w-10 rounded-full bg-primary/30 flex items-center justify-center">
-                                                <Users className="h-5 w-5 text-primary-foreground" />
-                                            </div>
-                                            <div>
-                                                <h3 className="text-lg font-medium">
-                                                    Diskusi Kosakata
-                                                </h3>
-                                                <p className="text-sm text-muted-foreground">
-                                                    Bagikan tips dan trik belajar
-                                                    dengan pengguna lain
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <Badge
-                                                variant="outline"
-                                                className="bg-primary/10 border-primary/20"
-                                            >
-                                                <Users className="h-3 w-3 mr-1" />
-                                                <span>
-                                                    {vocabularyData.stats.learners}{" "}
-                                                    Pelajar
-                                                </span>
-                                            </Badge>
-                                            <Badge
-                                                variant="outline"
-                                                className="bg-primary/10 border-primary/20"
-                                            >
-                                                <MessageCircle className="h-3 w-3 mr-1" />
-                                                <span>12 Komentar</span>
-                                            </Badge>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="p-5">
-                                    <div className="mb-6">
-                                        <div className="flex items-center gap-3 mb-3">
-                                            <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-                                                <Info className="h-4 w-4 text-primary" />
-                                            </div>
-                                            <h4 className="text-base font-medium">
-                                                Statistik Kosakata
-                                            </h4>
-                                        </div>
-
-                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                                            <div className="bg-primary/5 p-3 rounded-lg text-center">
-                                                <div className="text-sm text-muted-foreground mb-1">
-                                                    Dilihat
-                                                </div>
-                                                <div className="text-lg font-medium">
-                                                    {vocabularyData.stats.views}
-                                                </div>
-                                            </div>
-                                            <div className="bg-primary/5 p-3 rounded-lg text-center">
-                                                <div className="text-sm text-muted-foreground mb-1">
-                                                    Pelajar
-                                                </div>
-                                                <div className="text-lg font-medium">
-                                                    {vocabularyData.stats.learners}
-                                                </div>
-                                            </div>
-                                            <div className="bg-primary/5 p-3 rounded-lg text-center">
-                                                <div className="text-sm text-muted-foreground mb-1">
-                                                    Favorit
-                                                </div>
-                                                <div className="text-lg font-medium">
-                                                    {vocabularyData.stats.favorites}
-                                                </div>
-                                            </div>
-                                            <div className="bg-primary/5 p-3 rounded-lg text-center">
-                                                <div className="text-sm text-muted-foreground mb-1">
-                                                    Diperbarui
-                                                </div>
-                                                <div className="text-lg font-medium">
-                                                    {
-                                                        vocabularyData.stats
-                                                            .lastUpdated
-                                                    }
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="mb-6">
-                                        <div className="flex items-center justify-between mb-4">
-                                            <div className="flex items-center gap-3">
-                                                <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-                                                    <HelpCircle className="h-4 w-4 text-primary" />
-                                                </div>
-                                                <h4 className="text-base font-medium">
-                                                    Pertanyaan Populer
-                                                </h4>
-                                            </div>
-                                            <Button
-                                                variant="ghost"
-                                                size="sm"
-                                                className="rounded-full text-xs"
-                                            >
-                                                Lihat Semua
-                                            </Button>
-                                        </div>
-
-                                        <div className="space-y-3">
-                                            <div className="border border-primary/20 rounded-lg p-3 hover:bg-primary/5 transition-colors cursor-pointer">
-                                                <div className="flex items-center gap-2 mb-1">
-                                                    <Badge
-                                                        variant="outline"
-                                                        className="text-xs bg-amber-500/10 text-amber-600 border-amber-200"
-                                                    >
-                                                        Terjawab
-                                                    </Badge>
-                                                    <span className="text-sm text-muted-foreground">
-                                                        Ditanyakan oleh Budi
-                                                    </span>
-                                                </div>
-                                                <p className="text-sm font-medium">
-                                                    Apa perbedaan penggunaan 食べる
-                                                    dan 食う?
-                                                </p>
-                                            </div>
-                                            <div className="border border-primary/20 rounded-lg p-3 hover:bg-primary/5 transition-colors cursor-pointer">
-                                                <div className="flex items-center gap-2 mb-1">
-                                                    <Badge
-                                                        variant="outline"
-                                                        className="text-xs bg-primary/10 border-primary/20"
-                                                    >
-                                                        Diskusi
-                                                    </Badge>
-                                                    <span className="text-sm text-muted-foreground">
-                                                        Ditanyakan oleh Ani
-                                                    </span>
-                                                </div>
-                                                <p className="text-sm font-medium">
-                                                    Bagaimana cara mengingat
-                                                    konjugasi kata kerja ini dengan
-                                                    mudah?
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex justify-between items-center">
-                                        <Button
-                                            variant="outline"
-                                            className="rounded-full gap-2 border-primary/30 hover:bg-primary/10"
-                                        >
-                                            <MessageCircle className="h-4 w-4" />
-                                            <span>Ajukan Pertanyaan</span>
-                                        </Button>
-
-                                        <Button
-                                            variant="default"
-                                            className="rounded-full gap-2"
-                                        >
-                                            <ExternalLink className="h-4 w-4" />
-                                            <span>Lihat Forum</span>
-                                        </Button>
-                                    </div>
-                                </div>
-                            </div>
-                        </motion.div>
+                 
 
                     
                     </>
                 )}
             </motion.div>
+            {alertMessage && (
+                <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 backdrop-blur-sm">
+                    <motion.div
+                        initial={{ scale: 0.95, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0.95, opacity: 0 }}
+                        className="bg-background rounded-2xl shadow-2xl p-8 max-w-md w-full flex flex-col items-center border border-primary/20"
+                    >
+                        <Check className="h-10 w-10 text-green-500 mb-2" />
+                        <h2 className="text-xl font-bold mb-2 text-center">{alertTitle}</h2>
+                        <p className="text-center text-muted-foreground mb-4">{alertMessage}</p>
+                        {alertDesc && <p className="text-center text-sm text-muted-foreground mb-4">{alertDesc}</p>}
+                        <Button onClick={handleAlertClose} className="mt-2 w-32 rounded-full">OK</Button>
+                    </motion.div>
+                </div>
+            )}
         </>
     );
 };

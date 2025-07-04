@@ -570,30 +570,37 @@ export default function ReviewQuisPage() {
                               <div className="space-y-4 p-4">
                                   <div>
                                     <h4 className="font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                                    <Target className="w-4 h-4 text-indigo-600" />
+                                      <Target className="w-4 h-4 text-indigo-600" />
                                       Jawaban Kamu:
                                     </h4>
-                                    <div
-                                      className={`p-4 rounded-xl border-2 ${
-                                        answer.isCorrect
-                                          ? "border-green-300 bg-gradient-to-r from-green-50 to-green-100 text-green-800"
-                                          : "border-red-300 bg-gradient-to-r from-red-50 to-red-100 text-red-800"
-                                      }`}
-                                    >
-                                      <div className="flex items-center justify-between">
-                                        <span className="font-bold text-xl">{answer.userAnswer}</span>
-                                        {answer.isCorrect ? (
-                                          <CheckCircle className="w-6 h-6" />
-                                        ) : (
-                                          <XCircle className="w-6 h-6" />
-                                        )}
+                                    {answer.userAnswer ? (
+                                      <div
+                                        className={`p-4 rounded-xl border-2 ${
+                                          answer.isCorrect
+                                            ? "border-green-300 bg-gradient-to-r from-green-50 to-green-100 text-green-800"
+                                            : "border-red-300 bg-gradient-to-r from-red-50 to-red-100 text-red-800"
+                                        }`}
+                                      >
+                                        <div className="flex items-center justify-between">
+                                          <span className="font-bold text-xl">{answer.userAnswer}</span>
+                                          {answer.isCorrect ? (
+                                            <CheckCircle className="w-6 h-6" />
+                                          ) : (
+                                            <XCircle className="w-6 h-6" />
+                                          )}
+                                        </div>
+                                        <p className="text-sm mt-2 opacity-80">
+                                          {answer.isCorrect
+                                            ? "Jawaban kamu benar!"
+                                            : "Jawaban kamu kurang tepat"}
+                                        </p>
                                       </div>
-                                    <p className="text-sm mt-2 opacity-80">
-                                      {answer.isCorrect
-                                        ? "Jawaban kamu benar!"
-                                        : "Jawaban kamu kurang tepat"}
-                                    </p>
-                                  </div>
+                                    ) : (
+                                      <div className="p-4 rounded-xl border-2 border-gray-300 bg-gradient-to-r from-gray-50 to-gray-100 text-gray-700">
+                                        <span className="font-bold text-xl">-</span>
+                                        <p className="text-sm mt-2 opacity-80">Kamu tidak menjawab soal ini</p>
+                                      </div>
+                                    )}
                                   </div>
 
                                   {!answer.isCorrect && (

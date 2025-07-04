@@ -55,6 +55,7 @@ class QuisController extends Controller
     }
 
     public function pilihHurufQuisShow(){
+        $this->cleanupActiveQuisSession();
         $user = Auth::user();
         //ambil progress belajar user huruf & check kategori huruf
         $progressHuruf = $user->hurufs()->where('is_learned', true)->pluck('jenis_huruf') ;
@@ -75,7 +76,7 @@ class QuisController extends Controller
     }
 
     public function pilihLevelQuisShow($jenis){
-     
+        $this->cleanupActiveQuisSession();
         $user = Auth::user();
         //ambil progress belajar user huruf & check kategori huruf
         $progressHuruf = $user->hurufs()->where('is_learned', true)->where('jenis_huruf', $jenis)->count();
@@ -91,6 +92,7 @@ class QuisController extends Controller
     }
 
     public function pilihListHurufQuis(Request $request){
+        $this->cleanupActiveQuisSession();
         $user = Auth::user();
         $jenis = $request->query('jenis');
         $level = $request->query('level');
@@ -169,7 +171,7 @@ class QuisController extends Controller
 
     public function startQuis(Request $request){
         $user = Auth::user();
-
+        $this->cleanupActiveQuisSession();
         //validasi request
         $request->validate([
             'letters' => 'required|array',
@@ -461,7 +463,12 @@ class QuisController extends Controller
         $totalQuestions = count($answers);
         $correctAnswers = count(array_filter($answers, fn($a) => $a['isCorrect']));
         $percentage = $totalQuestions > 0 ? round(($correctAnswers / $totalQuestions) * 100) : 0;
-        $timeSpent = $session->ended_at ? now()->diffInSeconds($session->started_at) : 0;
+        if ($session->ended_at) {
+            $timeSpent = $session->ended_at->diffInSeconds($session->started_at);
+        } else {
+            // Jika waktu habis, tampilkan waktu maksimal
+            $timeSpent = $session->waktu_max;
+        }
 
         // Check level up
         $oldLevel = $user->level;

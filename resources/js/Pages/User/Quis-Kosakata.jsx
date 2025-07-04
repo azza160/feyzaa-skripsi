@@ -12,17 +12,165 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { X, Clock, CheckCircle, XCircle, Volume2, VolumeX, Pause, Play, Trophy, Eye, ArrowRight } from "lucide-react"
+import { X, Clock, CheckCircle, XCircle, Eye, EyeOff, ArrowRight, Trophy, BookOpen, GraduationCap } from "lucide-react"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import DashboardLayout from "../../Layouts/DashboardLayout"
-import { Link, router } from "@inertiajs/react"
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion"
-import axios from "axios"
+import { router } from "@inertiajs/react"
 import { usePage } from "@inertiajs/react"
+
+// Sample vocabulary quiz data
+const quizData = [
+  {
+    id: 1,
+    question: "Apa arti dari kosakata ini?",
+    kosakata: {
+      kanji: "学生",
+      furigana: "がくせい",
+      romaji: "gakusei",
+    },
+    options: [
+      { id: "A", text: "Guru", isCorrect: false },
+      { id: "B", text: "Mahasiswa", isCorrect: true },
+      { id: "C", text: "Siswa", isCorrect: false },
+      { id: "D", text: "Dosen", isCorrect: false },
+    ],
+  },
+  {
+    id: 2,
+    question: "Apa arti dari kosakata ini?",
+    kosakata: {
+      kanji: "食べ物",
+      furigana: "たべもの",
+      romaji: "tabemono",
+    },
+    options: [
+      { id: "A", text: "Minuman", isCorrect: false },
+      { id: "B", text: "Makanan", isCorrect: true },
+      { id: "C", text: "Pakaian", isCorrect: false },
+      { id: "D", text: "Kendaraan", isCorrect: false },
+    ],
+  },
+  {
+    id: 3,
+    question: "Apa arti dari kosakata ini?",
+    kosakata: {
+      kanji: "友達",
+      furigana: "ともだち",
+      romaji: "tomodachi",
+    },
+    options: [
+      { id: "A", text: "Keluarga", isCorrect: false },
+      { id: "B", text: "Teman", isCorrect: true },
+      { id: "C", text: "Tetangga", isCorrect: false },
+      { id: "D", text: "Guru", isCorrect: false },
+    ],
+  },
+  {
+    id: 4,
+    question: "Apa arti dari kosakata ini?",
+    kosakata: {
+      kanji: "本",
+      furigana: "ほん",
+      romaji: "hon",
+    },
+    options: [
+      { id: "A", text: "Buku", isCorrect: true },
+      { id: "B", text: "Pensil", isCorrect: false },
+      { id: "C", text: "Kertas", isCorrect: false },
+      { id: "D", text: "Meja", isCorrect: false },
+    ],
+  },
+  {
+    id: 5,
+    question: "Apa arti dari kosakata ini?",
+    kosakata: {
+      kanji: "水",
+      furigana: "みず",
+      romaji: "mizu",
+    },
+    options: [
+      { id: "A", text: "Api", isCorrect: false },
+      { id: "B", text: "Udara", isCorrect: false },
+      { id: "C", text: "Air", isCorrect: true },
+      { id: "D", text: "Tanah", isCorrect: false },
+    ],
+  },
+  {
+    id: 6,
+    question: "Apa arti dari kosakata ini?",
+    kosakata: {
+      kanji: "時間",
+      furigana: "じかん",
+      romaji: "jikan",
+    },
+    options: [
+      { id: "A", text: "Tempat", isCorrect: false },
+      { id: "B", text: "Waktu", isCorrect: true },
+      { id: "C", text: "Orang", isCorrect: false },
+      { id: "D", text: "Barang", isCorrect: false },
+    ],
+  },
+  {
+    id: 7,
+    question: "Apa arti dari kosakata ini?",
+    kosakata: {
+      kanji: "家族",
+      furigana: "かぞく",
+      romaji: "kazoku",
+    },
+    options: [
+      { id: "A", text: "Keluarga", isCorrect: true },
+      { id: "B", text: "Teman", isCorrect: false },
+      { id: "C", text: "Tetangga", isCorrect: false },
+      { id: "D", text: "Rekan", isCorrect: false },
+    ],
+  },
+  {
+    id: 8,
+    question: "Apa arti dari kosakata ini?",
+    kosakata: {
+      kanji: "車",
+      furigana: "くるま",
+      romaji: "kuruma",
+    },
+    options: [
+      { id: "A", text: "Sepeda", isCorrect: false },
+      { id: "B", text: "Motor", isCorrect: false },
+      { id: "C", text: "Mobil", isCorrect: true },
+      { id: "D", text: "Bus", isCorrect: false },
+    ],
+  },
+  {
+    id: 9,
+    question: "Apa arti dari kosakata ini?",
+    kosakata: {
+      kanji: "学校",
+      furigana: "がっこう",
+      romaji: "gakkou",
+    },
+    options: [
+      { id: "A", text: "Rumah", isCorrect: false },
+      { id: "B", text: "Sekolah", isCorrect: true },
+      { id: "C", text: "Kantor", isCorrect: false },
+      { id: "D", text: "Toko", isCorrect: false },
+    ],
+  },
+  {
+    id: 10,
+    question: "Apa arti dari kosakata ini?",
+    kosakata: {
+      kanji: "日本語",
+      furigana: "にほんご",
+      romaji: "nihongo",
+    },
+    options: [
+      { id: "A", text: "Bahasa Inggris", isCorrect: false },
+      { id: "B", text: "Bahasa Indonesia", isCorrect: false },
+      { id: "C", text: "Bahasa Jepang", isCorrect: true },
+      { id: "D", text: "Bahasa Korea", isCorrect: false },
+    ],
+  },
+]
 
 // Floating particles component
 const FloatingParticles = () => {
@@ -53,9 +201,10 @@ const FloatingParticles = () => {
 
 // Quiz completion component
 const QuizCompletion = ({ isTimeUp, answers, totalQuestions, onViewReview, onExitQuis }) => {
-  const answeredCount = answers.length;
-  const correctCount = answers.filter((a) => a.isCorrect).length;
-  const percent = totalQuestions > 0 ? Math.round((answeredCount / totalQuestions) * 100) : 0;
+  const answeredCount = answers.length
+  const correctCount = answers.filter((a) => a.isCorrect).length
+  const percent = totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 0
+
   return (
     <div className="flex items-center justify-center p-4">
       <motion.div
@@ -78,14 +227,26 @@ const QuizCompletion = ({ isTimeUp, answers, totalQuestions, onViewReview, onExi
               <>
                 <Trophy className="w-20 h-20 text-yellow-500 mx-auto mb-6" />
                 <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-4">Kuis Selesai!</h1>
-                <p className="text-gray-600 dark:text-gray-300 mb-6">Selamat! Kamu telah menyelesaikan semua soal dalam kuis ini.</p>
+                <p className="text-gray-600 dark:text-gray-300 mb-6">
+                  Selamat! Kamu telah menyelesaikan semua soal dalam kuis ini.
+                </p>
               </>
             )}
 
             <div className="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/60 dark:to-purple-900/60 rounded-2xl p-6 mb-8 border border-indigo-100 dark:border-indigo-700">
-              <div className="text-4xl font-bold text-indigo-600 dark:text-indigo-300 mb-2">{answeredCount}</div>
-              <p className="text-gray-600 dark:text-gray-300 font-medium">Soal Dikerjakan</p>
-              <div className="text-lg font-semibold text-purple-600 dark:text-purple-300 mt-2">Selesai {percent}%</div>
+              <div className="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                  <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-300">{correctCount}</div>
+                  <p className="text-gray-600 dark:text-gray-300 font-medium">Benar</p>
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-purple-600 dark:text-purple-300">
+                    {answeredCount - correctCount}
+                  </div>
+                  <p className="text-gray-600 dark:text-gray-300 font-medium">Salah</p>
+                </div>
+              </div>
+              <div className="text-lg font-semibold text-purple-600 dark:text-purple-300">Skor: {percent}%</div>
             </div>
 
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
@@ -95,7 +256,7 @@ const QuizCompletion = ({ isTimeUp, answers, totalQuestions, onViewReview, onExi
                 onClick={onExitQuis}
               >
                 <Eye className="w-5 h-5 mr-2" />
-                Selesai Kuis  Dan Lihat Review Jawaban
+                Selesai Kuis Dan Lihat Review Jawaban
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
             </motion.div>
@@ -106,7 +267,7 @@ const QuizCompletion = ({ isTimeUp, answers, totalQuestions, onViewReview, onExi
   )
 }
 
-export default function QuizHurufPage() {
+export default function VocabularyQuizPage() {
   const { quizData, remainingTime: initialTime, sessionId, jenis, level, currentQuestionIndex } = usePage().props
   const [currentQuestion, setCurrentQuestion] = useState(currentQuestionIndex)
   const [selectedAnswer, setSelectedAnswer] = useState(null)
@@ -117,30 +278,30 @@ export default function QuizHurufPage() {
   const [isQuizComplete, setIsQuizComplete] = useState(false)
   const [isTimeUp, setIsTimeUp] = useState(false)
   const [exitDialogOpen, setExitDialogOpen] = useState(false)
-  const [isPaused, setIsPaused] = useState(false)
-  const [soundEnabled, setSoundEnabled] = useState(true)
   const [showCompletion, setShowCompletion] = useState(false)
+  const [hideFurigana, setHideFurigana] = useState(false)
+  const [hideRomaji, setHideRomaji] = useState(false)
 
   const controls = useAnimation()
-  const characterRef = useRef(null)
+  const vocabularyRef = useRef(null)
 
   // Timer countdown
   useEffect(() => {
-    if (timeLeft > 0 && !isQuizComplete && !isPaused && !showCompletion) {
+    if (timeLeft > 0 && !isQuizComplete && !showCompletion) {
       const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000)
       return () => clearTimeout(timer)
     } else if (timeLeft === 0 && !showCompletion) {
       setIsTimeUp(true)
       handleQuizComplete()
     }
-  }, [timeLeft, isQuizComplete, isPaused, showCompletion])
+  }, [timeLeft, isQuizComplete, showCompletion])
 
-  // Character animation on question change
+  // Vocabulary animation on question change
   useEffect(() => {
     controls.start({
       scale: [0.8, 1.1, 1],
-      rotate: [0, 3, -3, 0],
-      transition: { duration: 0.5, ease: "easeOut" },
+      rotate: [0, 2, -2, 0],
+      transition: { duration: 0.6, ease: "easeOut" },
     })
   }, [currentQuestion, controls])
 
@@ -160,7 +321,7 @@ export default function QuizHurufPage() {
   }
 
   // Handle answer selection
-  const handleAnswerSelect = async (optionId) => {
+  const handleAnswerSelect = (optionId) => {
     if (isAnswered) return
 
     const selectedOption = quizData[currentQuestion].options.find((opt) => opt.id === optionId)
@@ -168,50 +329,38 @@ export default function QuizHurufPage() {
     setIsAnswered(true)
     setShowFeedback(true)
 
-    // Save answer to database
-    try {
-      const response = await axios.post(route('save-quiz-answer'), {
-        sessionId: sessionId,
-        soalId: quizData[currentQuestion].id,
-        answer: optionId.toLowerCase()
-      })
-
-      // Save answer locally
-      const newAnswer = {
-        questionId: quizData[currentQuestion].id,
-        selectedOption: optionId,
-        isCorrect: response.data.is_correct,
-        question: quizData[currentQuestion].question,
-        character: quizData[currentQuestion].character,
-        correctAnswer: quizData[currentQuestion].options.find((opt) => opt.isCorrect).text,
-        selectedText: selectedOption.text,
-      }
-
-      setAnswers((prev) => [...prev, newAnswer])
-
-      // Character shake animation for wrong answer
-      if (!response.data.is_correct) {
-        controls.start({
-          x: [-8, 8, -8, 8, 0],
-          transition: { duration: 0.4 },
-        })
-      }
-
-      // Auto advance after feedback
-      setTimeout(() => {
-        if (currentQuestion < quizData.length - 1) {
-          setCurrentQuestion((prev) => prev + 1)
-          setSelectedAnswer(null)
-          setIsAnswered(false)
-          setShowFeedback(false)
-        } else {
-          handleQuizComplete()
-        }
-      }, 1500)
-    } catch (error) {
-      console.error('Error saving answer:', error)
-      // Handle error appropriately
+    // Save answer locally
+    const newAnswer = {
+      questionId: quizData[currentQuestion].id,
+      selectedOption: optionId,
+      isCorrect: selectedOption.isCorrect,
+      question: quizData[currentQuestion].question,
+      kosakata: quizData[currentQuestion].kosakata,
+      correctAnswer: quizData[currentQuestion].options.find((opt) => opt.isCorrect).text,
+      selectedText: selectedOption.text,
     }
+
+    setAnswers((prev) => [...prev, newAnswer])
+
+    // Vocabulary shake animation for wrong answer
+    if (!selectedOption.isCorrect) {
+      controls.start({
+        x: [-8, 8, -8, 8, 0],
+        transition: { duration: 0.4 },
+      })
+    }
+
+    // Auto advance after feedback
+    setTimeout(() => {
+      if (currentQuestion < quizData.length - 1) {
+        setCurrentQuestion((prev) => prev + 1)
+        setSelectedAnswer(null)
+        setIsAnswered(false)
+        setShowFeedback(false)
+      } else {
+        handleQuizComplete()
+      }
+    }, 1500)
   }
 
   // Complete quiz
@@ -222,16 +371,11 @@ export default function QuizHurufPage() {
 
   // View review
   const handleViewReview = () => {
-    console.log('View review')
+    console.log("View review", answers)
   }
 
   const handleExitQuis = () => {
-    router.visit(route('review-quis', { sessionId: sessionId }))
-  }
-
-  // Toggle pause
-  const togglePause = () => {
-    setIsPaused(!isPaused)
+    console.log("Exit quiz")
   }
 
   // Exit quiz
@@ -259,25 +403,58 @@ export default function QuizHurufPage() {
     <DashboardLayout>
       <div className="text-foreground">
         <div className="max-w-6xl mx-auto px-4">
-         
-
-          <div className="mb-8">
+          {/* Guide Section */}
+          <div className="pt-8 mb-8">
             <Accordion type="single" collapsible className="w-full">
               <AccordionItem value="item-1">
-                <AccordionTrigger className="text-lg font-semibold text-gray-800 dark:text-gray-200">
-                  Panduan Kuis
+                <AccordionTrigger className="text-lg font-semibold text-gray-800 dark:text-gray-200 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-lg px-4 py-3 hover:from-indigo-100 hover:to-purple-100 dark:hover:from-indigo-800/30 dark:hover:to-purple-800/30 transition-all duration-300">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg">
+                      <BookOpen className="w-5 h-5 text-white" />
+                    </div>
+                    <span>Panduan Kuis Kosakata</span>
+                  </div>
                 </AccordionTrigger>
                 <AccordionContent className="text-gray-600 dark:text-gray-400">
-                  <div className="space-y-4">
-                    <p>
-                      Selamat datang di Kuis {jenis} - {level}! Berikut adalah beberapa panduan untuk mengikuti kuis:
-                    </p>
-                    <ul className="list-disc pl-5 space-y-2">
-                      <li>Kuis terdiri dari {quizData.length} soal pilihan ganda</li>
-                      <li>Waktu pengerjaan adalah {Math.floor(initialTime / 60)} menit</li>
-                      <li>Setiap jawaban benar akan mendapatkan poin</li>
-                      <li>Jawaban salah tidak akan mengurangi poin</li>
-                      <li>Kamu dapat melihat hasil kuis setelah selesai</li>
+                  <div className="space-y-4 p-4 bg-gradient-to-br from-white/50 to-indigo-50/50 dark:from-slate-800/50 dark:to-indigo-900/50 rounded-lg border border-indigo-100 dark:border-indigo-800">
+                    <div className="flex items-start gap-3">
+                      <div className="p-2 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full mt-1">
+                        <GraduationCap className="w-4 h-4 text-white" />
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-800 dark:text-gray-200 mb-2">Selamat datang di Kuis Kosakata Jepang!</p>
+                        <p className="text-sm">Berikut adalah beberapa panduan untuk mengikuti kuis:</p>
+                      </div>
+                    </div>
+                    <ul className="list-none space-y-3 ml-8">
+                      <li className="flex items-center gap-2">
+                        <div className="w-2 h-2 bg-indigo-500 rounded-full"></div>
+                        <span>Kuis terdiri dari <strong>{quizData.length} soal</strong> pilihan ganda</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                        <span>Waktu pengerjaan adalah <strong>{Math.floor(initialTime / 60)} menit</strong></span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <div className="w-2 h-2 bg-pink-500 rounded-full"></div>
+                        <span>Setiap soal menampilkan kosakata Jepang dengan kanji, furigana, dan romaji</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span>Pilih arti yang tepat dalam bahasa Indonesia</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                        <span>Setiap jawaban benar akan mendapatkan poin</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                        <span>Jawaban salah tidak akan mengurangi poin</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                        <span>Kamu dapat melihat hasil kuis setelah selesai</span>
+                      </li>
                     </ul>
                   </div>
                 </AccordionContent>
@@ -285,16 +462,16 @@ export default function QuizHurufPage() {
             </Accordion>
           </div>
 
-          <div className="bg-transparent dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950 relative overflow-hidden rounded-md">
+          <div className="bg-transparent relative overflow-hidden rounded-md">
             <FloatingParticles />
 
             {/* Header */}
-            <div className="bg-transparent dark:bg-slate-900/80 backdrop-blur-sm ">
+            <div className="bg-white/30 dark:bg-slate-900/80 backdrop-blur-sm">
               <div className="max-w-6xl mx-auto px-4 py-4 pb-5">
                 <div className="flex flex-col md:flex-row items-center justify-between">
                   <div>
                     <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                      Kuis {jenis} – {level}
+                      Kuis Kosakata – {level}
                     </h1>
                     <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                       Soal {currentQuestion + 1} dari {quizData.length}
@@ -302,22 +479,36 @@ export default function QuizHurufPage() {
                   </div>
 
                   <div className="flex items-center gap-2">
-                  
-
-                    {/* Pause Button */}
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      onClick={togglePause} 
-                      className="text-gray-600 dark:text-gray-400 hover:bg-white/50 dark:hover:bg-slate-800/50"
+                    {/* Hide Furigana Button */}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setHideFurigana(!hideFurigana)}
+                      className="text-gray-600 dark:text-gray-400 hover:bg-white/50 dark:hover:bg-slate-800/50 flex items-center gap-2"
                     >
-                      {isPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
+                      {hideFurigana ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                      {hideFurigana ? "Tampilkan" : "Sembunyikan"} Furigana
+                    </Button>
+
+                    {/* Hide Romaji Button */}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setHideRomaji(!hideRomaji)}
+                      className="text-gray-600 dark:text-gray-400 hover:bg-white/50 dark:hover:bg-slate-800/50 flex items-center gap-2"
+                    >
+                      {hideRomaji ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                      {hideRomaji ? "Tampilkan" : "Sembunyikan"} Romaji
                     </Button>
 
                     {/* Exit Button */}
                     <Dialog open={exitDialogOpen} onOpenChange={setExitDialogOpen}>
                       <DialogTrigger asChild>
-                        <Button variant="outline" size="sm" className="text-red-600 dark:text-red-400 border-red-200 dark:border-red-800 hover:bg-red-50 dark:hover:bg-red-900/20">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-red-600 dark:text-red-400 border-red-200 dark:border-red-800 hover:bg-red-50 dark:hover:bg-red-900/20 bg-transparent"
+                        >
                           <X className="w-4 h-4 mr-2" />
                           Keluar
                         </Button>
@@ -348,14 +539,16 @@ export default function QuizHurufPage() {
             </div>
 
             {/* Timer */}
-            <div className="bg-white/30 dark:bg-slate-900/60 ">
+            <div className="bg-white/30 dark:bg-slate-900/60">
               <div className="max-w-6xl mx-auto px-4 py-3 pb-[30px]">
                 <div className="flex items-center gap-3">
                   <Clock className={`w-5 h-5 ${timeLeft < 30 ? "text-red-500" : "text-gray-500 dark:text-gray-400"}`} />
                   <div className="flex-1">
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Waktu Tersisa</span>
-                      <span className={`text-sm font-bold ${timeLeft < 30 ? "text-red-600" : "text-gray-800 dark:text-gray-200"}`}>
+                      <span
+                        className={`text-sm font-bold ${timeLeft < 30 ? "text-red-600" : "text-gray-800 dark:text-gray-200"}`}
+                      >
                         {formatTime(timeLeft)}
                       </span>
                     </div>
@@ -405,7 +598,9 @@ export default function QuizHurufPage() {
                           >
                             <div className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-100 to-purple-100 dark:from-indigo-900 dark:to-purple-900 px-4 py-2 rounded-full border border-indigo-200 dark:border-indigo-800 mb-4">
                               <div className="w-2 h-2 bg-indigo-500 dark:bg-indigo-400 rounded-full animate-pulse"></div>
-                              <span className="text-sm font-medium text-indigo-700 dark:text-indigo-300">Soal {currentQuestion + 1}</span>
+                              <span className="text-sm font-medium text-indigo-700 dark:text-indigo-300">
+                                Soal {currentQuestion + 1}
+                              </span>
                             </div>
                           </motion.div>
 
@@ -419,12 +614,40 @@ export default function QuizHurufPage() {
                           </motion.h2>
 
                           <motion.div
+                            ref={vocabularyRef}
+                            animate={controls}
                             initial={{ scale: 0.8, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
+                            whileInView={{ scale: 1, opacity: 1 }}
                             transition={{ delay: 0.4, type: "spring", stiffness: 200 }}
-                            className="inline-flex items-center justify-center w-[300px] h-24 bg-gradient-to-br from-indigo-500 to-purple-600 dark:from-indigo-600 dark:to-purple-700 rounded-2xl shadow-xl text-white text-4xl font-bold relative"
+                            className="inline-flex flex-col items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-600 dark:from-indigo-600 dark:to-purple-700 rounded-2xl shadow-xl text-white p-6 relative min-w-[320px]"
                           >
-                            {quizData[currentQuestion].character}
+                            {/* Kanji */}
+                            <div className="text-5xl font-bold mb-2">{quizData[currentQuestion].kosakata.kanji}</div>
+
+                            {/* Furigana - conditionally shown */}
+                            {!hideFurigana && (
+                              <motion.div 
+                                className="text-lg text-indigo-100 dark:text-indigo-200 mb-1"
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                              >
+                                {quizData[currentQuestion].kosakata.furigana}
+                              </motion.div>
+                            )}
+
+                            {/* Romaji - conditionally shown */}
+                            {!hideRomaji && (
+                              <motion.div 
+                                className="text-sm text-indigo-200 dark:text-indigo-300 font-medium"
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                              >
+                                {quizData[currentQuestion].kosakata.romaji}
+                              </motion.div>
+                            )}
+
                             <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent rounded-2xl"></div>
                             <motion.div
                               className="absolute inset-0 rounded-2xl"
@@ -518,8 +741,10 @@ export default function QuizHurufPage() {
                                   {option.id}
                                 </motion.div>
                                 <span
-                                  className={`text-2xl font-bold transition-all duration-300 ${
-                                    showResult || isSelected ? "text-white" : "text-gray-800 dark:text-gray-200 group-hover:text-indigo-700 dark:group-hover:text-indigo-300"
+                                  className={`text-xl font-bold transition-all duration-300 ${
+                                    showResult || isSelected
+                                      ? "text-white"
+                                      : "text-gray-800 dark:text-gray-200 group-hover:text-indigo-700 dark:group-hover:text-indigo-300"
                                   }`}
                                 >
                                   {option.text}
@@ -557,14 +782,14 @@ export default function QuizHurufPage() {
                     })}
                   </div>
 
-                  {/* Simple Feedback Message */}
+                  {/* Simple Feedback Message - Moved up to avoid being covered by progress */}
                   <AnimatePresence>
                     {showFeedback && (
                       <motion.div
                         initial={{ opacity: 0, y: 20, scale: 0.9 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: -20, scale: 0.9 }}
-                        className="text-center mt-8"
+                        className="text-center mt-8 mb-20" // Added bottom margin to avoid progress overlap
                       >
                         <div
                           className={`inline-flex items-center gap-3 px-6 py-4 rounded-2xl text-lg font-semibold shadow-lg ${
@@ -576,12 +801,14 @@ export default function QuizHurufPage() {
                           {quizData[currentQuestion].options.find((opt) => opt.id === selectedAnswer)?.isCorrect ? (
                             <>
                               <CheckCircle className="w-6 h-6" />
-                              Benar!
+                              Benar! {quizData[currentQuestion].kosakata.kanji} berarti{" "}
+                              {quizData[currentQuestion].options.find((opt) => opt.isCorrect).text}
                             </>
                           ) : (
                             <>
                               <XCircle className="w-6 h-6" />
-                              Salah
+                              Salah. {quizData[currentQuestion].kosakata.kanji} berarti{" "}
+                              {quizData[currentQuestion].options.find((opt) => opt.isCorrect).text}
                             </>
                           )}
                         </div>

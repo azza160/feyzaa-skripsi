@@ -289,7 +289,9 @@ export default function Dashboard({ children }) {
               {!sidebarOpen && <div className="my-6 border-t border-border dark:border-slate-800"></div>}
               <nav className="space-y-1">
                 <SidebarLink icon={<PencilLine className="h-5 w-5" />} label="Kuis Huruf" isOpen={sidebarOpen} isActive={['pilih-huruf-quis','pilih-list-huruf-quis','pilih-level-quis'].some(name => route().current(name))} href={route('pilih-huruf-quis')} />
-                <SidebarLink icon={<ListChecks className="h-5 w-5" />} label="Kuis Kosakata" isOpen={sidebarOpen} locked={currentLevel < 3} />
+
+                <SidebarLink icon={<ListChecks className="h-5 w-5" />} label="Kuis Kosakata" isOpen={sidebarOpen} isActive={['pilih-level-quis-kosakata','pilih-list-quis-kosakata','quis-kosakata'].some(name => route().current(name))} href={route('pilih-level-quis-kosakata')} locked={currentLevel < 3}/>
+
                 <SidebarLink icon={<Trophy className="h-5 w-5" />} label="Leaderboard" isOpen={sidebarOpen} locked={currentLevel < 3} />
                 <SidebarLink
                   icon={<Award className="h-5 w-5" />}
@@ -402,7 +404,7 @@ export default function Dashboard({ children }) {
                   </h3>
                   <nav className="space-y-1">
                   <SidebarLink icon={<PencilLine className="h-5 w-5" />} label="Kuis Huruf" isOpen={true} isActive={['pilih-huruf-quis','pilih-list-huruf-quis','pilih-level-quis','quis','review-quis'].some(name => route().current(name))} href={route('pilih-huruf-quis')} />
-                <SidebarLink icon={<ListChecks className="h-5 w-5" />} label="Kuis Kosakata" isOpen={true} />
+                <SidebarLink icon={<ListChecks className="h-5 w-5" />} label="Kuis Kosakata" isOpen={true} isActive={['pilih-level-quis-kosakata','pilih-list-quis-kosakata','quis-kosakata'].some(name => route().current(name))} href={route('pilih-level-quis-kosakata')}/>
                 <SidebarLink icon={<Trophy className="h-5 w-5" />} label="Leaderboard" isOpen={true} />
                 <SidebarLink
                   icon={<Award className="h-5 w-5" />}

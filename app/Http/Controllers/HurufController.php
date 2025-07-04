@@ -35,6 +35,7 @@ class HurufController extends Controller
     }
     
     public function pilihHuruf(){
+        $this->cleanupActiveQuisSession();
         $user = auth()->user();
         $isKatakanaUnlocked = $user->level >= 2;
 
@@ -48,6 +49,7 @@ class HurufController extends Controller
     }
 
     public function kategoriHiragana(){
+        $this->cleanupActiveQuisSession();
         $user = auth()->user();
         //ambil data dari table user_belajar yang pembelajaran_id nya belajar-hiragana-gojuon
         $userBelajar = UserBelajar::where('pembelajaran_id', 'belajar-hiragana-gojuon')->first();
@@ -110,6 +112,7 @@ class HurufController extends Controller
     }
 
     public function kategoriKatakana(){
+        $this->cleanupActiveQuisSession();
         $user = auth()->user();
         
         // Check if user has required level
@@ -177,6 +180,7 @@ class HurufController extends Controller
 
     public function showDetailHuruf($jenis, $kategori, $id)
     {
+        $this->cleanupActiveQuisSession();
         $user = auth()->user();
         $huruf = Huruf::where('id', $id)->first();
         $contoh_penggunaan = Contoh_Penggunaan::where('huruf_id', $huruf->id)->get();
@@ -210,6 +214,7 @@ class HurufController extends Controller
 
     public function GetHurufByKategori($jenis, $kategori)
     {
+        $this->cleanupActiveQuisSession();
         $user = auth()->user();
         
         // Check if user tries to access Katakana without required level

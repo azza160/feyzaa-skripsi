@@ -37,7 +37,7 @@ class Kosakata extends Model
     public function userKosakatas()
     {
         return $this->belongsToMany(User::class, 'user_kosakatas', 'kosakata_id', 'user_id')
-            ->withPivot('is_learned', 'last_completed_at')
+            ->withPivot('is_learned', 'is_favorite', 'last_completed_at')
             ->withTimestamps();
     }
 }

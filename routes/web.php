@@ -6,6 +6,7 @@ use App\Http\Controllers\HurufController;
 use App\Http\Controllers\KosakataController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuisController;
+use App\Http\Controllers\QuisKosakataController;
 use App\Http\Controllers\UserBelajarController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Mail;
@@ -63,13 +64,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/huruf/{jenis}/{kategori}',[HurufController::class,'GetHurufByKategori'])->name('huruf-list');
     Route::get('/dashboard/huruf/{jenis}/{kategori}/{id}', [HurufController::class, 'showDetailHuruf'])->name('huruf-hiragana-detail');
 
+    //kosakata quis
     Route::get('/dashboard/kosakata',[KosakataController::class,'getAllKosakata'])->name('list-kosakata');
-
     Route::get('/dashboard/kosakata/detail-kosakata/{id}', [KosakataController::class,"getDetailKosakata"])->name('detail-kosakata');
     
     Route::get('/dashboard/flashcard', [KosakataController::class,'flashcard'])->name('flashcard');
 
-    //route quis
+    //route quis huruf
     Route::get('/dashboard/pilih-huruf-quis',[QuisController::class,'pilihHurufQuisShow'])->name('pilih-huruf-quis');
     Route::get('/dashboard/pilih-level-quis/{jenis}',[QuisController::class,'pilihLevelQuisShow'])->name('pilih-level-quis');
     Route::get('/dashboard/pilih-list-huruf-quis',[QuisController::class,'pilihListHurufQuis'])->name('pilih-list-huruf-quis');
@@ -77,6 +78,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/quis/{sessionId}',[QuisController::class,'QuisShow'])->name('quis');
     Route::post('/dashboard/quis/save-answer',[QuisController::class,'saveAnswer'])->name('save-quiz-answer');
     Route::get('/dashboard/review-quis/{sessionId}',[QuisController::class,'ReviewQuisShow'])->name('review-quis');
+    Route::get('/dashboard/review-quis/{sessionId}',[QuisController::class,'ReviewQuisShow'])->name('review-quis');
+    
+
+    //route quis kosakata
+    Route::get('/dashboard/pilih-level-quis-kosakata',[QuisKosakataController::class,'pilihLevelQuisShow'])->name('pilih-level-quis-kosakata');
+    Route::get('/dashboard/pilih-list-quis-kosakata',[QuisKosakataController::class,'pilihListQuisKosakata'])->name('pilih-list-quis-kosakata');
+    Route::get('/dashboard/quis-kosakata/{sessionId}',[QuisKosakataController::class,'QuisKosakataShow'])->name('quis-kosakata');
 
     // route progress uses
     Route::post('/user/belajar/update', [UserBelajarController::class, 'updateProgress'])->name('user.belajar.update');

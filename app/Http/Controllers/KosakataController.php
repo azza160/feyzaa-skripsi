@@ -34,6 +34,7 @@ class KosakataController extends Controller
 
     public function getAllKosakata()
     {
+        $this->cleanupActiveQuisSession();
         $user = Auth::user();
         
         // Ambil semua kosakata
@@ -69,18 +70,28 @@ class KosakataController extends Controller
             ];
         });
 
-    
+        // --- Tambahan: Kosakata Hari Ini (deterministik per hari) ---
+        $today = now()->format('Y-m-d');
+        $kosakataCount = $formatted->count();
+        $todayIndex = crc32($today) % ($kosakataCount > 0 ? $kosakataCount : 1);
+        $todayKosakata = $kosakataCount > 0 ? $formatted[$todayIndex] : null;
+
+        // --- Tambahan: Favorite Count langsung dari DB ---
+        $favoriteCount = $user->kosakatas()->wherePivot('is_favorite', true)->count();
+
         return Inertia::render('User/List-Kosakata', [
             'user' => $user,
-            'sample_vocabulary' => $formatted,    
+            'sample_vocabulary' => $formatted,
+            'today_vocabulary' => $todayKosakata,
+            'favorite_count' => $favoriteCount,
             'currentLevel' => $user->level,
             'currentExp' => $user->exp,
-            'maxExp' => $this->calculateNextLevelExp($user->level),      
+            'maxExp' => $this->calculateNextLevelExp($user->level),
         ]);
     }
 
     public function getDetailKosakata($id){
-
+        $this->cleanupActiveQuisSession();
         $user = Auth::user();
 
         $kosakata = Kosakata::with([
@@ -88,6 +99,11 @@ class KosakataController extends Controller
             'contohKalimats',
         ])->findOrFail($id);
     
+        // Ambil status favorite & learned dari pivot user_kosakatas
+        $userKosakata = $user->kosakatas()->where('kosakatas.id', $kosakata->id)->first();
+        $isFavorite = $userKosakata ? ($userKosakata->pivot->is_favorite ? true : false) : false;
+        $isLearned = $userKosakata ? ($userKosakata->pivot->is_learned ? true : false) : false;
+
         // Mapping struktur data yang frontend butuhkan
         $data = [
             'user' => $user,
@@ -99,9 +115,8 @@ class KosakataController extends Controller
             'meaning' => $kosakata->arti,
             'type' => 'verb', // misal masih hardcoded, nanti bisa dari kolom baru
             'level' => 'N5', // nanti bisa dari kolom baru
-            'progress' => 65, // hardcoded sementara
-            'isFavorite' => false, // bisa dari relasi user ke kosakata
-            'isLearned' => false,  // bisa dari relasi user ke progress
+            'isFavorite' => $isFavorite,
+            'isLearned' => $isLearned,
             'audio' => $kosakata->audio,
     
             'examples' => $kosakata->contohKalimats->map(function ($ex) {
@@ -159,6 +174,7 @@ class KosakataController extends Controller
     }
 
     public function flashcard(){
+        $this->cleanupActiveQuisSession();
         $user = Auth::user();
 
       

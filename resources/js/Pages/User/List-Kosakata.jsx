@@ -123,192 +123,33 @@ const Loading = () => {
 };
 
 // Alert Component
-const Alert = ({ message, onClose }) => {
+const Alert = ({ message, onClose, title = 'Berhasil!', description = '' }) => {
     return (
-        <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 50 }}
-            className="fixed bottom-4 right-4 bg-background border border-primary/20 shadow-lg rounded-lg p-4 z-50"
-        >
-            <div className="flex items-center gap-3">
-                <div className="flex-shrink-0">
-                    <Check className="h-5 w-5 text-green-500" />
-                </div>
-                <p className="text-sm font-medium">{message}</p>
-                <button
-                    onClick={onClose}
-                    className="ml-4 flex-shrink-0 text-muted-foreground hover:text-foreground"
-                >
-                    <X className="h-4 w-4" />
-                </button>
-            </div>
-        </motion.div>
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 backdrop-blur-sm">
+            <motion.div
+                initial={{ scale: 0.95, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.95, opacity: 0 }}
+                className="bg-background rounded-2xl shadow-2xl p-8 max-w-md w-full flex flex-col items-center border border-primary/20"
+            >
+                <Check className="h-10 w-10 text-green-500 mb-2" />
+                <h2 className="text-xl font-bold mb-2 text-center">{title}</h2>
+                <p className="text-center text-muted-foreground mb-4">{message}</p>
+                {description && <p className="text-center text-sm text-muted-foreground mb-4">{description}</p>}
+                <Button onClick={onClose} className="mt-2 w-32 rounded-full">OK</Button>
+            </motion.div>
+        </div>
     );
 };
 
-// Komponen untuk jalur belajar dengan animasi
-const LearningPath = () => {
-    const ref = useRef(null);
-    const isInView = useInView(ref, { once: false, amount: 0.3 });
-
-    const steps = [
-        {
-            number: 1,
-            title: "Dasar-dasar Kosakata",
-            description:
-                "Pelajari 50 kosakata dasar untuk percakapan sehari-hari",
-            status: "completed", // completed, in-progress, locked
-            icon: <BookOpen className="h-5 w-5" />,
-        },
-        {
-            number: 2,
-            title: "Kosakata Sehari-hari",
-            description: "Pelajari 100 kosakata untuk situasi umum",
-            status: "in-progress",
-            icon: <Target className="h-5 w-5" />,
-        },
-        {
-            number: 3,
-            title: "Kosakata Lanjutan",
-            description: "Pelajari 150 kosakata untuk percakapan lanjutan",
-            status: "locked",
-            icon: <Lock className="h-5 w-5" />,
-        },
-        {
-            number: 4,
-            title: "Penguasaan Kosakata",
-            description: "Kuasai 200+ kosakata untuk berbagai situasi",
-            status: "locked",
-            icon: <Trophy className="h-5 w-5" />,
-        },
-    ];
-
-    return (
-        <Card className="border border-primary/10 overflow-hidden">
-            <CardHeader className="pb-2 bg-gradient-to-r from-primary/5 to-transparent">
-                <CardTitle className="text-lg flex items-center gap-2">
-                    <Brain className="h-5 w-5 text-primary" /> Jalur Belajar
-                    Kosakata
-                </CardTitle>
-            </CardHeader>
-            <CardContent className="p-6">
-                <div className="relative" ref={ref}>
-                    {/* Garis penghubung animasi */}
-                    <div
-                        className="absolute left-[24px] top-8 bottom-8 w-[2px] bg-muted"
-                        style={{
-                            maskImage: isInView
-                                ? "linear-gradient(to bottom, #000 0%, #000 100%)"
-                                : "linear-gradient(to bottom, #000 0%, transparent 0%)",
-                            maskSize: "100% 100%",
-                            maskPosition: "0 0",
-                            transition: "mask-size 1.5s ease-in-out",
-                            WebkitMaskImage: isInView
-                                ? "linear-gradient(to bottom, #000 0%, #000 100%)"
-                                : "linear-gradient(to bottom, #000 0%, transparent 0%)",
-                            WebkitMaskSize: "100% 100%",
-                            WebkitMaskPosition: "0 0",
-                        }}
-                    />
-
-                    <div className="space-y-8">
-                        {steps.map((step, index) => (
-                            <motion.div
-                                key={step.number}
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={
-                                    isInView
-                                        ? { opacity: 1, x: 0 }
-                                        : { opacity: 0, x: -20 }
-                                }
-                                transition={{
-                                    duration: 0.5,
-                                    delay: index * 0.2,
-                                }}
-                                className="flex items-start gap-4"
-                            >
-                                <div
-                                    className={cn(
-                                        "relative z-10 flex items-center justify-center w-12 h-12 rounded-full",
-                                        step.status === "completed"
-                                            ? "bg-green-500 text-white"
-                                            : step.status === "in-progress"
-                                            ? "bg-primary text-white"
-                                            : "bg-muted text-muted-foreground"
-                                    )}
-                                >
-                                    {step.icon}
-                                </div>
-                                <div className="flex-1 pt-1">
-                                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                                        <div>
-                                            <h4 className="font-medium flex items-center gap-2">
-                                                {step.title}
-                                                {step.status ===
-                                                    "completed" && (
-                                                    <Badge className="bg-green-500/10 text-green-600 border-green-500/30 rounded-full">
-                                                        <Check
-                                                            size={10}
-                                                            className="mr-1"
-                                                        />{" "}
-                                                        Selesai
-                                                    </Badge>
-                                                )}
-                                                {step.status ===
-                                                    "in-progress" && (
-                                                    <Badge className="bg-primary/10 text-primary border-primary/30 rounded-full">
-                                                        <Target
-                                                            size={10}
-                                                            className="mr-1"
-                                                        />{" "}
-                                                        Sedang Dipelajari
-                                                    </Badge>
-                                                )}
-                                            </h4>
-                                            <p className="text-sm text-muted-foreground">
-                                                {step.description}
-                                            </p>
-                                        </div>
-                                        {step.status !== "locked" && (
-                                            <Button
-                                                size="sm"
-                                                variant={
-                                                    step.status === "completed"
-                                                        ? "outline"
-                                                        : "default"
-                                                }
-                                                className={cn(
-                                                    "rounded-full",
-                                                    step.status ===
-                                                        "completed" &&
-                                                        "border-green-500/30 text-green-600 hover:bg-green-500/10"
-                                                )}
-                                            >
-                                                {step.status === "completed"
-                                                    ? "Ulangi"
-                                                    : "Lanjutkan"}
-                                            </Button>
-                                        )}
-                                    </div>
-                                </div>
-                            </motion.div>
-                        ))}
-                    </div>
-                </div>
-            </CardContent>
-        </Card>
-    );
-};
-
-function VocabularyContent({ vocabulary }) {
+function VocabularyContent({ vocabulary, todayVocabulary, favoriteCount }) {
     const [searchTerm, setSearchTerm] = useState("");
     const [filter, setFilter] = useState("all");
     const [sortBy, setSortBy] = useState("a-z");
     const [showStickyBar, setShowStickyBar] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [vocabList, setVocabList] = useState(vocabulary);
-    const [todayVocab, setTodayVocab] = useState(null);
+    const [todayVocab, setTodayVocab] = useState(todayVocabulary || null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [progress, setProgress] = useState(0);
     const [isSearching, setIsSearching] = useState(false);
@@ -330,6 +171,9 @@ function VocabularyContent({ vocabulary }) {
     const [isButtonLoading, setIsButtonLoading] = useState(false);
     const [alertMessage, setAlertMessage] = useState(null);
     const [loadingButtonId, setLoadingButtonId] = useState(null);
+    const [favoriteTotal, setFavoriteTotal] = useState(favoriteCount || 0);
+    const [audioInstance, setAudioInstance] = useState(null);
+    const [hoverToday, setHoverToday] = useState(false);
 
     const itemsPerPage = 6; // Add back the itemsPerPage constant
 
@@ -344,8 +188,14 @@ function VocabularyContent({ vocabulary }) {
     //audio method
     const playAudio = (url) => {
         if (!url) return;
+        if (audioInstance) {
+            audioInstance.pause();
+            audioInstance.currentTime = 0;
+        }
         const audio = new Audio(url);
+        setAudioInstance(audio);
         audio.play().catch((e) => console.error("Gagal memutar audio:", e));
+        audio.onended = () => setAudioInstance(null);
     };
 
     const handleClick = (audio) => {
@@ -365,16 +215,6 @@ function VocabularyContent({ vocabulary }) {
         window.addEventListener("resize", checkIfMobile);
         return () => window.removeEventListener("resize", checkIfMobile);
     }, []);
-
-    // Get a random vocabulary for "Today's Vocabulary"
-    useEffect(() => {
-        const randomIndex = Math.floor(Math.random() * vocabulary.length);
-        setTodayVocab(vocabulary[randomIndex]);
-
-        // Simulasi progress belajar
-        const learnedCount = vocabulary.filter((item) => item.isLearned).length;
-        setProgress((learnedCount / vocabulary.length) * 100);
-    }, [vocabulary]);
 
     // Handle scroll to show sticky search bar at BOTTOM
     useEffect(() => {
@@ -446,23 +286,19 @@ function VocabularyContent({ vocabulary }) {
 
     // Toggle favorite status with loading and alert
     const toggleFavorite = async (id) => {
+        setLoadingButtonId(id);
+        setIsButtonLoading(true);
         try {
-            setLoadingButtonId(id);
-            setIsButtonLoading(true);
-            const response = await axios.post(route('user.belajar.update-user-kosakata-favorite'), { 
-                id: id
-            });
-            
+            const response = await axios.post(route('user.belajar.update-user-kosakata-favorite'), { id });
             if (response.data.success) {
                 setAlertMessage('Kosakata berhasil ditandai sebagai favorit');
-                // Refresh data without resetting pagination
-                const updatedVocab = vocabList.map(item => 
-                    item.id === id ? { ...item, isFavorite: !item.isFavorite } : item
-                );
-                setVocabList(updatedVocab);
+                setVocabList((prev) => prev.map(item => item.id === id ? { ...item, isFavorite: !item.isFavorite } : item));
+                setFavoriteTotal((prev) => {
+                    const item = vocabList.find(v => v.id === id);
+                    return item && item.isFavorite ? prev - 1 : prev + 1;
+                });
             }
         } catch (error) {
-            console.error(error);
             setAlertMessage('Gagal mengubah status favorit');
         } finally {
             setIsButtonLoading(false);
@@ -472,23 +308,15 @@ function VocabularyContent({ vocabulary }) {
 
     // Toggle learned status with loading and alert
     const toggleLearned = async (id) => {
+        setLoadingButtonId(id);
+        setIsButtonLoading(true);
         try {
-            setLoadingButtonId(id);
-            setIsButtonLoading(true);
-            const response = await axios.post(route('user.belajar.update-user-kosakata'), { 
-                id: id
-            });
-            
+            const response = await axios.post(route('user.belajar.update-user-kosakata'), { id });
             if (response.data.success) {
                 setAlertMessage('Status belajar berhasil diperbarui');
-                // Refresh data without resetting pagination
-                const updatedVocab = vocabList.map(item => 
-                    item.id === id ? { ...item, isLearned: !item.isLearned } : item
-                );
-                setVocabList(updatedVocab);
+                setVocabList((prev) => prev.map(item => item.id === id ? { ...item, isLearned: !item.isLearned } : item));
             }
         } catch (error) {
-            console.error(error);
             setAlertMessage('Gagal mengubah status belajar');
         } finally {
             setIsButtonLoading(false);
@@ -556,11 +384,29 @@ function VocabularyContent({ vocabulary }) {
         }
     };
 
-    const toggleTodayFavorite = () => {
-        setTodayVocabFavorite(!todayVocabFavorite);
-        if (todayVocab) {
-            toggleFavorite(todayVocab.id);
+    const toggleTodayFavorite = async () => {
+        if (!todayVocab) return;
+        setLoadingButtonId(todayVocab.id);
+        setIsButtonLoading(true);
+        try {
+            const response = await axios.post(route('user.belajar.update-user-kosakata-favorite'), { id: todayVocab.id });
+            if (response.data.success) {
+                setAlertMessage('Kosakata berhasil ditandai sebagai favorit');
+                setTodayVocab({ ...todayVocab, isFavorite: !todayVocab.isFavorite });
+                setFavoriteTotal((prev) => todayVocab.isFavorite ? prev - 1 : prev + 1);
+            }
+        } catch (error) {
+            setAlertMessage('Gagal mengubah status favorit');
+        } finally {
+            setIsButtonLoading(false);
+            setLoadingButtonId(null);
         }
+    };
+
+    // Overlay/alert yang hanya bisa ditutup dengan tombol, lalu refresh halaman
+    const handleAlertClose = () => {
+        setAlertMessage(null);
+        window.location.reload();
     };
 
     return (
@@ -571,7 +417,7 @@ function VocabularyContent({ vocabulary }) {
                 {alertMessage && (
                     <Alert 
                         message={alertMessage} 
-                        onClose={() => setAlertMessage(null)} 
+                        onClose={handleAlertClose} 
                     />
                 )}
             </AnimatePresence>
@@ -674,31 +520,22 @@ function VocabularyContent({ vocabulary }) {
                         transition={{ duration: 0.5 }}
                         className="mb-12"
                     >
-                        <Card className="overflow-hidden border border-primary/20 relative transition-all duration-300 ease-in-out hover:shadow-lg hover:scale-[1.01]">
-                            {/* Background gradient dari kanan ke kiri */}
+                        <Card
+                            className="overflow-hidden border border-primary/20 relative transition-all duration-300 ease-in-out hover:shadow-lg hover:scale-[1.01]"
+                        >
                             <div
                                 className={`absolute inset-0 -z-10 transition-all duration-500 ease-in-out ${
-                                    todayVocabFavorite
-                                        ? "bg-gradient-to-r from-yellow-500/10 via-primary/5 to-yellow-500/10"
+                                    todayVocab.isFavorite
+                                        ? "bg-gradient-to-r from-yellow-500/10 via-primary/5 to-yellow-500/10 z-[100]"
                                         : "bg-gradient-to-l from-primary/15 to-transparent"
                                 }`}
                             ></div>
-
                             <CardHeader className="pb-0">
                                 <div className="flex justify-between items-center">
                                     <CardTitle className="text-sm font-medium flex items-center">
                                         <Sparkles className="w-4 h-4 mr-2 text-primary" />
                                         Kosakata Hari Ini
                                     </CardTitle>
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-xs text-muted-foreground">
-                                            {Math.round(progress)}% Dipelajari
-                                        </span>
-                                        <Progress
-                                            value={progress}
-                                            className="w-24 h-2"
-                                        />
-                                    </div>
                                 </div>
                             </CardHeader>
 
@@ -734,18 +571,14 @@ function VocabularyContent({ vocabulary }) {
                                         </div>
 
                                         <div className="flex flex-wrap gap-3 justify-center">
-                                            <Button
-                                                className="gap-2 rounded-full bg-primary hover:bg-primary/90 text-white"
-                                                onClick={() =>
-                                                    toggleLearned(todayVocab.id)
-                                                }
-                                            >
-                                                <BookOpenCheck size={18} />
-                                                <Link href={`/dashboard/kosakata/detail-kosakata/${todayVocab.id}`}>
+                                            <Link href={`/dashboard/kosakata/detail-kosakata/${todayVocab.id}`}>
+                                                <Button
+                                                    className="gap-2 rounded-full bg-primary hover:bg-primary/90 text-white"
+                                                >
+                                                    <BookOpenCheck size={18} />
                                                     Pelajari Sekarang
-                                                </Link>
-                                            </Button>
-
+                                                </Button>
+                                            </Link>
                                             <Button
                                                 variant="outline"
                                                 className={`gap-2 rounded-full transition-all duration-300 ${
@@ -753,11 +586,7 @@ function VocabularyContent({ vocabulary }) {
                                                         ? "bg-primary text-primary-foreground border-primary"
                                                         : "border-primary/20 hover:bg-primary/10 hover:text-primary"
                                                 }`}
-                                                onClick={() =>
-                                                    handleClick(
-                                                        todayVocab.audio
-                                                    )
-                                                }
+                                                onClick={() => handleClick(todayVocab.audio)}
                                                 disabled={isPlaying}
                                             >
                                                 <Volume2
@@ -946,27 +775,19 @@ function VocabularyContent({ vocabulary }) {
                                     <div>
                                         <div className="flex items-baseline gap-1">
                                             <div className="text-3xl font-bold">
-                                                {streakDays}
+                                                {favoriteTotal}
                                             </div>
                                             <div className="text-xs text-muted-foreground">
-                                                hari
+                                                kata
                                             </div>
                                         </div>
                                         <div className="text-sm font-medium text-muted-foreground">
-                                            Streak Belajar
+                                            Kosakata Favorit
                                         </div>
-                                        <div className="flex gap-1 mt-2">
-                                            {[...Array(7)].map((_, i) => (
-                                                <div
-                                                    key={i}
-                                                    className={`h-1 flex-1 rounded-full ${
-                                                        i < streakDays
-                                                            ? "bg-yellow-500"
-                                                            : "bg-muted/50"
-                                                    }`}
-                                                ></div>
-                                            ))}
-                                        </div>
+                                        <Progress
+                                            value={100}
+                                            className="h-1 mt-2"
+                                        />
                                     </div>
                                 </CardContent>
                             </Card>
@@ -1366,9 +1187,6 @@ function VocabularyContent({ vocabulary }) {
                                                 <Link href={`/dashboard/kosakata/detail-kosakata/${item.id}`}>
                                                     <Button
                                                         className="w-full rounded-full bg-primary hover:bg-primary/90 gap-2 transition-all duration-300 hover:scale-105 hover:shadow-md"
-                                                        onClick={() =>
-                                                            toggleLearned(item.id)
-                                                        }
                                                     >
                                                         <BookOpen size={16} />{" "}
                                                         Pelajari Kosakata
@@ -1460,153 +1278,6 @@ function VocabularyContent({ vocabulary }) {
                                     }
                                     disabled={currentPage === totalPages}
                                     className="rounded-full h-9 w-9 hover:bg-primary/5"
-                                >
-                                    <ChevronRight size={16} />
-                                </Button>
-                            </CardContent>
-                        </Card>
-                    </motion.div>
-                )}
-
-                {/* Jalur Belajar Kosakata - Ditingkatkan dengan animasi */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.5 }}
-                    className="mb-12"
-                >
-                    <LearningPath />
-                </motion.div>
-
-                {/* Elemen tambahan di bawah list kosakata */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.7 }}
-                    className="mb-12 grid grid-cols-1 lg:grid-cols-2 gap-6"
-                >
-                    {/* Tips Belajar */}
-                    <Card className="border border-primary/10 transition-all duration-300 ease-in-out hover:shadow-md hover:scale-[1.01] hover:bg-yellow-500/[0.01]">
-                        <CardContent className="p-6">
-                            <div className="flex items-start gap-4">
-                                <div className="bg-yellow-500/10 p-3 rounded-full">
-                                    <Lightbulb className="text-yellow-500 h-6 w-6" />
-                                </div>
-                                <div>
-                                    <h3 className="text-lg font-medium mb-2">
-                                        Tips Belajar
-                                    </h3>
-                                    <p className="text-muted-foreground text-sm">
-                                        Ulangi kosakata keras-keras 3x setiap
-                                        hari agar lebih cepat hafal. Gunakan
-                                        dalam kalimat sederhana untuk memperkuat
-                                        ingatan.
-                                    </p>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    {/* Statistik Belajar */}
-                    <Card className="border border-primary/10 transition-all duration-300 ease-in-out hover:shadow-md hover:scale-[1.01] hover:bg-primary/[0.01]">
-                        <CardContent className="p-6">
-                            <div className="flex items-start gap-4">
-                                <div className="bg-primary/10 p-3 rounded-full">
-                                    <Zap className="text-primary h-6 w-6" />
-                                </div>
-                                <div>
-                                    <h3 className="text-lg font-medium mb-2">
-                                        Statistik Belajar
-                                    </h3>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="flex items-center gap-2">
-                                            <Repeat className="text-primary h-4 w-4" />
-                                            <div>
-                                                <div className="text-sm font-medium">
-                                                    {streakDays} Hari
-                                                </div>
-                                                <div className="text-xs text-muted-foreground">
-                                                    Streak Belajar
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <Clock className="text-primary h-4 w-4" />
-                                            <div>
-                                                <div className="text-sm font-medium">
-                                                    {lastStudied}
-                                                </div>
-                                                <div className="text-xs text-muted-foreground">
-                                                    Terakhir Belajar
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </motion.div>
-
-                {/* Pagination */}
-                {totalPages > 1 && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.6 }}
-                        className="flex justify-center mb-12"
-                    >
-                        <Card className="border border-primary/10 inline-block">
-                            <CardContent className="p-2 flex items-center gap-1">
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    onClick={() =>
-                                        setCurrentPage((prev) =>
-                                            Math.max(prev - 1, 1)
-                                        )
-                                    }
-                                    disabled={currentPage === 1}
-                                    className="rounded-full h-9 w-9"
-                                >
-                                    <ChevronLeft size={16} />
-                                </Button>
-
-                                <div className="flex gap-1">
-                                    {Array.from(
-                                        { length: totalPages },
-                                        (_, i) => i + 1
-                                    ).map((page) => (
-                                        <Button
-                                            key={page}
-                                            variant={
-                                                currentPage === page
-                                                    ? "default"
-                                                    : "ghost"
-                                            }
-                                            size="icon"
-                                            onClick={() => setCurrentPage(page)}
-                                            className={`rounded-full h-9 w-9 ${
-                                                currentPage === page
-                                                    ? "bg-primary text-primary-foreground"
-                                                    : ""
-                                            }`}
-                                        >
-                                            {page}
-                                        </Button>
-                                    ))}
-                                </div>
-
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    onClick={() =>
-                                        setCurrentPage((prev) =>
-                                            Math.min(prev + 1, totalPages)
-                                        )
-                                    }
-                                    disabled={currentPage === totalPages}
-                                    className="rounded-full h-9 w-9"
                                 >
                                     <ChevronRight size={16} />
                                 </Button>
@@ -1915,11 +1586,15 @@ const Share = ({ size, className }) => {
 
 // Main component at the end
 export default function KosakataIndex() {
-    const { sample_vocabulary } = usePage().props;
+    const { sample_vocabulary, today_vocabulary, favorite_count } = usePage().props;
 
     return (
         <Dashboard>
-            <VocabularyContent vocabulary={sample_vocabulary} />
+            <VocabularyContent 
+                vocabulary={sample_vocabulary} 
+                todayVocabulary={today_vocabulary}
+                favoriteCount={favorite_count}
+            />
         </Dashboard>
     );
 }

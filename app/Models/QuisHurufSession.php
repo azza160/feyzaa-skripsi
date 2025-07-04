@@ -10,6 +10,10 @@ class QuisHurufSession extends Model
     use HasFactory;
     protected $table = 'quis_huruf_sessions';
     protected $fillable = ['id_user', 'level', 'jenis_huruf', 'waktu_max', 'started_at', 'ended_at', 'total_exp', 'total_benar'];
+    protected $casts = [
+        'started_at' => 'datetime',
+        'ended_at' => 'datetime',
+    ];
 
     public function user()
     {

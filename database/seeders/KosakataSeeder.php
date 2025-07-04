@@ -80,57 +80,55 @@ class KosakataSeeder extends Seeder
                 'catatan' => 'Sering digunakan dalam konteks makan atau minum. Contoh: 食べる (makan), 飲む (minum).',
                 'audio' => 'https://res.cloudinary.com/dzozxilf6/video/upload/v1748799322/taberu-6_xjxan6.mp3',
             ],
-          // iku
-[
-    'id' => 'KOSA-007',
-    'kanji' => '行く',
-    'furigana' => 'いく',
-    'romaji' => 'iku',
-    'arti' => 'pergi',
-    'deskripsi' => 'Digunakan untuk menyatakan tindakan pergi ke suatu tempat.',
-    'catatan' => 'Sering digunakan dengan partikel 「へ」atau「に」untuk menunjukkan arah atau tujuan. Contoh: 学校へ行く (Pergi ke sekolah).',
-    'audio' => 'https://res.cloudinary.com/dzozxilf6/video/upload/v1748799515/iku-7_yr7npc.mp3',
-],
+            // iku
+            [
+                'id' => 'KOSA-007',
+                'kanji' => '行く',
+                'furigana' => 'いく',
+                'romaji' => 'iku',
+                'arti' => 'pergi',
+                'deskripsi' => 'Digunakan untuk menyatakan tindakan pergi ke suatu tempat.',
+                'catatan' => 'Sering digunakan dengan partikel 「へ」atau「に」untuk menunjukkan arah atau tujuan. Contoh: 学校へ行く (Pergi ke sekolah).',
+                'audio' => 'https://res.cloudinary.com/dzozxilf6/video/upload/v1748799515/iku-7_yr7npc.mp3',
+            ],
 
-// miru
-[
-    'id' => 'KOSA-008',
-    'kanji' => '見る',
-    'furigana' => 'みる',
-    'romaji' => 'miru',
-    'arti' => 'melihat, menonton',
-    'deskripsi' => 'Digunakan untuk menyatakan tindakan melihat atau menonton sesuatu.',
-    'catatan' => 'Biasa dipakai untuk kegiatan seperti menonton TV, film, atau melihat sesuatu. Contoh: 映画を見る (Menonton film).',
-    'audio' => 'https://res.cloudinary.com/dzozxilf6/video/upload/v1748799596/miru-8_axlaeh.mp3',
-],
+            // miru
+            [
+                'id' => 'KOSA-008',
+                'kanji' => '見る',
+                'furigana' => 'みる',
+                'romaji' => 'miru',
+                'arti' => 'melihat, menonton',
+                'deskripsi' => 'Digunakan untuk menyatakan tindakan melihat atau menonton sesuatu.',
+                'catatan' => 'Biasa dipakai untuk kegiatan seperti menonton TV, film, atau melihat sesuatu. Contoh: 映画を見る (Menonton film).',
+                'audio' => 'https://res.cloudinary.com/dzozxilf6/video/upload/v1748799596/miru-8_axlaeh.mp3',
+            ],
 
-// kuru
-[
-    'id' => 'KOSA-009',
-    'kanji' => '来る',
-    'furigana' => 'くる',
-    'romaji' => 'kuru',
-    'arti' => 'datang',
-    'deskripsi' => 'Digunakan untuk menyatakan tindakan datang ke suatu tempat.',
-    'catatan' => 'Kata kerja tidak beraturan. Digunakan saat subjek mendekati pembicara. Contoh: 友だちが来る (Teman datang).',
-    'audio' => 'https://res.cloudinary.com/dzozxilf6/video/upload/v1748799681/kuru-9_jawwsz.mp3',
-],
+            //kuru
+            [
+                    'id' => 'KOSA-009',
+                    'kanji' => '来る',
+                    'furigana' => 'くる',
+                    'romaji' => 'kuru',
+                    'arti' => 'datang',
+                    'deskripsi' => 'Digunakan untuk menyatakan tindakan datang ke suatu tempat.',
+                    'catatan' => 'Kata kerja tidak beraturan. Digunakan saat subjek mendekati pembicara. Contoh: 友だちが来る (Teman datang).',
+                    'audio' => 'https://res.cloudinary.com/dzozxilf6/video/upload/v1748799681/kuru-9_jawwsz.mp3',
+            ],
 
-// suru
-[
-    'id' => 'KOSA-010',
-    'kanji' => 'する',
-    'furigana' => 'する',
-    'romaji' => 'suru',
-    'arti' => 'melakukan',
-    'deskripsi' => 'Kata kerja serbaguna yang digunakan untuk menyatakan tindakan melakukan sesuatu.',
-    'catatan' => 'Kata kerja tidak beraturan. Sering digunakan dengan kata benda untuk membentuk kata kerja, misalnya 勉強する (belajar), 運動する (berolahraga).',
-    'audio' => 'https://res.cloudinary.com/dzozxilf6/video/upload/v1748799785/suru-10_ctxbod.mp3',
-],
+            // suru
+            [
+                'id' => 'KOSA-010',
+                'kanji' => 'する',
+                'furigana' => 'する',
+                'romaji' => 'suru',
+                'arti' => 'melakukan',
+                'deskripsi' => 'Kata kerja serbaguna yang digunakan untuk menyatakan tindakan melakukan sesuatu.',
+                'catatan' => 'Kata kerja tidak beraturan. Sering digunakan dengan kata benda untuk membentuk kata kerja, misalnya 勉強する (belajar), 運動する (berolahraga).',
+                'audio' => 'https://res.cloudinary.com/dzozxilf6/video/upload/v1748799785/suru-10_ctxbod.mp3',
+            ],
 
             
-
-         
         ]);
     }
 }
