@@ -78,7 +78,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/quis/{sessionId}',[QuisController::class,'QuisShow'])->name('quis');
     Route::post('/dashboard/quis/save-answer',[QuisController::class,'saveAnswer'])->name('save-quiz-answer');
     Route::get('/dashboard/review-quis/{sessionId}',[QuisController::class,'ReviewQuisShow'])->name('review-quis');
-    Route::get('/dashboard/review-quis/{sessionId}',[QuisController::class,'ReviewQuisShow'])->name('review-quis');
+   
     
 
     //route quis kosakata

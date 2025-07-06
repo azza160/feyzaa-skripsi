@@ -58,7 +58,7 @@ class QuisController extends Controller
         $this->cleanupActiveQuisSession();
         $user = Auth::user();
         //ambil progress belajar user huruf & check kategori huruf
-        $progressHuruf = $user->hurufs()->where('is_learned', true)->pluck('jenis_huruf') ;
+        $progressHuruf = $user->hurufs()->wherePivot('is_learned', true)->pluck('jenis_huruf') ;
        
         //check yang jumlah jenisnya hiragana atau katakana
         $jumlahHiragana = $progressHuruf->countBy()->get('hiragana', 0);
@@ -79,7 +79,7 @@ class QuisController extends Controller
         $this->cleanupActiveQuisSession();
         $user = Auth::user();
         //ambil progress belajar user huruf & check kategori huruf
-        $progressHuruf = $user->hurufs()->where('is_learned', true)->where('jenis_huruf', $jenis)->count();
+        $progressHuruf = $user->hurufs()->wherePivot('is_learned', true)->where('jenis_huruf', $jenis)->count();
         
         return Inertia::render('User/Pilih-Level-Quis',[
             'user' => $user,
@@ -88,6 +88,7 @@ class QuisController extends Controller
             'maxExp' => $this->calculateNextLevelExp($user->level),
             'jenis' => $jenis,
             'progressHuruf' => $progressHuruf,
+            'isRandomMode' => true, // Enable random mode
         ]);
     }
 
@@ -96,14 +97,43 @@ class QuisController extends Controller
         $user = Auth::user();
         $jenis = $request->query('jenis');
         $level = $request->query('level');
+        $mode = $request->query('mode', 'manual'); // Default to manual mode
+        
+        // Get user's progress for this type of letter
+        $progressHuruf = $user->hurufs()->wherePivot('is_learned', true)->where('jenis_huruf', $jenis)->count();
+        
+        // Validate access based on level and mode
+        $minLettersRequired = match($level) {
+            'beginner' => 10,
+            'intermediate' => 46,
+            'advanced' => 71,
+            default => 10,
+        };
+        
+        // For intermediate and advanced levels, both modes require letter requirements
+        // For beginner level, only manual mode requires letter requirements
+        if ($level !== 'beginner' || $mode === 'manual') {
+            if ($progressHuruf < $minLettersRequired) {
+                return redirect()->back()->with('error', "Untuk level $level, kamu perlu mempelajari minimal $minLettersRequired huruf terlebih dahulu.");
+            }
+        }
        
-        // Base query for learned letters
-        $query = $user->hurufs()
-            ->wherePivot('is_learned', true)
-            ->where('jenis_huruf', $jenis)
-            ->with(['contohPenggunaans' => function($query) {
-                $query->take(1); // Get only first example
-            }]);
+        // Base query for letters
+        if ($mode === 'random') {
+            // For random mode, get all letters regardless of learning status
+            $query = \App\Models\Huruf::where('jenis_huruf', $jenis)
+                ->with(['contohPenggunaans' => function($query) {
+                    $query->take(1); // Get only first example
+                }]);
+        } else {
+            // For manual mode, get only learned letters
+            $query = $user->hurufs()
+                ->wherePivot('is_learned', true)
+                ->where('jenis_huruf', $jenis)
+                ->with(['contohPenggunaans' => function($query) {
+                    $query->take(1); // Get only first example
+                }]);
+        }
 
         // Filter by level
         switch($level) {
@@ -155,7 +185,22 @@ class QuisController extends Controller
             'count' => count($transformedLetters)
         ]);
 
-    
+        // If random mode, we'll handle letter selection differently
+        if ($mode === 'random') {
+            // For random mode, we'll show a different interface
+            return Inertia::render('User/Pilih-List-Huruf-Quis', [
+                'user' => $user,
+                'currentLevel' => $user->level,
+                'currentExp' => $user->exp,
+                'maxExp' => $this->calculateNextLevelExp($user->level),
+                'letters' => $transformedLetters,
+                'letterGroups' => $letterGroups,
+                'jenis' => $jenis,
+                'level' => $level,
+                'mode' => $mode,
+                'isRandomMode' => true
+            ]);
+        }
 
         return Inertia::render('User/Pilih-List-Huruf-Quis', [
             'user' => $user,
@@ -165,7 +210,9 @@ class QuisController extends Controller
             'letters' => $transformedLetters,
             'letterGroups' => $letterGroups,
             'jenis' => $jenis,
-            'level' => $level
+            'level' => $level,
+            'mode' => $mode,
+            'isRandomMode' => false
         ]);
     }
 
@@ -174,15 +221,17 @@ class QuisController extends Controller
         $this->cleanupActiveQuisSession();
         //validasi request
         $request->validate([
-            'letters' => 'required|array',
+            'letters' => $request->mode === 'random' ? 'nullable|array' : 'required|array',
             'jenis' => 'required|string|in:hiragana,katakana',
             'level' => 'required|string|in:beginner,intermediate,advanced',
+            'mode' => 'nullable|string|in:manual,random',
         ]);
         
         //simpan request
-        $letters = $request->letters;
+        $letters = $request->letters ?? [];
         $jenis = $request->jenis;
         $level = $request->level;
+        $mode = $request->mode ?? 'manual';
 
         
         //tentukan waktu maksimal
@@ -198,6 +247,7 @@ class QuisController extends Controller
             'id_user' => $user->id,
             'level' => $level,
             'jenis_huruf' => $jenis,
+            'mode' => $mode,
             'waktu_max' => $waktu_maximal,
             'started_at' => now(),
             'ended_at' => null,
@@ -206,10 +256,19 @@ class QuisController extends Controller
         ]);
 
         //ambil semua soal sesuai huruf,level dan jenis
-        $soalList = SoalQuisHuruf::whereIn('huruf_id', $letters)
-            ->where('jenis', $jenis)
-            ->where('level', $level)
-            ->get();
+        if ($mode === 'random') {
+            // For random mode, get ALL available questions for the level and type
+            // regardless of whether user has learned the letters or not
+            $soalList = SoalQuisHuruf::where('jenis', $jenis)
+                ->where('level', $level)
+                ->get();
+        } else {
+            // For manual mode, get questions only for selected letters
+            $soalList = SoalQuisHuruf::whereIn('huruf_id', $letters)
+                ->where('jenis', $jenis)
+                ->where('level', $level)
+                ->get();
+        }
 
         //acak urutan soal
         $soalList = $soalList->shuffle();
@@ -220,9 +279,16 @@ class QuisController extends Controller
         $idSoal = [];
 
         foreach($soalList as $soal){
-            //skip jika huruf_id sudah diproses
-            if(in_array($soal->huruf_id, $processedHurufIds)){
-                continue;
+            if ($mode === 'random') {
+                // For random mode, take the first 10 questions regardless of letter
+                if (count($transformedSoal) >= 10) {
+                    break;
+                }
+            } else {
+                // For manual mode, skip if huruf_id already processed
+                if(in_array($soal->huruf_id, $processedHurufIds)){
+                    continue;
+                }
             }
 
             //simpan id soal yang terpilih
@@ -259,12 +325,14 @@ class QuisController extends Controller
                 'options' => $option,
             ];
 
-            //tandai huruf_id sudah diproses
-            $processedHurufIds[] = $soal->huruf_id;
+            //tandai huruf_id sudah diproses (only for manual mode)
+            if ($mode !== 'random') {
+                $processedHurufIds[] = $soal->huruf_id;
+            }
         }
 
         //masukan data idSoal terpilih ke table quis_huruf_session_soals
-        foreach($idSoal as $id){
+        foreach($idSoal as $index => $id){
             //cari record yang sudah ada
             $existingRecord = QuisHurufSessionSoal::where('id_user', $user->id)
             ->where('session_id', $session->id)
@@ -279,6 +347,31 @@ class QuisController extends Controller
 
                 $attempt = $totalAttempt + 1;
 
+                // Calculate EXP based on attempt and level
+                $exp = match($level){
+                    'beginner' => match($attempt){
+                        1 => 9,
+                        2 => 6,
+                        3 => 3,
+                        default => 0,
+                    },
+                    'intermediate' => match($attempt){
+                        1 => 15,
+                        2 => 10,
+                        3 => 5,
+                        default => 0,
+                    },
+                    'advanced' => match($attempt){
+                        1 => 21,
+                        2 => 14,
+                        3 => 7,
+                        default => 0,
+                    },
+                    default => 0,
+                };
+
+
+
                 $sessionSoal = QuisHurufSessionSoal::create([
                     'id_user' => $user->id,
                     'session_id' => $session->id,
@@ -286,21 +379,12 @@ class QuisController extends Controller
                     'attempt' => $attempt,
                     'user_answer' => null,
                     'is_correct' => false,
+                    'exp' => $exp,
                 ]);
-            }
-        }
 
-        //modfikasi transformedSoal dengan menambahkan field exp
-        foreach($transformedSoal as &$soal){
-            //tentukan exp berdasarkan level
-            $exp = match($level){
-                'beginner' => 9,
-                'intermediate' => 15,
-                'advanced' => 21,
-                default => 9,
-            };
-            //tambahkan field exp ke soal
-            $soal['exp'] = $exp;
+                // Update transformedSoal with the calculated EXP
+                $transformedSoal[$index]['exp'] = $exp;
+            }
         }
 
         return redirect()->route('quis', ['sessionId' => $session->id]);
@@ -324,6 +408,11 @@ class QuisController extends Controller
         ->where('session_id', $sessionId)
         ->where('id_user', $user->id)
         ->get();
+
+        // Shuffle questions for random mode
+        if ($session->mode === 'random') {
+            $sessionSoals = $sessionSoals->shuffle();
+        }
 
         //transform data pivot menjadi format yang sama dengan transformedSoal
         $transformedSoal = [];
@@ -355,34 +444,10 @@ class QuisController extends Controller
                 ],
             ];
 
-            //tentukan exp berdasarkan level dan attempt
+            // Use the stored EXP value from the database
+            // The EXP value is already calculated with the correct multiplier when the session was created
+            $exp = $sessionSoal->exp;
             $attempt = $sessionSoal->attempt;
-            $level = $session->level;
-            $exp = match($level){
-                'beginner' => match($attempt){
-                    1 => 9,
-                    2 => 6,
-                    3 => 3,
-                    default => 0,
-                },
-                'intermediate' => match($attempt){
-                    1 => 15,
-                    2 => 10,
-                    3 => 5,
-                    default => 0,
-                },
-                'advanced' => match($attempt){
-                    1 => 21,
-                    2 => 14,
-                    3 => 7,
-                    default => 0,
-                },
-                default => 0,
-            };
-
-            $sessionSoal->update([
-                'exp' => $exp,
-            ]);
 
             $transformedSoal[] = [
                 'id' => $soal->id,
@@ -436,12 +501,75 @@ class QuisController extends Controller
         ->where('id_user', $user->id)
         ->get();
 
-        //hitung total exp berdasarkan soal yang dijawab benar
-        $totalExp = $sessionSoals->where('is_correct', true)->sum('exp');
+        //hitung total exp berdasarkan soal yang dijawab benar dengan perhitungan ulang
+        $totalExp = 0;
+        foreach ($sessionSoals as $sessionSoal) {
+            if ($sessionSoal->is_correct) {
+                $attempt = $sessionSoal->attempt;
+                $level = $session->level;
+                $mode = $session->mode;
+                
+                $exp = match($level){
+                    'beginner' => match($attempt){
+                        1 => 9,
+                        2 => 6,
+                        3 => 3,
+                        default => 0,
+                    },
+                    'intermediate' => match($attempt){
+                        1 => 15,
+                        2 => 10,
+                        3 => 5,
+                        default => 0,
+                    },
+                    'advanced' => match($attempt){
+                        1 => 21,
+                        2 => 14,
+                        3 => 7,
+                        default => 0,
+                    },
+                    default => 0,
+                };
+                
+                $totalExp += $exp;
+            }
+        }
 
         // Transform data untuk frontend
-        $answers = $sessionSoals->map(function($sessionSoal) {
+        $answers = $sessionSoals->map(function($sessionSoal) use ($session) {
             $soal = $sessionSoal->soal;
+            
+            // Recalculate EXP to ensure it's correct
+            $attempt = $sessionSoal->attempt;
+            $level = $session->level;
+            $mode = $session->mode;
+            
+            $exp = match($level){
+                'beginner' => match($attempt){
+                    1 => 9,
+                    2 => 6,
+                    3 => 3,
+                    default => 0,
+                },
+                'intermediate' => match($attempt){
+                    1 => 15,
+                    2 => 10,
+                    3 => 5,
+                    default => 0,
+                },
+                'advanced' => match($attempt){
+                    1 => 21,
+                    2 => 14,
+                    3 => 7,
+                    default => 0,
+                },
+                default => 0,
+            };
+            
+
+            
+
+            
             return [
                 'id' => $soal->id,
                 'question' => $soal->question,
@@ -455,7 +583,7 @@ class QuisController extends Controller
                     ['id' => 'c', 'text' => $soal->option_c],
                     ['id' => 'd', 'text' => $soal->option_d],
                 ],
-                'expGained' => $sessionSoal->exp,
+                'expGained' => $exp, // Use recalculated EXP instead of stored EXP
             ];
         })->values()->toArray();
 
@@ -470,30 +598,41 @@ class QuisController extends Controller
             $timeSpent = $session->waktu_max;
         }
 
-        // Check level up
-        $oldLevel = $user->level;
-        $oldExp = $user->exp;
-        $newExp = $oldExp + $totalExp;
-        $nextLevelExp = $this->calculateNextLevelExp($oldLevel);
-        $leveledUp = false;
-        $newLevel = $oldLevel;
-        $unlockedFeatures = [];
+        // Check if session is already completed and EXP already added
+        $sessionAlreadyCompleted = $session->ended_at !== null;
+        
+        if (!$sessionAlreadyCompleted) {
+            // Only add EXP and update user if session is not completed yet
+            $oldLevel = $user->level;
+            $oldExp = $user->exp;
+            $newExp = $oldExp + $totalExp;
+            $nextLevelExp = $this->calculateNextLevelExp($oldLevel);
+            $leveledUp = false;
+            $newLevel = $oldLevel;
+            $unlockedFeatures = [];
 
-        if ($newExp >= $nextLevelExp) {
-            $leveledUp = true;
-            $newLevel = $oldLevel + 1;
-            $unlockedFeatures = $this->getUnlockedFeatures($newLevel);
-            $user->level = $newLevel;
+            if ($newExp >= $nextLevelExp) {
+                $leveledUp = true;
+                $newLevel = $oldLevel + 1;
+                $unlockedFeatures = $this->getUnlockedFeatures($newLevel);
+                $user->level = $newLevel;
+            }
+            $user->exp = $newExp;
+            $user->save();
+
+            // Update session with total exp and mark as completed
+            $session->update([
+                'total_exp' => $totalExp,
+                'total_benar' => $correctAnswers,
+                'ended_at' => now()
+            ]);
+        } else {
+            // Session already completed, just get the data for display
+            $leveledUp = false;
+            $newLevel = $user->level;
+            $unlockedFeatures = [];
+            $nextLevelExp = $this->calculateNextLevelExp($user->level);
         }
-        $user->exp = $newExp;
-        $user->save();
-
-        // Update session with total exp
-        $session->update([
-            'total_exp' => $totalExp,
-            'total_benar' => $correctAnswers,
-            'ended_at' => now()
-        ]);
 
         // Prepare quiz results data
         $quizResults = [
@@ -501,9 +640,9 @@ class QuisController extends Controller
             'correctAnswers' => $correctAnswers,
             'timeSpent' => $timeSpent,
             'percentage' => $percentage,
-            'totalScore' => $totalExp,
+            'totalScore' => $sessionAlreadyCompleted ? $session->total_exp : $totalExp,
             'answers' => $answers,
-            'expGained' => $totalExp,
+            'expGained' => $sessionAlreadyCompleted ? $session->total_exp : $totalExp,
             'currentExp' => $user->exp,
             'nextLevelExp' => $nextLevelExp,
             'leveledUp' => $leveledUp,
@@ -539,14 +678,48 @@ class QuisController extends Controller
         $soal = SoalQuisHuruf::findOrFail($request->soalId);
         $isCorrect = $soal->correct_answer === $request->answer;
 
+        // Get session info for EXP calculation
+        $session = QuisHurufSession::find($request->sessionId);
+        
+        // Calculate EXP based on attempt and level
+        $attempt = $sessionSoal->attempt;
+        $level = $session->level;
+        $mode = $session->mode;
+        
+        $exp = match($level){
+            'beginner' => match($attempt){
+                1 => 9,
+                2 => 6,
+                3 => 3,
+                default => 0,
+            },
+            'intermediate' => match($attempt){
+                1 => 15,
+                2 => 10,
+                3 => 5,
+                default => 0,
+            },
+            'advanced' => match($attempt){
+                1 => 21,
+                2 => 14,
+                3 => 7,
+                default => 0,
+            },
+            default => 0,
+        };
+        
+
+
         $sessionSoal->update([
             'user_answer' => $request->answer,
-            'is_correct' => $isCorrect
+            'is_correct' => $isCorrect,
+            'exp' => $exp
         ]);
 
         return response()->json([
             'success' => true,
-            'is_correct' => $isCorrect
+            'is_correct' => $isCorrect,
+            'exp_gained' => $isCorrect ? $exp : 0
         ]);
     }
 

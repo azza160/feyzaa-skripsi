@@ -64,7 +64,7 @@ const levels = [
     color: "from-emerald-400 to-green-500",
     bgColor: "bg-green-50 dark:bg-green-900/20",
     textColor: "text-green-700 dark:text-green-300",
-    minLettersRequired: 0,
+    minLettersRequired: 10,
     timeLimit: "60 detik",
     questions: "10 soal",
     features: [
@@ -117,15 +117,7 @@ const levels = [
   },
 ]
 
-const userProgress = {
-  learnedLettersCount: 15,
-  currentLevel: "beginner",
-  completedLevels: ["beginner"],
-  achievements: [
-    { id: "first_quiz", name: "Quiz Pertama", icon: Star },
-    { id: "streak_3", name: "3 Hari Berturut-turut", icon: Flame },
-  ],
-}
+
 
 export default function QuizLevelSelect() {
   const [isPageLoading, setIsPageLoading] = useState(true)
@@ -133,7 +125,8 @@ export default function QuizLevelSelect() {
   const [selectedLevel, setSelectedLevel] = useState(null)
   const [showDialog, setShowDialog] = useState(false)
   const [dialogLevel, setDialogLevel] = useState(null)
-  const { jenis, progressHuruf } = usePage().props
+  const [showModeSelection, setShowModeSelection] = useState(false)
+  const { jenis, progressHuruf, isRandomMode = false } = usePage().props
 
   // Simulate initial page load
   useEffect(() => {
@@ -144,25 +137,201 @@ export default function QuizLevelSelect() {
   }, [])
 
   const handleLevelSelect = (level) => {
+    // Special case for Beginner level: random mode doesn't require letters
+    if (level.id === 'beginner' && isRandomMode) {
+      setSelectedLevel(level.id)
+      setShowModeSelection(true)
+      return
+    }
+    
+    // For all other cases, check letter requirements
     if (progressHuruf < level.minLettersRequired) {
       setDialogLevel(level)
       setShowDialog(true)
       return
     }
     setSelectedLevel(level.id)
+    setShowModeSelection(true)
   }
 
-  const handleContinue = () => {
-    if (selectedLevel) {
+  const handleModeSelect = (mode) => {
+    if (mode === 'manual') {
       router.visit(route('pilih-list-huruf-quis', {
         jenis: jenis,
         level: selectedLevel
       }));
+    } else if (mode === 'random') {
+      // For random mode, we'll create a special route or handle it differently
+      router.visit(route('pilih-list-huruf-quis', {
+        jenis: jenis,
+        level: selectedLevel,
+        mode: 'random'
+      }));
     }
+  }
+
+  const handleBackToLevel = () => {
+    setShowModeSelection(false)
+    setSelectedLevel(null)
   }
 
   const getSelectedLevelData = () => {
     return levels.find((level) => level.id === selectedLevel)
+  }
+
+  // Quiz Mode Selection Modal
+  const QuizModeModal = () => {
+    const quizModes = [
+      {
+        id: 'manual',
+        name: 'Pilih Huruf Manual',
+        description: 'Pilih sendiri huruf yang ingin diujikan. Kontrol penuh atas materi yang dipelajari.',
+        icon: Target,
+        color: 'from-blue-500 to-indigo-600',
+        features: [
+          'Pilih huruf spesifik yang ingin dilatih',
+          'Fokus pada area yang perlu diperbaiki',
+          'EXP standar sesuai level',
+          'Cocok untuk pemula yang ingin belajar bertahap'
+        ],
+        expMultiplier: 1,
+        timeBonus: 0
+      },
+      {
+        id: 'random',
+        name: 'Random Challenge Mode',
+        description: 'Tantangan dengan huruf acak! Soal dipilih secara otomatis oleh sistem.',
+        icon: Zap,
+        color: 'from-purple-500 to-pink-600',
+        features: [
+          'Huruf dipilih secara acak oleh sistem',
+          'EXP standar sesuai level',
+          'Waktu standar sesuai level',
+          'Cocok untuk yang ingin tantangan lebih'
+        ],
+        expMultiplier: 1,
+        timeBonus: 0
+      }
+    ]
+
+    return (
+      <Dialog open={showModeSelection} onOpenChange={setShowModeSelection}>
+        <DialogContent className="w-[95vw] max-w-4xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
+          <DialogHeader className="mb-4">
+            <DialogTitle className="text-xl sm:text-2xl font-bold text-center">
+              Pilih Mode Quiz 🎯
+            </DialogTitle>
+            <DialogDescription className="text-center text-sm sm:text-base">
+              {getSelectedLevelData()?.name} - {jenis}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="py-4 sm:py-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+              {quizModes.map((mode, index) => (
+                <motion.div
+                  key={mode.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="group cursor-pointer"
+                  onClick={() => handleModeSelect(mode.id)}
+                >
+                  <div className={cn(
+                    "relative overflow-hidden rounded-2xl bg-gradient-to-br transition-all duration-300 border-2 h-full",
+                    mode.color,
+                    "hover:scale-[1.02] hover:shadow-lg",
+                  )}>
+                    <div className="p-6 flex flex-col h-full">
+                      {/* Header */}
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+                            <mode.icon className="w-6 h-6 text-white" />
+                          </div>
+                          <div>
+                            <h3 className="text-xl font-bold text-white">{mode.name}</h3>
+                            {mode.id === 'random' && (
+                              <div className="flex items-center gap-1 mt-1">
+                                <Star className="w-3 h-3 text-yellow-300" />
+                                <span className="text-xs text-yellow-200">Bonus Mode</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      <p className="text-white/90 text-sm mb-6 flex-grow">{mode.description}</p>
+
+                      {/* Features */}
+                      <div className="space-y-2 mb-6">
+                        {mode.features.map((feature, i) => (
+                          <div key={i} className="bg-white/10 rounded-lg p-2 text-xs text-white/90">
+                            {feature}
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Bonus Info */}
+                      <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 text-center">
+                        <div className="flex items-center justify-center gap-4 text-white/90 text-sm">
+                          <div className="flex items-center gap-1">
+                            <Zap className="w-4 h-4 text-yellow-300" />
+                            <span>Lanjutkan</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Comparison Table */}
+            <div className="mt-6 bg-card/50 rounded-xl p-4 border">
+              <h4 className="font-semibold text-center mb-4 text-sm sm:text-base">Perbandingan Mode</h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs sm:text-sm">
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">EXP per Soal:</span>
+                    <span className="font-medium">Standar</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Waktu:</span>
+                    <span className="font-medium">{getSelectedLevelData()?.timeLimit}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Kontrol:</span>
+                    <span className="font-medium">Penuh</span>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">EXP per Soal:</span>
+                    <span className="font-medium">Standar</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Waktu:</span>
+                    <span className="font-medium">{getSelectedLevelData()?.timeLimit}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Kontrol:</span>
+                    <span className="font-medium">Sistem</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-center">
+            <Button variant="outline" onClick={handleBackToLevel}>
+              <ChevronRight className="w-4 h-4 mr-2 rotate-180" />
+              Kembali ke Pilih Level
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    )
   }
 
   return (
@@ -264,8 +433,10 @@ export default function QuizLevelSelect() {
                   {/* Level Cards */}
                   <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 mb-16">
                     {levels.map((level, index) => {
-                      const isLocked = progressHuruf < level.minLettersRequired
-                      const isSelected = selectedLevel === level.id
+                      // Special case for Beginner level: unlocked for random mode
+                      const isLocked = level.id === 'beginner' && isRandomMode 
+                        ? false 
+                        : progressHuruf < level.minLettersRequired
 
                       return (
                         <motion.div
@@ -281,7 +452,6 @@ export default function QuizLevelSelect() {
                               "relative overflow-hidden rounded-2xl bg-gradient-to-br transition-all duration-300 border-2 h-full",
                               level.color,
                               "hover:scale-[1.02] hover:shadow-lg",
-                              isSelected && "ring-2 ring-primary ring-offset-2",
                             )}
                           >
                             <CardContent className="p-6 flex flex-col h-full">
@@ -306,14 +476,23 @@ export default function QuizLevelSelect() {
                               {/* Progress Bar */}
                               <div className="mb-6">
                                 <div className="flex justify-between text-xs text-white/80 mb-1">
-                                  <span>Progress</span>
-                                  <span>{progressHuruf}/{level.minLettersRequired}</span>
+                                  <span>{level.id === 'beginner' && isRandomMode ? 'Status' : 'Progress'}</span>
+                                  <span>
+                                    {level.id === 'beginner' && isRandomMode 
+                                      ? 'Tersedia' 
+                                      : `${progressHuruf}/${level.minLettersRequired}`
+                                    }
+                                  </span>
                                 </div>
                                 <div className="h-2 bg-white/20 rounded-full overflow-hidden">
                                   <motion.div
                                     className="h-full bg-white/40 rounded-full"
                                     initial={{ width: 0 }}
-                                    animate={{ width: `${Math.min((progressHuruf / level.minLettersRequired) * 100, 100)}%` }}
+                                    animate={{ 
+                                      width: level.id === 'beginner' && isRandomMode 
+                                        ? "100%" 
+                                        : `${Math.min((progressHuruf / level.minLettersRequired) * 100, 100)}%` 
+                                    }}
                                     transition={{ duration: 0.5 }}
                                   />
                                 </div>
@@ -346,7 +525,7 @@ export default function QuizLevelSelect() {
                   </div>
 
                   {/* Selected Level Details */}
-                  {selectedLevel && (
+                  {selectedLevel && !showModeSelection && (
                     <motion.div
                       className="bg-card rounded-2xl p-8 border mb-16"
                       initial={{ opacity: 0, y: 20 }}
@@ -367,7 +546,10 @@ export default function QuizLevelSelect() {
                             <div>
                               <h3 className="text-2xl font-bold">Level {getSelectedLevelData()?.name}</h3>
                               <p className={cn("text-sm font-medium", getSelectedLevelData()?.textColor)}>
-                                {progressHuruf}/{getSelectedLevelData()?.minLettersRequired} huruf dikuasai
+                                {getSelectedLevelData()?.id === 'beginner' && isRandomMode 
+                                  ? 'Mode Random - Level tersedia tanpa ketentuan huruf' 
+                                  : `${progressHuruf}/${getSelectedLevelData()?.minLettersRequired} huruf dikuasai`
+                                }
                               </p>
                             </div>
                           </div>
@@ -385,12 +567,12 @@ export default function QuizLevelSelect() {
                         </div>
 
                         <div className="flex flex-col justify-center items-center gap-4">
-                          <Button size="lg" className="px-8 py-6 text-lg" onClick={handleContinue}>
-                            Lanjut ke Pemilihan Huruf
+                          <Button size="lg" className="px-8 py-6 text-lg" onClick={() => setShowModeSelection(true)}>
+                            Pilih Mode Quiz
                             <ArrowRight size={18} className="ml-2" />
                           </Button>
                           <p className="text-sm text-muted-foreground text-center">
-                            Kamu akan memilih huruf spesifik untuk diujikan
+                            Pilih mode yang sesuai dengan keinginanmu
                           </p>
                         </div>
                       </div>
@@ -403,6 +585,9 @@ export default function QuizLevelSelect() {
         </div>
       </AnimatePresence>
 
+      {/* Quiz Mode Selection Modal */}
+      <QuizModeModal />
+
       {/* Dialog */}
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
         <DialogContent className="sm:max-w-md">
@@ -411,22 +596,41 @@ export default function QuizLevelSelect() {
               <span className="w-8 h-8 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center text-amber-600 dark:text-amber-400">
                 {dialogLevel?.emoji}
               </span>
-              Level {dialogLevel?.name} Terkunci
+              {dialogLevel?.id === 'beginner' && isRandomMode ? 'Mode Random Tersedia' : `Level ${dialogLevel?.name} Terkunci`}
             </DialogTitle>
             <DialogDescription className="pt-4 text-base">
               <div className="space-y-4">
-                <p>
-                  Kamu baru mempelajari{" "}
-                  <span className="font-bold text-primary">{progressHuruf} huruf</span>, sedangkan
-                  untuk level ini kamu perlu menguasai minimal{" "}
-                  <span className="font-bold text-primary">{dialogLevel?.minLettersRequired} huruf</span>.
-                </p>
-                <div className="p-4 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-md">
-                  <p className="flex items-center gap-2 text-amber-700 dark:text-amber-400 font-medium">
-                    <Sparkles className="w-5 h-5" />
-                    Yuk belajar lebih banyak huruf dulu sebelum mencoba level ini!
-                  </p>
-                </div>
+                {dialogLevel?.id === 'beginner' && isRandomMode ? (
+                  <>
+                    <p>
+                      Mode Random untuk level Beginner memungkinkan kamu untuk mengakses level ini tanpa perlu mempelajari huruf terlebih dahulu.
+                    </p>
+                    <div className="p-4 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-md">
+                      <p className="flex items-center gap-2 text-amber-700 dark:text-amber-400 font-medium">
+                        <Sparkles className="w-5 h-5" />
+                        Sistem akan memilih soal secara acak dari semua soal yang tersedia!
+                      </p>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <p>
+                      Kamu baru mempelajari{" "}
+                      <span className="font-bold text-primary">{progressHuruf} huruf</span>, sedangkan
+                      untuk level ini kamu perlu menguasai minimal{" "}
+                      <span className="font-bold text-primary">{dialogLevel?.minLettersRequired} huruf</span>.
+                    </p>
+                    <div className="p-4 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-md">
+                      <p className="flex items-center gap-2 text-amber-700 dark:text-amber-400 font-medium">
+                        <Sparkles className="w-5 h-5" />
+                        {dialogLevel?.id === 'beginner' 
+                          ? 'Untuk mode manual, yuk belajar minimal 10 huruf dulu!' 
+                          : 'Yuk belajar lebih banyak huruf dulu sebelum mencoba level ini!'
+                        }
+                      </p>
+                    </div>
+                  </>
+                )}
               </div>
             </DialogDescription>
           </DialogHeader>
@@ -437,10 +641,12 @@ export default function QuizLevelSelect() {
             <Button
               onClick={() => {
                 setShowDialog(false)
-                navigateTo("learn")
+                if (!isRandomMode) {
+                  navigateTo("learn")
+                }
               }}
             >
-              Belajar Huruf
+              {isRandomMode ? 'Mengerti' : 'Belajar Huruf'}
             </Button>
           </div>
         </DialogContent>

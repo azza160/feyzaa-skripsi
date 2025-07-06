@@ -407,6 +407,8 @@ export default function QuizHurufPage() {
                               <div className="w-2 h-2 bg-indigo-500 dark:bg-indigo-400 rounded-full animate-pulse"></div>
                               <span className="text-sm font-medium text-indigo-700 dark:text-indigo-300">Soal {currentQuestion + 1}</span>
                             </div>
+                            
+
                           </motion.div>
 
                           <motion.h2
