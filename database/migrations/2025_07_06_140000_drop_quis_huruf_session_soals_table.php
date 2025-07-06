@@ -11,6 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Drop the table since we're now using JSON-based tracking
+        Schema::dropIfExists('quis_huruf_session_soals');
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        // Recreate the table if needed for rollback
         Schema::create('quis_huruf_session_soals', function (Blueprint $table) {
             $table->char('id', 26)->primary(); // ULID for better security
             $table->char('id_user', 26); // ULID
@@ -35,12 +45,4 @@ return new class extends Migration
             $table->index(['soal_id', 'is_correct']);
         });
     }
-
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
-        Schema::dropIfExists('quis_huruf_session_soals');
-    }
-};
+}; 

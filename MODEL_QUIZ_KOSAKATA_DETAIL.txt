@@ -1,0 +1,313 @@
+================================================================================
+                    MODEL KUIS KOSAKATA BAHASA JEPANG
+                    Platform Pembelajaran Kosakata
+================================================================================
+
+1. OVERVIEW
+================================================================================
+Platform ini memiliki 3 level kuis kosakata dengan model soal yang berbeda:
+- BEGINNER: Bidirectional Translation
+- INTERMEDIATE: Fill in the Blank + Context
+- ADVANCED: Memilih Kalimat yang Benar
+
+Setiap level fokus pada aspek pembelajaran yang berbeda untuk memastikan
+pembelajaran yang natural dan efektif.
+
+================================================================================
+2. BEGINNER LEVEL
+================================================================================
+
+MODEL SOAL: Bidirectional Translation (TANPA AUDIO)
+DURASI: 10 soal, 5 menit per session
+FOKUS: Pengenalan dasar kosakata, recognition, translation
+
+KARAKTERISTIK:
+- TANPA AUDIO (fokus visual untuk menghindari distraksi)
+- Bidirectional: Jepang → Indonesia atau Indonesia → Jepang
+- Mixed format: Kanji, Furigana, Romaji
+- Pilihan ganda 4 opsi
+- 1 kosakata = 1 soal
+
+CONTOH SOAL:
+
+A. Jepang → Indonesia:
+   Soal: "食べる"
+   Pilihan: A) Makan, B) Minum, C) Tidur, D) Berjalan
+   Jawaban: A) Makan
+
+B. Indonesia → Jepang:
+   Soal: "Makan"
+   Pilihan: A) 食べる, B) 飲む, C) 寝る, D) 歩く
+   Jawaban: A) 食べる
+
+C. Kanji/Furigana → Indonesia:
+   Soal: "食べる" (dengan furigana たべる)
+   Pilihan: A) Makan, B) Minum, C) Tidur, D) Berjalan
+   Jawaban: A) Makan
+
+KEUNGGULAN:
+- Fokus visual tanpa distraksi audio
+- Bidirectional learning yang efektif
+- Mixed format untuk variasi pembelajaran
+- Vocabulary building yang solid
+- Progressive difficulty dalam format
+
+================================================================================
+3. INTERMEDIATE LEVEL
+================================================================================
+
+MODEL SOAL: Fill in the Blank + Context (TANPA AUDIO)
+DURASI: 15 soal, 6 menit per session
+FOKUS: Penggunaan kosakata dalam konteks sehari-hari dan grammar natural
+
+KARAKTERISTIK:
+- TANPA AUDIO (fokus ke konteks)
+- Fill in the blank dengan konteks yang jelas
+- Contextual vocabulary yang masuk akal
+- Natural grammar dalam kalimat
+- Pilihan ganda 4 opsi
+- 1 kosakata = 1 soal
+
+CONTOH SOAL:
+
+A. Kosakata Utama: シャツ (shatsu)
+   Soal: "私は紳士服店で____を買います"
+   Pilihan: A) シャツ, B) 魚, C) 野菜, D) コンピューター
+   Jawaban: A) シャツ
+
+B. Kosakata Utama: 魚 (sakana)
+   Soal: "私はスーパーで____を買います"
+   Pilihan: A) 魚, B) 車, C) 本, D) 服
+   Jawaban: A) 魚
+
+C. Kosakata Utama: 電車 (densha)
+   Soal: "私は____で学校に行きます"
+   Pilihan: A) 電車, B) 本, C) 魚, D) 服
+   Jawaban: A) 電車
+
+D. Kosakata Utama: 本 (hon)
+   Soal: "私は図書館で____を読みます"
+   Pilihan: A) 本, B) 魚, C) 服, D) 車
+   Jawaban: A) 本
+
+SITUASI KONTEKS:
+- Restoran dan makanan
+- Transportasi
+- Belanja dan toko
+- Sekolah dan pendidikan
+- Rumah dan aktivitas sehari-hari
+- Kantor dan pekerjaan
+
+KEUNGGULAN:
+- Contextual learning yang natural
+- Grammar acquisition tanpa sadar
+- Practical vocabulary dalam situasi nyata
+- Critical thinking untuk memilih jawaban yang masuk akal
+- Natural sentence structure
+
+================================================================================
+4. ADVANCED LEVEL
+================================================================================
+
+MODEL SOAL: Memilih Kalimat yang Benar (TANPA AUDIO)
+DURASI: 20 soal, 7 menit per session
+FOKUS: Penggunaan kosakata yang benar dan alami dalam bahasa Jepang
+
+KARAKTERISTIK:
+- TANPA AUDIO (fokus ke analisis kalimat)
+- 4 pilihan kalimat (3 salah, 1 benar)
+- Natural vs unnatural usage
+- Grammar correctness
+- Cultural appropriateness
+- 1 kosakata = 1 soal
+
+CONTOH SOAL:
+
+A. Kosakata Utama: 見る (miru)
+   Soal: Di bawah ini, kalimat mana yang menggunakan kosakata 「見る」 
+         dengan penggunaan yang benar dan alami dalam bahasa Jepang?
+   
+   Pilihan:
+   a) 昨日、友達とラーメンを見ました。
+   b) 明日、海を見に行きます。
+   c) 朝ごはんを見て食べました。
+   d) コーヒーを見ましたか？
+   
+   Jawaban benar: b) 明日、海を見に行きます。
+
+B. Kosakata Utama: 食べる (taberu)
+   Soal: Di bawah ini, kalimat mana yang menggunakan kosakata 「食べる」 
+         dengan penggunaan yang benar dan alami dalam bahasa Jepang?
+   
+   Pilihan:
+   a) 私は音楽を食べます。
+   b) 昨日、寿司を食べました。
+   c) 本を食べて勉強します。
+   d) 車を食べに行きます。
+   
+   Jawaban benar: b) 昨日、寿司を食べました。
+
+C. Kosakata Utama: 買う (kau)
+   Soal: Di bawah ini, kalimat mana yang menggunakan kosakata 「買う」 
+         dengan penggunaan yang benar dan alami dalam bahasa Jepang?
+   
+   Pilihan:
+   a) 私は友達を買いました。
+   b) デパートで服を買います。
+   c) 映画を買って見ます。
+   d) 時間を買いました。
+   
+   Jawaban benar: b) デパートで服を買います。
+
+D. Kosakata Utama: 行く (iku)
+   Soal: Di bawah ini, kalimat mana yang menggunakan kosakata 「行く」 
+         dengan penggunaan yang benar dan alami dalam bahasa Jepang?
+   
+   Pilihan:
+   a) 私は本に行きます。
+   b) 明日、学校に行きます。
+   c) 音楽に行って聞きます。
+   d) 時間に行きました。
+   
+   Jawaban benar: b) 明日、学校に行きます。
+
+JENIS KESALAHAN YANG DITAMPILKAN:
+1. Verb Usage Error: Penggunaan verb yang tidak tepat
+2. Object Mismatch: Object yang tidak sesuai dengan verb
+3. Particle Error: Penggunaan particle yang salah
+4. Context Inappropriateness: Konteks yang tidak masuk akal
+5. Cultural Misunderstanding: Penggunaan yang tidak natural
+
+KEUNGGULAN:
+- Natural usage learning
+- Grammar awareness
+- Cultural understanding
+- Critical thinking
+- Practical application
+- Error recognition
+
+================================================================================
+5. SISTEM EXP PER LEVEL
+================================================================================
+
+BEGINNER LEVEL:
+- EXP per soal: 5-8 (sesuai attempt)
+- Perfect score bonus: +50% EXP
+- Speed bonus: Jawab cepat +25% EXP
+
+INTERMEDIATE LEVEL:
+- EXP per soal: 8-12 (sesuai attempt)
+- Perfect score bonus: +50% EXP
+- Speed bonus: Jawab cepat +25% EXP
+
+ADVANCED LEVEL:
+- EXP per soal: 12-18 (sesuai attempt)
+- Perfect score bonus: +50% EXP
+- Speed bonus: Jawab cepat +25% EXP
+
+PERHITUNGAN ATTEMPT:
+- Attempt 1: EXP penuh
+- Attempt 2: EXP 70%
+- Attempt 3: EXP 40%
+- Attempt 4+: 0 EXP
+
+================================================================================
+6. PROGRESS TRACKING
+================================================================================
+
+PER KOSAKATA:
+- Learned: Sudah dipelajari
+- Mastered: Sudah dikuasai dengan baik
+- Needs Review: Perlu review ulang
+
+PER LEVEL:
+- Progress percentage
+- Accuracy rate
+- Average completion time
+
+OVERALL:
+- Total kosakata dipelajari
+- Learning streak
+- Achievement unlocked
+
+================================================================================
+7. INTEGRASI DENGAN FITUR LAIN
+================================================================================
+
+FLASHCARD:
+- Kosakata dari kuis masuk ke flashcard
+- Review otomatis
+- Reinforce learning
+
+LEARNING PATH:
+- Kuis → Flashcard → Review
+- Progressive difficulty
+- Personalized learning
+
+ACHIEVEMENT SYSTEM:
+- "Vocabulary Master" (100 kosakata)
+- "Context Expert" (50 soal intermediate)
+- "Natural Speaker" (50 soal advanced)
+- "Daily Learner" (7 hari berturut-turut)
+
+================================================================================
+8. ALUR KUIS KOSAKATA
+================================================================================
+
+1. User Login → Dashboard
+2. Pilih Kategori Kosakata (optional)
+3. Pilih Level (Beginner/Intermediate/Advanced)
+4. Start Quiz → Create Session
+5. Answer Questions → Save to JSON
+6. Calculate EXP → Update User Progress
+7. Review Results → Show Statistics
+8. Update Learning Progress → Add to Flashcard
+
+================================================================================
+9. TECHNICAL IMPLEMENTATION
+================================================================================
+
+DATABASE TABLES:
+- soal_quis_kosakatas: Bank soal dengan level dan jenis
+- quis_kosakata_sessions: Session kuis dengan JSON tracking
+- user_kosakatas: Progress per kosakata per user
+
+SECURITY:
+- Rate limiting untuk quiz starts dan answer submissions
+- Session ownership validation
+- ULID untuk security
+
+PERFORMANCE:
+- JSON-based answer tracking
+- Caching untuk user progress
+- Optimized queries dengan indexes
+
+================================================================================
+10. SUCCESS METRICS
+================================================================================
+
+USER ENGAGEMENT:
+- Completion rate per level
+- Average session duration
+- Return user rate
+
+LEARNING EFFECTIVENESS:
+- Accuracy improvement over time
+- Retention rate per kosakata
+- Level progression speed
+
+SYSTEM PERFORMANCE:
+- Response time
+- Error rate
+- Database efficiency
+
+================================================================================
+NOTES:
+- Semua level TANPA AUDIO untuk fokus visual
+- 1 kosakata = 1 soal untuk konsistensi
+- Natural learning approach
+- Progressive difficulty
+- Cultural awareness
+- Practical application
+
+================================================================================ 

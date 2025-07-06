@@ -676,11 +676,11 @@ export default function QuizLetterSelect() {
                           </>
                         ) : (
                           <>
-                            Pilih tepat {requiredLetters} huruf yang ingin kamu ujikan
-                            <br />
-                            <span className="text-sm inline-block mt-2 bg-primary/5 px-3 py-1 rounded-full">
-                              Pilih huruf yang ingin kamu latih!
-                            </span>
+                        Pilih tepat {requiredLetters} huruf yang ingin kamu ujikan
+                        <br />
+                        <span className="text-sm inline-block mt-2 bg-primary/5 px-3 py-1 rounded-full">
+                          Pilih huruf yang ingin kamu latih!
+                        </span>
                           </>
                         )}
                       </p>
@@ -724,70 +724,70 @@ export default function QuizLetterSelect() {
                   {/* Filters and Letter Selection - Only show for manual mode */}
                   {!isRandomMode && (
                     <>
-                      {/* Filters */}
+                  {/* Filters */}
+                  <motion.div
+                    className="mb-8"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-lg font-semibold">Filter Berdasarkan Group</h3>
+                      <Button variant="outline" size="sm" onClick={autoSelectLetters} className="gap-2">
+                        <Shuffle className="w-4 h-4" />
+                        Pilih Otomatis
+                      </Button>
+                    </div>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
+                      {letterGroups.map((group) => (
+                        <FilterButton
+                          key={group.id}
+                          active={activeFilter === group.id}
+                          count={group.count}
+                          onClick={() => setActiveFilter(group.id)}
+                        >
+                          {group.name}
+                        </FilterButton>
+                      ))}
+                    </div>
+                  </motion.div>
+
+                  {/* Letter Grid */}
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 mb-8">
+                    {filteredLetters.map((letter, index) => (
                       <motion.div
-                        className="mb-8"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.2 }}
+                        key={letter.id}
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.3, delay: index * 0.02 }}
                       >
-                        <div className="flex items-center justify-between mb-4">
-                          <h3 className="text-lg font-semibold">Filter Berdasarkan Group</h3>
-                          <Button variant="outline" size="sm" onClick={autoSelectLetters} className="gap-2">
-                            <Shuffle className="w-4 h-4" />
-                            Pilih Otomatis
-                          </Button>
-                        </div>
-
-                        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
-                          {letterGroups.map((group) => (
-                            <FilterButton
-                              key={group.id}
-                              active={activeFilter === group.id}
-                              count={group.count}
-                              onClick={() => setActiveFilter(group.id)}
-                            >
-                              {group.name}
-                            </FilterButton>
-                          ))}
-                        </div>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <div>
+                                <LetterCard
+                                  letter={letter}
+                                  isSelected={selectedLetters.includes(letter.id)}
+                                  onClick={() => toggleLetterSelection(letter.id)}
+                                />
+                              </div>
+                            </TooltipTrigger>
+                            <TooltipContent side="top" className="bg-card border shadow-lg px-4 py-3">
+                              <div className="text-center">
+                                {letter.example ? (
+                                  <p className="font-medium">{letter.example}</p>
+                                ) : (
+                                  <p className="font-medium text-muted-foreground">
+                                    Belum ada contoh penggunaan untuk huruf ini
+                                  </p>
+                                )}
+                              </div>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                       </motion.div>
-
-                      {/* Letter Grid */}
-                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 mb-8">
-                        {filteredLetters.map((letter, index) => (
-                          <motion.div
-                            key={letter.id}
-                            initial={{ opacity: 0, scale: 0.8 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ duration: 0.3, delay: index * 0.02 }}
-                          >
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <div>
-                                    <LetterCard
-                                      letter={letter}
-                                      isSelected={selectedLetters.includes(letter.id)}
-                                      onClick={() => toggleLetterSelection(letter.id)}
-                                    />
-                                  </div>
-                                </TooltipTrigger>
-                                <TooltipContent side="top" className="bg-card border shadow-lg px-4 py-3">
-                                  <div className="text-center">
-                                    {letter.example ? (
-                                      <p className="font-medium">{letter.example}</p>
-                                    ) : (
-                                      <p className="font-medium text-muted-foreground">
-                                        Belum ada contoh penggunaan untuk huruf ini
-                                      </p>
-                                    )}
-                                  </div>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-                          </motion.div>
-                        ))}
+                    ))}
                       </div>
                     </>
                   )}
@@ -817,7 +817,7 @@ export default function QuizLetterSelect() {
                             <span className="font-semibold">Sistem Otomatis</span>
                           </div>
                           <p className="text-sm text-purple-700 dark:text-purple-300">Soal dipilih secara acak oleh sistem</p>
-                        </div>
+                  </div>
                         
                         <div className="mt-4 p-3 bg-purple-100 dark:bg-purple-900/50 rounded-lg">
                           <p className="text-sm text-purple-800 dark:text-purple-300 text-center">
@@ -872,40 +872,40 @@ export default function QuizLetterSelect() {
                           </div>
                         ) : (
                           <>
-                            <div className="flex justify-between mb-2">
-                              <span className="text-sm font-medium flex items-center gap-1">
-                                <BookOpen className="w-4 h-4" />
-                                Huruf Dipilih: {selectedLetters.length}/{requiredLetters}
-                              </span>
-                              <span className="text-sm text-muted-foreground">
-                                {selectedLetters.length === requiredLetters
-                                  ? "Siap untuk kuis!"
-                                  : `Pilih ${requiredLetters - selectedLetters.length} lagi`}
-                              </span>
-                            </div>
+                        <div className="flex justify-between mb-2">
+                          <span className="text-sm font-medium flex items-center gap-1">
+                            <BookOpen className="w-4 h-4" />
+                            Huruf Dipilih: {selectedLetters.length}/{requiredLetters}
+                          </span>
+                          <span className="text-sm text-muted-foreground">
+                            {selectedLetters.length === requiredLetters
+                              ? "Siap untuk kuis!"
+                              : `Pilih ${requiredLetters - selectedLetters.length} lagi`}
+                          </span>
+                        </div>
 
-                            <Progress value={selectionProgress} className="h-3 rounded-full mb-4" />
+                        <Progress value={selectionProgress} className="h-3 rounded-full mb-4" />
 
-                            {/* Selected letters preview */}
-                            <div className="flex flex-wrap gap-2">
-                              {selectedLetters.map((id) => {
-                                const letter = letters.find((l) => l.id === id)
-                                return (
-                                  <motion.div
-                                    key={id}
-                                    className="w-16 h-16 rounded-xl bg-primary/10 flex flex-col items-center justify-center text-primary cursor-pointer hover:bg-primary/20 p-1"
-                                    whileHover={{ scale: 1.1 }}
-                                    onClick={() => toggleLetterSelection(id)}
-                                  >
-                                    <span className="text-2xl font-bold leading-none">{letter?.character}</span>
-                                    <span className="text-xs text-primary/80">{letter?.romaji}</span>
-                                  </motion.div>
-                                )
-                              })}
-                              {Array.from({ length: requiredLetters - selectedLetters.length }).map((_, i) => (
-                                <div key={i} className="w-16 h-16 rounded-xl border-2 border-dashed border-muted-foreground/30" />
-                              ))}
-                            </div>
+                        {/* Selected letters preview */}
+                        <div className="flex flex-wrap gap-2">
+                          {selectedLetters.map((id) => {
+                            const letter = letters.find((l) => l.id === id)
+                            return (
+                              <motion.div
+                                key={id}
+                                className="w-16 h-16 rounded-xl bg-primary/10 flex flex-col items-center justify-center text-primary cursor-pointer hover:bg-primary/20 p-1"
+                                whileHover={{ scale: 1.1 }}
+                                onClick={() => toggleLetterSelection(id)}
+                              >
+                                <span className="text-2xl font-bold leading-none">{letter?.character}</span>
+                                <span className="text-xs text-primary/80">{letter?.romaji}</span>
+                              </motion.div>
+                            )
+                          })}
+                          {Array.from({ length: requiredLetters - selectedLetters.length }).map((_, i) => (
+                            <div key={i} className="w-16 h-16 rounded-xl border-2 border-dashed border-muted-foreground/30" />
+                          ))}
+                        </div>
                           </>
                         )}
                       </div>
@@ -930,12 +930,12 @@ export default function QuizLetterSelect() {
                             </>
                           ) : (
                             <>
-                              Mulai Kuis
-                              <Zap size={18} className="ml-2" />
+                          Mulai Kuis
+                          <Zap size={18} className="ml-2" />
                             </>
                           )}
                         </Button>
-
+                       
                         {/* Show explanation button for returning users */}
                         {hasSeenQuizExplanation() && (
                           <Button

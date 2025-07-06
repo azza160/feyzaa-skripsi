@@ -3,11 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\QuisHurufSession;
-use App\Models\QuisHurufSessionSoal;
+// Removed QuisHurufSessionSoal import - no longer needed
 use App\Models\SoalQuisHuruf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use Illuminate\Support\Str;
 
 class QuisController extends Controller
 {
@@ -54,11 +55,43 @@ class QuisController extends Controller
         return $features;
     }
 
+    private function calculateExp($level, $attempt)
+    {
+        return match($level) {
+            'beginner' => match($attempt) {
+                1 => 9,
+                2 => 6,
+                3 => 3,
+                default => 0,
+            },
+            'intermediate' => match($attempt) {
+                1 => 15,
+                2 => 10,
+                3 => 5,
+                default => 0,
+            },
+            'advanced' => match($attempt) {
+                1 => 21,
+                2 => 14,
+                3 => 7,
+                default => 0,
+            },
+            default => 0,
+        };
+    }
+
     public function pilihHurufQuisShow(){
         $this->cleanupActiveQuisSession();
         $user = Auth::user();
-        //ambil progress belajar user huruf & check kategori huruf
-        $progressHuruf = $user->hurufs()->wherePivot('is_learned', true)->pluck('jenis_huruf') ;
+        
+        // OPTIMIZATION: Use eager loading and cache user progress
+        $progressHuruf = cache()->remember("user_progress_{$user->id}", 300, function() use ($user) {
+            return $user->hurufs()
+                ->select('jenis_huruf')
+                ->wherePivot('is_learned', true)
+                ->get()
+                ->pluck('jenis_huruf');
+        });
        
         //check yang jumlah jenisnya hiragana atau katakana
         $jumlahHiragana = $progressHuruf->countBy()->get('hiragana', 0);
@@ -219,6 +252,7 @@ class QuisController extends Controller
     public function startQuis(Request $request){
         $user = Auth::user();
         $this->cleanupActiveQuisSession();
+        
         //validasi request
         $request->validate([
             'letters' => $request->mode === 'random' ? 'nullable|array' : 'required|array',
@@ -233,159 +267,24 @@ class QuisController extends Controller
         $level = $request->level;
         $mode = $request->mode ?? 'manual';
 
+        // Gunakan QuizService untuk optimasi
+        $quizService = new \App\Services\QuizService();
         
-        //tentukan waktu maksimal
-        $waktu_maximal = match($level){
-            'beginner' => 240,
-            'intermediate' => 180,
-            'advanced' => 120,
-            default => 240,
-        };
-
-        //buat session
-        $session = QuisHurufSession::create([
-            'id_user' => $user->id,
+        // Buat session dengan ULID
+        $session = $quizService->createSession($user, [
             'level' => $level,
-            'jenis_huruf' => $jenis,
+            'jenis' => $jenis,
             'mode' => $mode,
-            'waktu_max' => $waktu_maximal,
-            'started_at' => now(),
-            'ended_at' => null,
-            'total_exp' => 0,
-            'total_benar' => 0,
         ]);
 
-        //ambil semua soal sesuai huruf,level dan jenis
-        if ($mode === 'random') {
-            // For random mode, get ALL available questions for the level and type
-            // regardless of whether user has learned the letters or not
-            $soalList = SoalQuisHuruf::where('jenis', $jenis)
-                ->where('level', $level)
-                ->get();
-        } else {
-            // For manual mode, get questions only for selected letters
-            $soalList = SoalQuisHuruf::whereIn('huruf_id', $letters)
-                ->where('jenis', $jenis)
-                ->where('level', $level)
-                ->get();
-        }
-
-        //acak urutan soal
-        $soalList = $soalList->shuffle();
-
-        //transform data soal menjadi format yang sama dengan quizData
-        $transformedSoal = [];
-        $processedHurufIds = [];
-        $idSoal = [];
-
-        foreach($soalList as $soal){
-            if ($mode === 'random') {
-                // For random mode, take the first 10 questions regardless of letter
-                if (count($transformedSoal) >= 10) {
-                    break;
-                }
-            } else {
-                // For manual mode, skip if huruf_id already processed
-                if(in_array($soal->huruf_id, $processedHurufIds)){
-                    continue;
-                }
-            }
-
-            //simpan id soal yang terpilih
-            $idSoal[] = $soal->id;
-            //ambil opsi jawaban dari soal
-            $option = [
-                [
-                    'id' => 'A',
-                    'text' => $soal->option_a,
-                    'isCorrect' => $soal->correct_answer == 'a'
-                ],
-                [
-                    'id' => 'B',
-                    'text' => $soal->option_b,
-                    'isCorrect' => $soal->correct_answer == 'b'
-                ],
-                [
-                    'id' => 'C',
-                    'text' => $soal->option_c,
-                    'isCorrect' => $soal->correct_answer == 'c'
-                ],
-                [
-                    'id' => 'D',
-                    'text' => $soal->option_d,
-                    'isCorrect' => $soal->correct_answer == 'd'
-                ],
-            ];
-
-            //tambahkan data ke array transformedSoal
-            $transformedSoal[] = [
-                'id' => $soal->id,
-                'question' => $soal->question,
-                'character' => $soal->character,
-                'options' => $option,
-            ];
-
-            //tandai huruf_id sudah diproses (only for manual mode)
-            if ($mode !== 'random') {
-                $processedHurufIds[] = $soal->huruf_id;
-            }
-        }
-
-        //masukan data idSoal terpilih ke table quis_huruf_session_soals
-        foreach($idSoal as $index => $id){
-            //cari record yang sudah ada
-            $existingRecord = QuisHurufSessionSoal::where('id_user', $user->id)
-            ->where('session_id', $session->id)
-            ->where('soal_id', $id)
-            ->first();
-
-            //jika record tidak ada, buat record baru
-            if(!$existingRecord){
-                $totalAttempt = QuisHurufSessionSoal::where('id_user', $user->id)
-                ->where('soal_id', $id)
-                ->count();
-
-                $attempt = $totalAttempt + 1;
-
-                // Calculate EXP based on attempt and level
-                $exp = match($level){
-                    'beginner' => match($attempt){
-                        1 => 9,
-                        2 => 6,
-                        3 => 3,
-                        default => 0,
-                    },
-                    'intermediate' => match($attempt){
-                        1 => 15,
-                        2 => 10,
-                        3 => 5,
-                        default => 0,
-                    },
-                    'advanced' => match($attempt){
-                        1 => 21,
-                        2 => 14,
-                        3 => 7,
-                        default => 0,
-                    },
-                    default => 0,
-                };
-
-
-
-                $sessionSoal = QuisHurufSessionSoal::create([
-                    'id_user' => $user->id,
-                    'session_id' => $session->id,
-                    'soal_id' => $id,
-                    'attempt' => $attempt,
-                    'user_answer' => null,
-                    'is_correct' => false,
-                    'exp' => $exp,
-                ]);
-
-                // Update transformedSoal with the calculated EXP
-                $transformedSoal[$index]['exp'] = $exp;
-            }
-        }
+        // Ambil soal dengan optimasi
+        $transformedSoal = $quizService->getQuestions($jenis, $level, $mode, $letters);
+        
+        // Ambil ID soal untuk disimpan
+        $soalIds = collect($transformedSoal)->pluck('id')->toArray();
+        
+        // Buat session soals dengan batch insert
+        $quizService->createSessionSoals($user, $session, $soalIds);
 
         return redirect()->route('quis', ['sessionId' => $session->id]);
     }
@@ -394,7 +293,7 @@ class QuisController extends Controller
         $user = Auth::user();
         
         //ambil session quis
-        $session = QuisHurufSession::with('sessionSoals')->where('id', $sessionId)
+        $session = QuisHurufSession::where('id', $sessionId)
         ->where('id_user', $user->id)
         ->firstOrFail();
 
@@ -403,24 +302,20 @@ class QuisController extends Controller
             return redirect()->route('review-quis');
         }
 
-        //ambil semua data pivot untuk sesi ini
-        $sessionSoals = QuisHurufSessionSoal::with('soal')
-        ->where('session_id', $sessionId)
-        ->where('id_user', $user->id)
-        ->get();
+        // OPTIMIZATION: Get questions from JSON field instead of individual records
+        $selectedSoalIds = $session->selected_soals ?? [];
+        
+        // Get soal data from IDs stored in JSON
+        $soals = SoalQuisHuruf::whereIn('id', $selectedSoalIds)->get();
+        
+        // Get answered questions from JSON field
+        $userAnswers = $session->user_answers ?? [];
 
-        // Shuffle questions for random mode
-        if ($session->mode === 'random') {
-            $sessionSoals = $sessionSoals->shuffle();
-        }
-
-        //transform data pivot menjadi format yang sama dengan transformedSoal
+        //transform data menjadi format yang sama dengan quizData
         $transformedSoal = [];
-        $currentQuestionIndex = 0;
         $answeredQuestions = 0;
 
-        foreach($sessionSoals as $index => $sessionSoal){
-            $soal = $sessionSoal->soal;
+        foreach($soals as $soal){
             $options = [
                 [
                     'id' => 'A',
@@ -444,10 +339,25 @@ class QuisController extends Controller
                 ],
             ];
 
-            // Use the stored EXP value from the database
-            // The EXP value is already calculated with the correct multiplier when the session was created
-            $exp = $sessionSoal->exp;
-            $attempt = $sessionSoal->attempt;
+            // Check if this soal has been answered from JSON
+            $answeredData = $userAnswers[$soal->id] ?? null;
+            $isAnswered = $answeredData !== null;
+            
+            if ($isAnswered) {
+                $answeredQuestions++;
+                $exp = $answeredData['exp'];
+                $attempt = $answeredData['attempt'];
+                $isCorrect = $answeredData['is_correct'];
+                $userAnswer = $answeredData['answer'];
+            } else {
+                // Calculate potential EXP for unanswered questions using JSON-based tracking
+                $attempts = $session->attempts ?? [];
+                $totalAttempt = $attempts[$soal->id] ?? 0;
+                $attempt = $totalAttempt + 1;
+                $exp = $this->calculateExp($session->level, $attempt);
+                $isCorrect = false;
+                $userAnswer = null;
+            }
 
             $transformedSoal[] = [
                 'id' => $soal->id,
@@ -456,15 +366,14 @@ class QuisController extends Controller
                 'options' => $options,
                 'exp' => $exp,
                 'attempt' => $attempt,
-                'is_correct' => $sessionSoal->is_correct,
-                'user_answer' => $sessionSoal->user_answer,
-               
+                'is_correct' => $isCorrect,
+                'user_answer' => $userAnswer,
             ];
+        }
 
-            // Jika soal ini sudah dijawab, tambahkan ke counter
-            if ($sessionSoal->user_answer !== null) {
-                $answeredQuestions++;
-            }
+        // Shuffle questions for random mode
+        if ($session->mode === 'random') {
+            $transformedSoal = collect($transformedSoal)->shuffle()->toArray();
         }
 
         // Set current question index ke soal yang belum dijawab
@@ -491,101 +400,69 @@ class QuisController extends Controller
         $user = Auth::user();
        
         //ambil session quis
-        $session = QuisHurufSession::with('sessionSoals')->where('id', $sessionId)
+        $session = QuisHurufSession::where('id', $sessionId)
         ->where('id_user', $user->id)
         ->firstOrFail();
 
-        //ambil semua data pivot untuk sesi ini
-        $sessionSoals = QuisHurufSessionSoal::with('soal')
-        ->where('session_id', $sessionId)
-        ->where('id_user', $user->id)
-        ->get();
+        // OPTIMIZATION: Get questions from JSON field instead of individual records
+        $selectedSoalIds = $session->selected_soals ?? [];
+        
+        // Get soal data from IDs stored in JSON
+        $soals = SoalQuisHuruf::whereIn('id', $selectedSoalIds)->get();
+        
+        // Get answered questions from JSON field
+        $userAnswers = $session->user_answers ?? [];
 
         //hitung total exp berdasarkan soal yang dijawab benar dengan perhitungan ulang
         $totalExp = 0;
-        foreach ($sessionSoals as $sessionSoal) {
-            if ($sessionSoal->is_correct) {
-                $attempt = $sessionSoal->attempt;
-                $level = $session->level;
-                $mode = $session->mode;
-                
-                $exp = match($level){
-                    'beginner' => match($attempt){
-                        1 => 9,
-                        2 => 6,
-                        3 => 3,
-                        default => 0,
-                    },
-                    'intermediate' => match($attempt){
-                        1 => 15,
-                        2 => 10,
-                        3 => 5,
-                        default => 0,
-                    },
-                    'advanced' => match($attempt){
-                        1 => 21,
-                        2 => 14,
-                        3 => 7,
-                        default => 0,
-                    },
-                    default => 0,
-                };
-                
-                $totalExp += $exp;
+        foreach ($soals as $soal) {
+            $answeredData = $userAnswers[$soal->id] ?? null;
+            if ($answeredData && ($answeredData['is_correct'] ?? false)) {
+                $totalExp += $answeredData['exp'] ?? 0;
             }
         }
 
         // Transform data untuk frontend
-        $answers = $sessionSoals->map(function($sessionSoal) use ($session) {
-            $soal = $sessionSoal->soal;
+        $answers = [];
+        foreach ($soals as $soal) {
+            $answeredData = $userAnswers[$soal->id] ?? null;
             
-            // Recalculate EXP to ensure it's correct
-            $attempt = $sessionSoal->attempt;
-            $level = $session->level;
-            $mode = $session->mode;
-            
-            $exp = match($level){
-                'beginner' => match($attempt){
-                    1 => 9,
-                    2 => 6,
-                    3 => 3,
-                    default => 0,
-                },
-                'intermediate' => match($attempt){
-                    1 => 15,
-                    2 => 10,
-                    3 => 5,
-                    default => 0,
-                },
-                'advanced' => match($attempt){
-                    1 => 21,
-                    2 => 14,
-                    3 => 7,
-                    default => 0,
-                },
-                default => 0,
-            };
-            
-
-            
-
-            
-            return [
-                'id' => $soal->id,
-                'question' => $soal->question,
-                'character' => $soal->character,
-                'userAnswer' => $sessionSoal->user_answer,
-                'correctAnswer' => $soal->correct_answer,
-                'isCorrect' => $sessionSoal->is_correct,
-                'options' => [
-                    ['id' => 'a', 'text' => $soal->option_a],
-                    ['id' => 'b', 'text' => $soal->option_b],
-                    ['id' => 'c', 'text' => $soal->option_c],
-                    ['id' => 'd', 'text' => $soal->option_d],
-                ],
-                'expGained' => $exp, // Use recalculated EXP instead of stored EXP
-            ];
-        })->values()->toArray();
+            if ($answeredData) {
+                // Soal sudah dijawab
+                $answers[] = [
+                    'id' => $soal->id,
+                    'question' => $soal->question,
+                    'character' => $soal->character,
+                    'userAnswer' => $answeredData['answer'],
+                    'correctAnswer' => $soal->correct_answer,
+                    'isCorrect' => $answeredData['is_correct'],
+                    'options' => [
+                        ['id' => 'a', 'text' => $soal->option_a],
+                        ['id' => 'b', 'text' => $soal->option_b],
+                        ['id' => 'c', 'text' => $soal->option_c],
+                        ['id' => 'd', 'text' => $soal->option_d],
+                    ],
+                    'expGained' => $answeredData['exp'],
+                ];
+            } else {
+                // Soal belum dijawab (tidak seharusnya terjadi di review)
+                $answers[] = [
+                    'id' => $soal->id,
+                    'question' => $soal->question,
+                    'character' => $soal->character,
+                    'userAnswer' => null,
+                    'correctAnswer' => $soal->correct_answer,
+                    'isCorrect' => false,
+                    'options' => [
+                        ['id' => 'a', 'text' => $soal->option_a],
+                        ['id' => 'b', 'text' => $soal->option_b],
+                        ['id' => 'c', 'text' => $soal->option_c],
+                        ['id' => 'd', 'text' => $soal->option_d],
+                    ],
+                    'expGained' => 0,
+                ];
+            }
+        }
 
         // Hitung statistik
         $totalQuestions = count($answers);
@@ -670,57 +547,17 @@ class QuisController extends Controller
             'answer' => 'required|in:a,b,c,d'
         ]);
 
-        $sessionSoal = QuisHurufSessionSoal::where('session_id', $request->sessionId)
-            ->where('soal_id', $request->soalId)
-            ->where('id_user', $user->id)
-            ->firstOrFail();
-
-        $soal = SoalQuisHuruf::findOrFail($request->soalId);
-        $isCorrect = $soal->correct_answer === $request->answer;
-
-        // Get session info for EXP calculation
-        $session = QuisHurufSession::find($request->sessionId);
+        // Gunakan QuizService untuk optimasi
+        $quizService = new \App\Services\QuizService();
         
-        // Calculate EXP based on attempt and level
-        $attempt = $sessionSoal->attempt;
-        $level = $session->level;
-        $mode = $session->mode;
-        
-        $exp = match($level){
-            'beginner' => match($attempt){
-                1 => 9,
-                2 => 6,
-                3 => 3,
-                default => 0,
-            },
-            'intermediate' => match($attempt){
-                1 => 15,
-                2 => 10,
-                3 => 5,
-                default => 0,
-            },
-            'advanced' => match($attempt){
-                1 => 21,
-                2 => 14,
-                3 => 7,
-                default => 0,
-            },
-            default => 0,
-        };
-        
+        $result = $quizService->saveAnswer(
+            $user, 
+            $request->sessionId, 
+            $request->soalId, 
+            $request->answer
+        );
 
-
-        $sessionSoal->update([
-            'user_answer' => $request->answer,
-            'is_correct' => $isCorrect,
-            'exp' => $exp
-        ]);
-
-        return response()->json([
-            'success' => true,
-            'is_correct' => $isCorrect,
-            'exp_gained' => $isCorrect ? $exp : 0
-        ]);
+        return response()->json($result);
     }
 
 }

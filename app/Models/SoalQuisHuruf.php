@@ -16,8 +16,5 @@ class SoalQuisHuruf extends Model
         return $this->belongsTo(Huruf::class, 'huruf_id');
     }
 
-    public function sessionSoals()
-    {
-        return $this->hasMany(QuisHurufSessionSoal::class, 'soal_id');
-    }
+    // Removed sessionSoals relationship - no longer needed with JSON-based tracking
 }

@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('quis_huruf_sessions', function (Blueprint $table) {
-            $table->enum('mode', ['manual', 'random'])->default('manual')->after('jenis_huruf');
+            $table->json('user_answers')->nullable()->after('selected_soals');
         });
     }
 
@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('quis_huruf_sessions', function (Blueprint $table) {
-            $table->dropColumn('mode');
+            $table->dropColumn('user_answers');
         });
     }
 };
