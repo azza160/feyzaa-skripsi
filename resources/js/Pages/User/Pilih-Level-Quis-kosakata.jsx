@@ -18,11 +18,19 @@ import {
   Brain,
   CheckCircle,
   Lock,
+  Shuffle,
+  ListChecks,
+  ChevronLeft,
+  AlertCircle,
+  Info,
+  TrendingUp,
+  ChevronRight,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import DashboardLayout from "../../Layouts/DashboardLayout"
 import { Link, usePage, router } from "@inertiajs/react"
 import { Loading } from "../../components/Loading"
+import { Progress } from "@/components/ui/progress"
 
 // Simplified Loading Component
 const ContentLoading = () => {
@@ -71,7 +79,7 @@ const levels = [
     emoji: "🎓",
     icon: GraduationCap,
     description:
-      "Level pemula yang dirancang khusus untuk mereka yang baru memulai perjalanan belajar kosakata Bahasa Jepang. Fokus pada pengenalan dasar dengan waktu yang cukup untuk berpikir dan memahami setiap kata dengan baik.",
+      "Level pemula untuk pengenalan kosakata dasar. Fokus pada soal terjemahan dua arah dan penguatan hafalan.",
     longDescription:
       "Level Beginner adalah titik awal yang sempurna untuk memulai perjalanan belajar kosakata Bahasa Jepang. Dirancang dengan pendekatan yang ramah pemula, level ini memberikan waktu yang cukup untuk memahami setiap kata dan maknanya. Kamu akan diperkenalkan dengan kosakata dasar sehari-hari yang sering digunakan dalam percakapan sederhana.",
     gradient: "from-emerald-400 via-teal-500 to-cyan-600",
@@ -90,37 +98,267 @@ const levels = [
     ],
   },
   {
-    id: "pro",
-    name: "Pro",
+    id: "intermediate",
+    name: "Intermediate",
     emoji: "🚀",
     icon: Rocket,
     description:
-      "Level lanjutan untuk mereka yang sudah menguasai dasar-dasar kosakata Jepang. Menguji pemahaman konteks dan kemampuan mengingat kosakata dalam situasi yang lebih kompleks dengan waktu yang lebih terbatas.",
+      "Level menengah untuk menguji pemahaman konteks dan penggunaan kosakata dalam kalimat.",
     longDescription:
-      "Level Pro menantang kemampuan kosakata Jepang yang sudah lebih matang. Dirancang untuk menguji tidak hanya hafalan, tetapi juga pemahaman konteks dan penggunaan kata dalam situasi yang beragam. Dengan waktu yang lebih terbatas, level ini melatih kecepatan berpikir dan ketepatan dalam memilih jawaban yang paling sesuai.",
+      "Level Intermediate menantang kemampuan kosakata Jepang yang sudah lebih matang. Dirancang untuk menguji tidak hanya hafalan, tetapi juga pemahaman konteks dan penggunaan kata dalam situasi yang beragam.",
+    gradient: "from-yellow-400 via-orange-500 to-pink-500",
+    bgGlow: "bg-yellow-500/10",
+    borderGlow: "border-yellow-500/30",
+    textColor: "text-yellow-700",
+    minWordsRequired: 0,
+    timeLimit: "45 detik",
+    questions: "10 soal",
+    difficulty: "Sedang",
+    features: [
+      "Waktu menjawab 45 detik per soal",
+      "Soal fill in the blank & konteks kalimat",
+      "Konteks penggunaan kosakata",
+      "Menguji pemahaman dan aplikasi",
+    ],
+  },
+  {
+    id: "advanced",
+    name: "Advanced",
+    emoji: "🏆",
+    icon: Trophy,
+    description:
+      "Level lanjutan untuk analisis kalimat dan penggunaan kosakata yang natural.",
+    longDescription:
+      "Level Advanced menguji kemampuan analisis dan pemilihan kalimat yang paling natural untuk penggunaan kosakata tertentu. Cocok untuk yang ingin mengasah pemahaman konteks dan penggunaan alami.",
     gradient: "from-violet-500 via-purple-600 to-indigo-700",
     bgGlow: "bg-violet-500/10",
     borderGlow: "border-violet-500/30",
     textColor: "text-violet-700",
     minWordsRequired: 0,
     timeLimit: "30 detik",
-    questions: "15 soal",
-    difficulty: "Menantang",
+    questions: "10 soal",
+    difficulty: "Sulit",
     features: [
       "Waktu menjawab 30 detik per soal",
-      "Kosakata tingkat menengah-lanjut",
-      "Konteks kalimat yang kompleks",
-      "Menguji kecepatan dan ketepatan",
+      "Soal analisis kalimat",
+      "Penggunaan kosakata yang natural",
+      "Menguji pemahaman konteks lanjutan",
     ],
   },
 ]
+
+const quizModes = [
+  {
+    id: 'manual',
+    name: 'Manual',
+    icon: ListChecks,
+    color: 'from-emerald-400 to-green-500',
+    description: 'Pilih sendiri kosakata yang ingin dijadikan soal kuis. Cocok untuk latihan terfokus pada kosakata yang sudah kamu pelajari.',
+    features: [
+      'Pilih kosakata yang sudah dipelajari',
+      'Kontrol penuh atas materi kuis',
+      'Cocok untuk latihan terarah',
+      'EXP standar sesuai level',
+    ],
+    tips: 'Rekomendasi: Pilih minimal 10 kosakata yang sudah kamu kuasai untuk hasil maksimal!',
+    onboarding: [
+      'Gunakan mode ini untuk latihan terfokus pada kosakata yang sudah kamu pelajari.',
+      'Sangat cocok untuk memperkuat hafalan dan mengukur progress belajar.',
+      'Tips: Pilih minimal 10 kosakata agar variasi soal lebih banyak!',
+      'Mode ini membantu kamu mengulang materi yang sudah dikuasai agar semakin mantap.',
+    ],
+  },
+  {
+    id: 'random',
+    name: 'Random Challenge',
+    icon: Shuffle,
+    color: 'from-purple-500 to-pink-600',
+    description: 'Sistem akan memilihkan kosakata secara acak dari seluruh database. Tantang dirimu dengan soal yang benar-benar random!',
+    features: [
+      'Kosakata dipilih acak oleh sistem',
+      'Cocok untuk menguji penguasaan luas',
+      'EXP standar sesuai level',
+      'Waktu standar sesuai level',
+    ],
+    tips: 'Mode ini cocok untuk menguji seberapa luas penguasaan kosakata kamu secara spontan.',
+    bonus: true,
+    onboarding: [
+      'Mode random akan menguji penguasaan kosakata secara luas, termasuk yang belum pernah kamu pelajari.',
+      'Jangan khawatir jika hasil kurang bagus, gunakan mode ini untuk latihan dan mengukur seberapa banyak kosakata yang sudah kamu kuasai.',
+      'Gunakan mode ini untuk menantang diri sendiri dan melihat perkembangan belajar secara keseluruhan.',
+      'Hasil di mode random bisa jadi motivasi untuk belajar lebih banyak kosakata!',
+    ],
+  },
+];
+
+const comparison = [
+  {
+    label: 'Kontrol Materi',
+    manual: 'Penuh',
+    random: 'Sistem',
+  },
+  {
+    label: 'EXP per Soal',
+    manual: 'Standar',
+    random: 'Standar',
+  },
+  {
+    label: 'Waktu',
+    manual: 'Standar',
+    random: 'Standar',
+  },
+];
+
+// QuizSystemModal: multi-step onboarding quiz/EXP
+function QuizSystemModal({ isOpen, onClose, onStartQuiz, level, mode }) {
+  const [currentStep, setCurrentStep] = useState(0)
+  const expSystem = {
+    beginner: [8, 5, 2, 0],
+    intermediate: [12, 7, 3, 0],
+    advanced: [18, 10, 4, 0],
+  }
+  const timeLimit = {
+    beginner: '5 menit',
+    intermediate: '10 menit',
+    advanced: '12 menit',
+  }
+  // Fallback jika level tidak valid
+  const safeLevel = ['beginner', 'intermediate', 'advanced'].includes(level) ? level : 'beginner';
+  const steps = [
+    {
+      title: 'Selamat Datang di Quiz Kosakata!',
+      content: (
+        <div className="space-y-4">
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 p-3 sm:p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+            <h3 className="font-semibold text-blue-800 dark:text-blue-300 mb-2 flex items-center gap-2 text-sm sm:text-base">
+              <Info className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+              <span>Quiz Level {safeLevel}</span>
+            </h3>
+            <p className="text-blue-700 dark:text-blue-400 text-xs sm:text-sm leading-relaxed">
+              Kamu akan mengerjakan 10 soal pilihan ganda dengan waktu {timeLimit[safeLevel]}. Jawaban benar akan memberikan EXP sesuai sistem yang adil.
+            </p>
+          </div>
+        </div>
+      )
+    },
+    {
+      title: 'Sistem EXP yang Adil',
+      content: (
+        <div className="space-y-4">
+          <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/30 dark:to-emerald-950/30 p-3 sm:p-4 rounded-lg border border-green-200 dark:border-green-800">
+            <h3 className="font-semibold text-green-800 dark:text-green-300 mb-2 flex items-center gap-2 text-sm sm:text-base">
+              <Star className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+              <span>Bagaimana EXP Dihitung?</span>
+            </h3>
+            <p className="text-green-700 dark:text-green-400 text-xs sm:text-sm leading-relaxed">
+              EXP yang kamu dapatkan bergantung pada berapa kali kamu sudah mengerjakan soal yang sama sebelumnya. Semakin sering kamu mengerjakan soal yang sama, semakin sedikit EXP yang didapat.
+            </p>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            {['Attempt 1', 'Attempt 2', 'Attempt 3', 'Attempt 4+'].map((label, i) => (
+              <div key={i} className="flex flex-col items-center bg-white/80 dark:bg-slate-900/40 rounded-lg p-3 border">
+                <span className="font-bold text-lg text-primary mb-1">{label}</span>
+                <span className="text-2xl font-bold text-green-700 dark:text-green-300">+{expSystem[safeLevel][i]} EXP</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )
+    },
+    {
+      title: 'Tips Belajar Efektif',
+      content: (
+        <div className="space-y-4">
+          <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950/30 dark:to-pink-950/30 p-3 sm:p-4 rounded-lg border border-purple-200 dark:border-purple-800">
+            <h3 className="font-semibold text-purple-800 dark:text-purple-300 mb-2 flex items-center gap-2 text-sm sm:text-base">
+              <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+              <span>Strategi Belajar Efektif</span>
+            </h3>
+            <ul className="text-purple-700 dark:text-purple-400 text-xs sm:text-sm leading-relaxed list-disc ml-5">
+              <li>Fokus pada soal baru untuk EXP maksimal</li>
+              <li>Jangan terlalu lama di satu soal</li>
+              <li>Latihan rutin setiap hari</li>
+              <li>Review hasil quiz secara berkala</li>
+            </ul>
+          </div>
+        </div>
+      )
+    }
+  ]
+  const handleNext = () => {
+    if (currentStep < steps.length - 1) setCurrentStep(currentStep + 1)
+    else onStartQuiz()
+  }
+  const handleBack = () => { if (currentStep > 0) setCurrentStep(currentStep - 1) }
+  const handleSkip = () => { onStartQuiz() }
+  // Reset step setiap kali modal dibuka, level, atau mode berubah
+  useEffect(() => {
+    if (isOpen) setCurrentStep(0)
+  }, [isOpen, level, mode])
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="w-[95vw] max-w-2xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
+        <DialogHeader className="mb-4">
+          <DialogTitle className="text-xl sm:text-2xl font-bold text-center leading-tight">
+            {steps[currentStep].title}
+          </DialogTitle>
+          <DialogDescription className="text-center text-sm sm:text-base">
+            Langkah {currentStep + 1} dari {steps.length}
+          </DialogDescription>
+        </DialogHeader>
+        <div className="py-4 sm:py-6">{steps[currentStep].content}</div>
+        <div className="mb-4 sm:mb-6">
+          <div className="flex justify-between text-xs sm:text-sm text-muted-foreground mb-2">
+            <span>Progress</span>
+            <span>{currentStep + 1}/{steps.length}</span>
+          </div>
+          <Progress value={((currentStep + 1) / steps.length) * 100} className="h-2" />
+        </div>
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-2">
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+            {currentStep > 0 && (
+              <Button variant="outline" onClick={handleBack} className="w-full sm:w-auto">
+                <ChevronLeft className="w-4 h-4 mr-2" />
+                Kembali
+              </Button>
+            )}
+            <Button variant="ghost" onClick={handleSkip} className="w-full sm:w-auto">
+              Lewati
+            </Button>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+            <Button variant="outline" onClick={onClose} className="w-full sm:w-auto">
+              Batal
+            </Button>
+            <Button onClick={handleNext} className="w-full sm:w-auto">
+              {currentStep === steps.length - 1 ? (
+                <>
+                  Mulai Quiz
+                  <Star className="w-4 h-4 ml-2" />
+                </>
+              ) : (
+                <>
+                  Selanjutnya
+                  <ChevronRight className="w-4 h-4 ml-2" />
+                </>
+              )}
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  )
+}
 
 export default function QuizLevelSelector() {
   const [isPageLoading, setIsPageLoading] = useState(true)
   const [selectedLevel, setSelectedLevel] = useState(null)
   const [showDialog, setShowDialog] = useState(false)
   const [dialogLevel, setDialogLevel] = useState(null)
+  const [showModeSelection, setShowModeSelection] = useState(false)
+  const [selectedMode, setSelectedMode] = useState(null)
   const { progressKosakata, user, currentLevel, currentExp, maxExp, totalKosakata } = usePage().props
+  const [showQuizSystemModal, setShowQuizSystemModal] = useState(false)
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -129,28 +367,67 @@ export default function QuizLevelSelector() {
     return () => clearTimeout(timer)
   }, [])
 
+  useEffect(() => {
+    setShowQuizSystemModal(false)
+  }, [selectedLevel, selectedMode])
+
+  // Reset selectedMode setiap kali modal mode dibuka atau level berubah
+  useEffect(() => {
+    if (showModeSelection) setSelectedMode(null)
+  }, [showModeSelection, selectedLevel])
+
   const handleLevelSelect = (level) => {
-    if (level.id === 'pro' && user.level < 4) {
-      setDialogLevel(level)
-      setShowDialog(true)
-      return
-    }
-    if (progressKosakata < level.minWordsRequired) {
-      setDialogLevel(level)
-      setShowDialog(true)
-      return
-    }
     setSelectedLevel(level.id)
+    setShowModeSelection(true)
   }
 
-  const handleContinue = () => {
-    if (selectedLevel) {
-      router.visit(route('pilih-list-quis-kosakata', { level: selectedLevel }))
+  const handleModeSelect = (modeId) => {
+    setSelectedMode(modeId)
+  }
+
+  const handleModeContinue = () => {
+    if (!hasSeenQuizExplanation()) {
+      setShowQuizSystemModal(true)
+      return
     }
+    if (selectedMode === 'manual') {
+      router.visit(route('pilih-list-quis-kosakata', { level: selectedLevel }))
+    } else if (selectedMode === 'random') {
+      router.post(route('start-quis-kosakata'), { mode: 'random', level: selectedLevel })
+    }
+  }
+
+  const handleStartQuizAfterExplanation = () => {
+    setShowQuizSystemModal(false)
+    markQuizExplanationAsSeen()
+    if (selectedMode === 'manual') {
+      router.visit(route('pilih-list-quis-kosakata', { level: selectedLevel }))
+    } else if (selectedMode === 'random') {
+      router.post(route('start-quis-kosakata'), { mode: 'random', level: selectedLevel })
+    }
+  }
+
+  const handleBackToLevel = () => {
+    setShowModeSelection(false)
+    setSelectedLevel(null)
+    setSelectedMode(null)
   }
 
   const getSelectedLevelData = () => {
     return levels.find((level) => level.id === selectedLevel)
+  }
+
+  const hasSeenQuizExplanation = () => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('quizKosakataSystemExplained') === 'true'
+    }
+    return false
+  }
+
+  const markQuizExplanationAsSeen = () => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('quizKosakataSystemExplained', 'true')
+    }
   }
 
   return (
@@ -231,9 +508,6 @@ export default function QuizLevelSelector() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
                     {levels.map((level, index) => {
                       let isLocked = progressKosakata < level.minWordsRequired
-                      if (level.id === 'pro' && user.level < 4) {
-                        isLocked = true
-                      }
                       const isSelected = selectedLevel === level.id
 
                       return (
@@ -244,7 +518,8 @@ export default function QuizLevelSelector() {
                           transition={{ duration: 0.5, delay: index * 0.1 }}
                           className={cn(
                             'group',
-                            isLocked ? 'cursor-not-allowed grayscale relative' : 'cursor-pointer'
+                            isLocked ? 'cursor-not-allowed grayscale relative' : 'cursor-pointer',
+                            isSelected && 'ring-4 ring-primary scale-105',
                           )}
                           onClick={() => !isLocked && handleLevelSelect(level)}
                           style={{ pointerEvents: isLocked ? 'none' : 'auto' }}
@@ -263,9 +538,6 @@ export default function QuizLevelSelector() {
                               <div className="absolute inset-0 bg-black/40 z-20 flex flex-col items-center justify-center rounded-2xl">
                                 <Lock className="w-10 h-10 text-white/80 mb-2" />
                                 <span className="bg-amber-500/90 text-white text-xs font-bold px-3 py-1 rounded-full mb-2">Terkunci</span>
-                                {level.id === 'pro' && user.level < 4 && (
-                                  <span className="text-white text-xs text-center px-4">Kuis di level ini akan terbuka ketika kamu sudah mencapai <b>Level 4</b>.</span>
-                                )}
                               </div>
                             )}
                             <CardContent className="p-6 flex flex-col h-full relative z-10">
@@ -329,8 +601,8 @@ export default function QuizLevelSelector() {
                     })}
                   </div>
 
-                  {/* Selected Level Details */}
-                  {selectedLevel && (
+                  {/* Onboarding/long description muncul di bawah grid card setelah klik */}
+                  {selectedLevel && !showModeSelection && (
                     <motion.div
                       className="bg-card rounded-2xl p-8 border mb-16"
                       initial={{ opacity: 0, y: 20 }}
@@ -343,23 +615,23 @@ export default function QuizLevelSelector() {
                             <div
                               className={cn(
                                 "w-12 h-12 rounded-xl flex items-center justify-center",
-                                getSelectedLevelData()?.bgGlow,
+                                levels.find((l) => l.id === selectedLevel)?.bgGlow,
                               )}
                             >
-                              <span className="text-2xl">{getSelectedLevelData()?.emoji}</span>
+                              <span className="text-2xl">{levels.find((l) => l.id === selectedLevel)?.emoji}</span>
                             </div>
                             <div>
-                              <h3 className="text-2xl font-bold">Level {getSelectedLevelData()?.name}</h3>
-                              <p className={cn("text-sm font-medium", getSelectedLevelData()?.textColor)}>
-                                {progressKosakata}/{getSelectedLevelData()?.minWordsRequired} kata dikuasai
+                              <h3 className="text-2xl font-bold">Level {levels.find((l) => l.id === selectedLevel)?.name}</h3>
+                              <p className={cn("text-sm font-medium", levels.find((l) => l.id === selectedLevel)?.textColor)}>
+                                {progressKosakata}/{levels.find((l) => l.id === selectedLevel)?.minWordsRequired} kosakata dikuasai
                               </p>
                             </div>
                           </div>
 
-                          <p className="text-muted-foreground mb-6">{getSelectedLevelData()?.longDescription}</p>
+                          <p className="text-muted-foreground mb-6">{levels.find((l) => l.id === selectedLevel)?.longDescription}</p>
 
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            {getSelectedLevelData()?.features.map((feature, i) => (
+                            {levels.find((l) => l.id === selectedLevel)?.features.map((feature, i) => (
                               <div key={i} className="flex items-center gap-2 p-3 rounded-lg bg-secondary">
                                 <div className="w-2 h-2 rounded-full bg-primary" />
                                 <span className="text-sm">{feature}</span>
@@ -369,17 +641,31 @@ export default function QuizLevelSelector() {
                         </div>
 
                         <div className="flex flex-col justify-center items-center gap-4">
-                          <Button size="lg" className="px-8 py-6 text-lg" onClick={handleContinue}>
-                            Lanjut ke Kuis Kosakata
+                          <Button size="lg" className="px-8 py-6 text-lg" onClick={() => setShowModeSelection(true)}>
+                            Pilih Mode Kuis
                             <ArrowRight size={18} className="ml-2" />
                           </Button>
                           <p className="text-sm text-muted-foreground text-center">
-                            Kamu akan mengerjakan soal kosakata sesuai level yang dipilih
+                            Pilih mode yang sesuai dengan keinginanmu
                           </p>
                         </div>
                       </div>
                     </motion.div>
                   )}
+
+                  {/* Motivational Footer */}
+                  <motion.div
+                    className="text-center"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.6 }}
+                  >
+                    <div className="bg-gradient-to-r from-primary/10 via-chart-2/10 to-chart-1/10 rounded-xl p-6 border">
+                      <p className="text-lg font-medium text-foreground">
+                        ✨ Semakin sering berlatih, semakin banyak kosakata yang kamu kuasai! ✨
+                      </p>
+                    </div>
+                  </motion.div>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -429,6 +715,118 @@ export default function QuizLevelSelector() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Modal Pemilihan Mode */}
+      <Dialog open={showModeSelection} onOpenChange={setShowModeSelection}>
+        <DialogContent className="w-[95vw] max-w-4xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
+          <DialogHeader className="mb-4">
+            <DialogTitle className="text-xl sm:text-2xl font-bold text-center">
+              Pilih Mode Kuis Kosakata 🎯
+            </DialogTitle>
+            <DialogDescription className="text-center text-sm sm:text-base">
+              {levels.find((l) => l.id === selectedLevel)?.name}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4 sm:py-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+              {quizModes.map((mode, index) => {
+                const Icon = mode.icon;
+                const isActive = selectedMode === mode.id;
+                return (
+                  <motion.div
+                    key={mode.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className={cn("group cursor-pointer", isActive && "ring-4 ring-primary scale-105")}
+                    onClick={() => handleModeSelect(mode.id)}
+                  >
+                    <div className={cn(
+                      "relative overflow-hidden rounded-2xl bg-gradient-to-br transition-all duration-300 border-2 h-full",
+                      mode.color,
+                      "hover:scale-[1.02] hover:shadow-lg",
+                    )}>
+                      <div className="p-6 flex flex-col h-full">
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+                              <Icon className="w-6 h-6 text-white" />
+                            </div>
+                            <div>
+                              <h3 className="text-xl font-bold text-white">{mode.name}</h3>
+                              {mode.bonus && (
+                                <div className="flex items-center gap-1 mt-1">
+                                  <Star className="w-3 h-3 text-yellow-300" />
+                                  <span className="text-xs text-yellow-200">Bonus Mode</span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                        <p className="text-white/90 text-sm mb-6 flex-grow">{mode.description}</p>
+                        <div className="space-y-2 mb-6">
+                          {mode.features.map((feature, i) => (
+                            <div key={i} className="bg-white/10 rounded-lg p-2 text-xs text-white/90">
+                              {feature}
+                            </div>
+                          ))}
+                        </div>
+                        <div className="flex items-center gap-2 text-xs text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-900/30 rounded px-3 py-1 w-fit mb-2">
+                          <Sparkles className="w-4 h-4" />
+                          <span>{mode.tips}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                )
+              })}
+            </div>
+            {/* Onboarding/tips dinamis muncul di bawah grid card mode */}
+            {selectedMode && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
+                className="mt-8 bg-white/20 dark:bg-slate-900/40 rounded-xl p-6 border border-primary/20"
+              >
+                <h4 className="font-bold mb-2 text-primary">Tips & Onboarding</h4>
+                <ul className="list-disc ml-5 text-sm text-primary dark:text-violet-200 mb-4">
+                  {quizModes.find((m) => m.id === selectedMode)?.onboarding.map((tip, i) => <li key={i}>{tip}</li>)}
+                </ul>
+                <Button onClick={handleModeContinue} className="w-full mt-2">
+                  {selectedMode === 'manual' ? 'Pilih Kosakata' : 'Mulai Kuis Random'}
+                </Button>
+                {/* Tombol untuk menampilkan ulang modal penjelasan quiz/EXP */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full mt-2"
+                  onClick={() => setShowQuizSystemModal(true)}
+                >
+                  <Info className="w-4 h-4 mr-2 inline" />
+                  Lihat Penjelasan Sistem Quiz/EXP
+                </Button>
+              </motion.div>
+            )}
+            <div className="flex justify-center mt-6">
+              <Button variant="outline" onClick={handleBackToLevel} className="flex items-center gap-2">
+                <ChevronLeft className="w-4 h-4" />
+                Kembali ke Pilih Level
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal penjelasan sistem quiz/EXP */}
+      <QuizSystemModal
+        key={selectedLevel + '-' + selectedMode}
+        isOpen={showQuizSystemModal}
+        onClose={() => setShowQuizSystemModal(false)}
+        onStartQuiz={handleStartQuizAfterExplanation}
+        level={selectedLevel}
+        mode={selectedMode}
+      />
     </DashboardLayout>
   )
 }

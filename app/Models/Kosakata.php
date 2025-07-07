@@ -40,4 +40,9 @@ class Kosakata extends Model
             ->withPivot('is_learned', 'is_favorite', 'last_completed_at')
             ->withTimestamps();
     }
+
+    public function soalKosakata()
+    {
+        return $this->hasMany(SoalKosakata::class, 'kosakata_id', 'id');
+    }
 }

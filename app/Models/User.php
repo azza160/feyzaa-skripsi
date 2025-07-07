@@ -54,6 +54,11 @@ public function quisHurufSessions()
     return $this->hasMany(QuisHurufSession::class, 'id_user');
 }
 
+public function quisKosakataSessions()
+{
+    return $this->hasMany(QuisKosakataSession::class, 'user_id', 'id');
+}
+
     // Removed quisHurufSessionSoals relationship - no longer needed with JSON-based tracking
 
     protected static function boot()

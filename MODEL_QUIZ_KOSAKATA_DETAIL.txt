@@ -14,180 +14,299 @@ Setiap level fokus pada aspek pembelajaran yang berbeda untuk memastikan
 pembelajaran yang natural dan efektif.
 
 ================================================================================
-2. BEGINNER LEVEL
+2. BEGINNER LEVEL (ALUR & SISTEM SOAL TERBARU)
 ================================================================================
 
-MODEL SOAL: Bidirectional Translation (TANPA AUDIO)
-DURASI: 10 soal, 5 menit per session
-FOKUS: Pengenalan dasar kosakata, recognition, translation
+A) ALUR PENGGUNA MEMILIH LEVEL BEGINER
+--------------------------------------------------------------------------------
 
-KARAKTERISTIK:
-- TANPA AUDIO (fokus visual untuk menghindari distraksi)
-- Bidirectional: Jepang → Indonesia atau Indonesia → Jepang
-- Mixed format: Kanji, Furigana, Romaji
-- Pilihan ganda 4 opsi
-- 1 kosakata = 1 soal
+1) Pengguna masuk ke halaman kuis kosakata yang menampilkan 3 card level: Beginner, Intermediate, dan Advanced. Pengguna mengklik "Pilih Level" pada card Beginner, lalu diarahkan ke halaman pemilihan mode kuis.
 
-CONTOH SOAL:
+2) Di halaman pemilihan mode kuis, pengguna diberikan 2 opsi:
+   - **Manual**: Pengguna akan diarahkan ke halaman pemilihan kosakata yang ingin dijadikan soal kuis.
+   - **Random**: Pengguna akan diarahkan ke halaman yang sama, namun tampilannya berbeda karena sistem yang akan menentukan kosakata untuk soal kuis (tanpa pemilihan manual).
 
-A. Jepang → Indonesia:
-   Soal: "食べる"
-   Pilihan: A) Makan, B) Minum, C) Tidur, D) Berjalan
-   Jawaban: A) Makan
+3) Setelah memilih mode:
+   - **Mode Manual**: Pengguna memilih kosakata yang sudah dipelajari (minimal 10 kosakata) untuk dijadikan soal kuis. Hanya kosakata yang sudah dipelajari yang bisa dipilih. Untuk memulai kuis, pengguna harus memilih tepat 10 kosakata.
+   - **Mode Random**: Pengguna tidak perlu memilih kosakata, sistem akan memilihkan 10 kosakata secara acak dari seluruh database (tidak perlu sudah dipelajari). Pengguna bisa langsung memulai kuis tanpa syarat minimal belajar kosakata.
+   - Pada kedua mode, setelah menekan tombol "Mulai Kuis", pengguna akan dialihkan ke halaman kuis.
 
-B. Indonesia → Jepang:
-   Soal: "Makan"
-   Pilihan: A) 食べる, B) 飲む, C) 寝る, D) 歩く
-   Jawaban: A) 食べる
+4) Halaman Kuis:
+   - Tampilan sama untuk mode manual dan random, yang membedakan hanya sumber kosakata soalnya.
+   - Jika mode manual, soal diambil dari kosakata yang dipilih pengguna.
+   - Jika mode random, soal diambil dari kosakata random yang dipilih sistem.
+   - **Jenis soal:**
+     - Jepang → Indonesia: "Apa arti dari kata berikut?" (bisa diubah jadi kalimat yang lebih natural)
+       - Soal dalam bentuk kanji (misal: 座る)
+       - Furigana di bawahnya (misal: すわる), bisa disembunyikan/ditampilkan dengan tombol
+       - Romaji di bawahnya (misal: suwaru), bisa disembunyikan/ditampilkan dengan tombol
+     - Indonesia → Jepang: "Apa bahasa Jepang dari kata duduk?" (bisa diubah jadi kalimat yang lebih natural)
+   - Jawaban selalu pilihan ganda (A-D), sistem yang menentukan opsi jawaban dan jawaban benar.
+   - Jika pengguna keluar dari halaman kuis (dengan tombol, ganti URL, atau navigasi lain), data kuis otomatis dihapus.
+   - Ada timer pengerjaan kuis (5 menit per session). Jika waktu habis, kuis tidak bisa dikerjakan lagi dan muncul card dengan tombol "Selesai & Lihat Review Kuis". Jika ditekan, pengguna dialihkan ke halaman review kuis.
 
-C. Kanji/Furigana → Indonesia:
-   Soal: "食べる" (dengan furigana たべる)
-   Pilihan: A) Makan, B) Minum, C) Tidur, D) Berjalan
-   Jawaban: A) Makan
+5) Halaman Review Kuis:
+   - Pengguna dapat melihat hasil review dari setiap soal yang dikerjakan, termasuk jawaban benar/salah, jawaban pengguna, dan pembahasan jika ada.
 
-KEUNGGULAN:
-- Fokus visual tanpa distraksi audio
-- Bidirectional learning yang efektif
-- Mixed format untuk variasi pembelajaran
-- Vocabulary building yang solid
-- Progressive difficulty dalam format
+--------------------------------------------------------------------------------
 
-================================================================================
-3. INTERMEDIATE LEVEL
-================================================================================
+B) SISTEM SOAL PADA LEVEL BEGINER
+--------------------------------------------------------------------------------
 
-MODEL SOAL: Fill in the Blank + Context (TANPA AUDIO)
-DURASI: 15 soal, 6 menit per session
-FOKUS: Penggunaan kosakata dalam konteks sehari-hari dan grammar natural
+- Sumber soal diambil langsung dari data kosakata (bukan dari bank soal manual).
+- Untuk setiap kosakata yang dijadikan soal (baik mode manual maupun random):
+  - Sistem akan menentukan secara acak apakah soal tersebut akan berupa Jepang → Indonesia atau Indonesia → Jepang.
+  - Jika Jepang → Indonesia:
+    - Soal: Tampilkan kanji, furigana, dan romaji (dengan opsi show/hide untuk furigana & romaji).
+    - Pertanyaan: "Apa arti dari kata berikut?" (atau kalimat natural lain)
+    - Opsi jawaban: 4 pilihan, 1 benar (arti kosakata), 3 lain diambil dari arti kosakata lain secara acak.
+  - Jika Indonesia → Jepang:
+    - Soal: Tampilkan kata dalam bahasa Indonesia (arti kosakata).
+    - Pertanyaan: "Apa bahasa Jepang dari kata ...?" (atau kalimat natural lain)
+    - Opsi jawaban: 4 pilihan, 1 benar (kosakata utama), 3 lain diambil dari kosakata lain secara acak.
+    - **Tampilan opsi jawaban:**
+      - Opsi jawaban bisa berupa kanji, furigana, dan/atau romaji, tergantung status tombol "Tampilkan Romaji" dan "Tampilkan Furigana" yang ada di halaman.
+      - **Default:** Saat pertama kali soal muncul, yang tampil hanya kanji dan furigana.
+      - Jika user menekan tombol "Tampilkan Romaji", maka romaji juga akan muncul di opsi jawaban.
+      - User bisa menyembunyikan/menampilkan furigana dan romaji sesuai kebutuhan.
+- Sistem juga menentukan jawaban benar dan menghitung EXP yang didapat sesuai dengan attempt kosakata tersebut (semakin sering dikerjakan, EXP berkurang).
+- Semua logika soal dan opsi jawaban di-generate otomatis oleh sistem berdasarkan data kosakata.
 
-KARAKTERISTIK:
-- TANPA AUDIO (fokus ke konteks)
-- Fill in the blank dengan konteks yang jelas
-- Contextual vocabulary yang masuk akal
-- Natural grammar dalam kalimat
-- Pilihan ganda 4 opsi
-- 1 kosakata = 1 soal
+--------------------------------------------------------------------------------
 
-CONTOH SOAL:
-
-A. Kosakata Utama: シャツ (shatsu)
-   Soal: "私は紳士服店で____を買います"
-   Pilihan: A) シャツ, B) 魚, C) 野菜, D) コンピューター
-   Jawaban: A) シャツ
-
-B. Kosakata Utama: 魚 (sakana)
-   Soal: "私はスーパーで____を買います"
-   Pilihan: A) 魚, B) 車, C) 本, D) 服
-   Jawaban: A) 魚
-
-C. Kosakata Utama: 電車 (densha)
-   Soal: "私は____で学校に行きます"
-   Pilihan: A) 電車, B) 本, C) 魚, D) 服
-   Jawaban: A) 電車
-
-D. Kosakata Utama: 本 (hon)
-   Soal: "私は図書館で____を読みます"
-   Pilihan: A) 本, B) 魚, C) 服, D) 車
-   Jawaban: A) 本
-
-SITUASI KONTEKS:
-- Restoran dan makanan
-- Transportasi
-- Belanja dan toko
-- Sekolah dan pendidikan
-- Rumah dan aktivitas sehari-hari
-- Kantor dan pekerjaan
-
-KEUNGGULAN:
-- Contextual learning yang natural
-- Grammar acquisition tanpa sadar
-- Practical vocabulary dalam situasi nyata
-- Critical thinking untuk memilih jawaban yang masuk akal
-- Natural sentence structure
+C) CATATAN TAMBAHAN
+--------------------------------------------------------------------------------
+- Pengguna harus mempelajari minimal 10 kosakata untuk bisa memulai kuis mode manual.
+- Pada mode random, tidak ada syarat minimal belajar kosakata.
+- Semua soal dan opsi jawaban diambil dan diacak dari data kosakata, tidak perlu membuat soal manual satu per satu.
+- Fitur show/hide furigana dan romaji membantu pengguna belajar bertahap.
+- Data kuis akan otomatis terhapus jika pengguna keluar dari halaman kuis sebelum selesai.
+- Setelah kuis selesai, pengguna bisa melihat review hasil pengerjaan.
+- Timer per session: 5 menit untuk 10 soal.
 
 ================================================================================
-4. ADVANCED LEVEL
-================================================================================
-
-MODEL SOAL: Memilih Kalimat yang Benar (TANPA AUDIO)
-DURASI: 20 soal, 7 menit per session
-FOKUS: Penggunaan kosakata yang benar dan alami dalam bahasa Jepang
-
-KARAKTERISTIK:
-- TANPA AUDIO (fokus ke analisis kalimat)
-- 4 pilihan kalimat (3 salah, 1 benar)
-- Natural vs unnatural usage
-- Grammar correctness
-- Cultural appropriateness
-- 1 kosakata = 1 soal
-
-CONTOH SOAL:
-
-A. Kosakata Utama: 見る (miru)
-   Soal: Di bawah ini, kalimat mana yang menggunakan kosakata 「見る」 
-         dengan penggunaan yang benar dan alami dalam bahasa Jepang?
-   
-   Pilihan:
-   a) 昨日、友達とラーメンを見ました。
-   b) 明日、海を見に行きます。
-   c) 朝ごはんを見て食べました。
-   d) コーヒーを見ましたか？
-   
-   Jawaban benar: b) 明日、海を見に行きます。
-
-B. Kosakata Utama: 食べる (taberu)
-   Soal: Di bawah ini, kalimat mana yang menggunakan kosakata 「食べる」 
-         dengan penggunaan yang benar dan alami dalam bahasa Jepang?
-   
-   Pilihan:
-   a) 私は音楽を食べます。
-   b) 昨日、寿司を食べました。
-   c) 本を食べて勉強します。
-   d) 車を食べに行きます。
-   
-   Jawaban benar: b) 昨日、寿司を食べました。
-
-C. Kosakata Utama: 買う (kau)
-   Soal: Di bawah ini, kalimat mana yang menggunakan kosakata 「買う」 
-         dengan penggunaan yang benar dan alami dalam bahasa Jepang?
-   
-   Pilihan:
-   a) 私は友達を買いました。
-   b) デパートで服を買います。
-   c) 映画を買って見ます。
-   d) 時間を買いました。
-   
-   Jawaban benar: b) デパートで服を買います。
-
-D. Kosakata Utama: 行く (iku)
-   Soal: Di bawah ini, kalimat mana yang menggunakan kosakata 「行く」 
-         dengan penggunaan yang benar dan alami dalam bahasa Jepang?
-   
-   Pilihan:
-   a) 私は本に行きます。
-   b) 明日、学校に行きます。
-   c) 音楽に行って聞きます。
-   d) 時間に行きました。
-   
-   Jawaban benar: b) 明日、学校に行きます。
-
-JENIS KESALAHAN YANG DITAMPILKAN:
-1. Verb Usage Error: Penggunaan verb yang tidak tepat
-2. Object Mismatch: Object yang tidak sesuai dengan verb
-3. Particle Error: Penggunaan particle yang salah
-4. Context Inappropriateness: Konteks yang tidak masuk akal
-5. Cultural Misunderstanding: Penggunaan yang tidak natural
-
-KEUNGGULAN:
-- Natural usage learning
-- Grammar awareness
-- Cultural understanding
-- Critical thinking
-- Practical application
-- Error recognition
+D) ONBOARDING/TIPS SEBELUM RANDOM QUIZ (BEGINNER)
+--------------------------------------------------------------------------------
+- Sebelum pengguna memulai random quiz pada level beginner, tampilkan onboarding atau tips singkat, misalnya:
+  - "Pada mode random, soal akan diambil dari seluruh kosakata, termasuk yang belum pernah Anda pelajari."
+  - "Jangan khawatir jika hasil Anda belum bagus, gunakan mode ini untuk latihan dan mengukur seberapa banyak kosakata yang sudah Anda kuasai."
+  - "Untuk hasil yang lebih baik, disarankan mempelajari kosakata terlebih dahulu melalui fitur belajar."
+  - "EXP yang didapatkan akan berkurang jika Anda sering mengerjakan soal dari kosakata yang sama."
+- Onboarding/tips ini bertujuan agar user baru tidak frustasi jika hasil quiz random kurang memuaskan, dan memahami tujuan mode random sebagai latihan, bukan evaluasi utama.
 
 ================================================================================
-5. SISTEM EXP PER LEVEL
+
+================================================================================
+2. INTERMEDIATE LEVEL (ALUR & SISTEM SOAL TERBARU)
+================================================================================
+
+A) ALUR PENGGUNA & SISTEM QUIS
+--------------------------------------------------------------------------------
+- Alur pengguna hampir sama dengan level beginner:
+  1) Pilih level intermediate dari halaman utama kuis kosakata (bersama beginner & advanced).
+  2) Pilih mode quis: manual (pilih kosakata yang sudah dipelajari, minimal 10) atau random (langsung, tanpa syarat minimal belajar).
+  3) Jika manual, pilih 10 kosakata yang sudah dipelajari. Jika random, sistem memilihkan 10 kosakata acak dari seluruh database.
+  4) Setelah klik "Mulai Kuis", pengguna masuk ke halaman quis.
+  5) Setelah selesai, pengguna masuk ke halaman review quis.
+- Perbedaan utama:
+  - Onboarding di setiap halaman berbeda, menyesuaikan level intermediate.
+  - Sumber soal diambil dari bank soal (bukan auto-generate dari data kosakata).
+  - Tampilan halaman quis sedikit berbeda (lebih fokus ke konteks/kalimat, tetap menarik dan konsisten dengan beginner).
+
+--------------------------------------------------------------------------------
+
+B) SISTEM SOAL & BANK SOAL
+--------------------------------------------------------------------------------
+- Soal diambil dari tabel baru: **soal_kosakata**.
+- Setiap entry di soal_kosakata mengacu ke satu kosakata utama, dan satu kosakata bisa punya beberapa soal.
+- Field utama pada tabel soal_kosakata:
+  - id
+  - kosakata_id (relasi ke kosakata utama)
+  - soal_kanji (kalimat dengan blank/____, dalam kanji)
+  - soal_furigana (kalimat dengan blank/____, dalam furigana)
+  - soal_romaji (kalimat dengan blank/____, dalam romaji)
+  - soal_arti (kalimat dengan blank/____, dalam bahasa Indonesia)
+  - opsi_a_kanji, opsi_a_furigana, opsi_a_romaji, opsi_a_arti
+  - opsi_b_kanji, opsi_b_furigana, opsi_b_romaji, opsi_b_arti
+  - opsi_c_kanji, opsi_c_furigana, opsi_c_romaji, opsi_c_arti
+  - opsi_d_kanji, opsi_d_furigana, opsi_d_romaji, opsi_d_arti
+  - jawaban_benar (a/b/c/d)
+  - (opsional) pembahasan
+- **Saran:** Gunakan field terpisah untuk setiap representasi opsi jawaban (bukan JSON), agar mudah di-query dan diakses di Laravel/Eloquent.
+- Untuk 1 kosakata, sistem akan mengacak soal mana yang akan ditampilkan (jika ada lebih dari 1 soal untuk kosakata tersebut).
+
+--------------------------------------------------------------------------------
+
+C) TAMPILAN HALAMAN QUIS
+--------------------------------------------------------------------------------
+- Halaman quis menggunakan layout yang sama dengan beginner, namun dengan penyesuaian desain agar lebih fokus ke konteks kalimat.
+- Contoh tampilan soal (kosakata utama: シャツ):
+  1. "Lengkapi kalimat berikut agar menjadi suatu kalimat utuh yang benar." (kalimat ini bisa diubah agar lebih natural)
+     私は紳士服店で____を買います
+     A) シャツ, B) 魚, C) 野菜, D) コンピューター
+- Yang tampil di halaman quis:
+  - Soal dalam bentuk kanji dan furigana (furigana bisa show/hide dengan tombol).
+  - Opsi jawaban juga hanya kanji dan furigana (furigana bisa show/hide).
+  - Romaji dan arti **tidak tampil** di halaman quis, hanya di review.
+- Aturan lain sama seperti beginner:
+  - Timer per session (10 menit untuk 10 soal).
+  - Jika keluar dari halaman, session kuis otomatis dihapus.
+  - Setelah waktu habis, muncul card "Selesai & Lihat Review Kuis".
+
+--------------------------------------------------------------------------------
+
+D) TAMPILAN HALAMAN REVIEW QUIS
+--------------------------------------------------------------------------------
+- Halaman review bisa menggunakan layout yang sama dengan beginner, dengan tambahan:
+  - Tampilkan soal lengkap: kanji, furigana, romaji, arti (semua representasi)
+  - Opsi jawaban: tampilkan semua representasi (kanji, furigana, romaji, arti)
+  - Highlight jawaban user dan jawaban benar
+  - (Opsional) Tampilkan pembahasan jika ada di database
+- Keuntungan: konsistensi UX, mudah di-maintain, user tidak bingung.
+
+--------------------------------------------------------------------------------
+
+E) ATTEMPT TRACKING & EXP
+--------------------------------------------------------------------------------
+- Attempt di level intermediate di-track **per soal** (bukan per kosakata).
+- EXP yang didapatkan menurun sesuai jumlah attempt user pada soal tersebut (mirip sistem beginner, tapi per soal).
+- Sistem anti-farming tetap berlaku: jika soal yang sama sering dikerjakan, exp akan berkurang hingga 0.
+
+--------------------------------------------------------------------------------
+
+F) ONBOARDING/TIPS
+--------------------------------------------------------------------------------
+- Onboarding/tips di setiap halaman harus menyesuaikan level intermediate:
+  - Jelaskan bahwa soal diambil dari bank soal dan berbasis konteks kalimat.
+  - Beri tahu user bahwa jawaban benar/arti/romaji bisa dilihat di halaman review.
+  - Berikan motivasi untuk belajar konteks penggunaan kosakata, bukan sekadar hafalan.
+
+--------------------------------------------------------------------------------
+
+G) CATATAN TAMBAHAN
+--------------------------------------------------------------------------------
+- Untuk random mode, sistem bisa mengacak soal dari seluruh bank soal, tidak hanya dari kosakata yang sudah dipelajari.
+- Fitur show/hide furigana tetap ada untuk membantu user belajar bertahap.
+- Kualitas bank soal sangat penting, pastikan soal benar-benar natural dan sesuai konteks kehidupan sehari-hari.
+- Jika memungkinkan, tambahkan fitur "lihat pembahasan" di review untuk soal-soal yang tricky.
+
+================================================================================
+
+================================================================================
+3. ADVANCED LEVEL (ALUR & SISTEM SOAL TERBARU)
+================================================================================
+
+A) ALUR PENGGUNA & SISTEM QUIS
+--------------------------------------------------------------------------------
+- Alur pengguna sama seperti intermediate:
+  1) Pilih level advanced dari halaman utama kuis kosakata.
+  2) Pilih mode quis: manual (pilih kosakata yang sudah dipelajari, minimal 10) atau random (langsung, tanpa syarat minimal belajar).
+  3) Jika manual, pilih 10 kosakata yang sudah dipelajari. Jika random, sistem memilihkan 10 kosakata acak dari seluruh database.
+  4) Setelah klik "Mulai Kuis", pengguna masuk ke halaman quis.
+  5) Setelah selesai, pengguna masuk ke halaman review quis.
+- Onboarding di setiap halaman menyesuaikan level advanced (penekanan pada pemahaman konteks dan penggunaan alami).
+- Sumber soal tetap dari bank soal, namun model soal lebih kompleks dan menuntut analisis konteks.
+- Tampilan halaman quis lebih fokus pada analisis kalimat dan pemilihan penggunaan yang benar.
+
+--------------------------------------------------------------------------------
+
+B) SISTEM SOAL & BANK SOAL
+--------------------------------------------------------------------------------
+- Soal diambil dari tabel **soal_kosakata** (sama dengan intermediate, dibedakan dengan field level).
+- Setiap entry mengacu ke satu kosakata utama, dan satu kosakata bisa punya beberapa soal.
+- **Model soal utama:**
+  - Memilih kalimat yang benar dan alami (natural usage) untuk kosakata tertentu.
+- Field utama pada tabel soal_kosakata:
+  - id
+  - kosakata_id (relasi ke kosakata utama)
+  - level (beginner/intermediate/advanced)
+  - soal_kanji (instruksi/pertanyaan, misal: "Pilih kalimat yang menggunakan kosakata ... dengan benar")
+  - soal_furigana
+  - soal_romaji
+  - soal_arti
+  - opsi_a_kanji, opsi_a_furigana, opsi_a_romaji, opsi_a_arti
+  - opsi_b_kanji, opsi_b_furigana, opsi_b_romaji, opsi_b_arti
+  - opsi_c_kanji, opsi_c_furigana, opsi_c_romaji, opsi_c_arti
+  - opsi_d_kanji, opsi_d_furigana, opsi_d_romaji, opsi_d_arti
+  - jawaban_benar (a/b/c/d)
+- Untuk 1 kosakata, sistem akan mengacak soal mana yang akan ditampilkan (jika ada lebih dari 1 soal untuk kosakata tersebut).
+
+--------------------------------------------------------------------------------
+
+C) TAMPILAN HALAMAN QUIS
+--------------------------------------------------------------------------------
+- Layout sama dengan intermediate, namun:
+  - Soal berupa instruksi + 4 kalimat pilihan (A-D).
+  - Hanya tampil kanji dan furigana (furigana bisa show/hide).
+  - Romaji dan arti hanya muncul di halaman review.
+  - Desain lebih fokus ke analisis kalimat dan penggunaan alami.
+- Aturan lain:
+  - Timer per session (12 menit untuk 10 soal).
+  - Jika keluar dari halaman, session kuis otomatis dihapus.
+  - Setelah waktu habis, muncul card "Selesai & Lihat Review Kuis".
+
+--------------------------------------------------------------------------------
+
+D) TAMPILAN HALAMAN REVIEW QUIS
+--------------------------------------------------------------------------------
+- Layout sama dengan intermediate:
+  - Tampilkan soal, semua opsi, dan highlight jawaban user & benar.
+  - Tampilkan semua representasi (kanji, furigana, romaji, arti).
+
+--------------------------------------------------------------------------------
+
+E) ATTEMPT TRACKING & EXP
+--------------------------------------------------------------------------------
+- Attempt di-track **per soal** (bukan per kosakata).
+- EXP menurun sesuai jumlah attempt user pada soal tersebut.
+- Sistem anti-farming tetap berlaku: jika soal yang sama sering dikerjakan, exp akan berkurang hingga 0.
+
+================================================================================
+
+4. SISTEM EXP PER ATTEMPT PER LEVEL
+================================================================================
+
+| Level        | Attempt 1 | Attempt 2 | Attempt 3 | Attempt 4+ |
+|--------------|-----------|-----------|-----------|------------|
+| Beginner     |    8      |     5     |     2     |     0      |
+| Intermediate |   12      |     7     |     3     |     0      |
+| Advanced     |   18      |    10     |     4     |     0      |
+
+- EXP hanya diberikan jika jawaban benar.
+- Attempt dihitung secara global per soal (bukan per session/user saja).
+- Sistem ini memastikan user tidak bisa farming exp dari soal/kosakata yang sama.
+
+================================================================================
+
+5. DAFTAR TABEL YANG DIPERLUKAN & BEST PRACTICE
+================================================================================
+
+A) Tabel Utama:
+- **users**: Data user, exp, level, dsb.
+- **kosakatas**: Data kosakata utama.
+- **soal_kosakata**: Bank soal untuk semua level (dengan field level).
+- **quis_kosakata_sessions**: Menyimpan session kuis per user (id, user_id, mode, level, selected_kosakata, selected_soal, user_answers, started_at, ended_at, ended, total_exp, dsb).
+- **user_kosakatas**: Tracking progress belajar kosakata per user.
+
+B) Tabel Pendukung (opsional):
+- **riwayat_exp**: Riwayat perolehan exp user.
+- **quis_kosakata_attempts**: (opsional, jika ingin tracking attempt lebih detail per user/soal)
+
+C) Best Practice Performance & Security:
+- Gunakan **index** pada kolom yang sering di-query (user_id, kosakata_id, level, dsb).
+- Simpan jawaban user dan selected soal dalam bentuk JSON di session untuk efisiensi.
+- Gunakan **rate limiting** pada endpoint start quiz dan submit answer untuk mencegah abuse.
+- Validasi ownership session di backend (user hanya bisa akses session miliknya).
+- Gunakan **ULID**/UUID untuk id session dan soal agar tidak mudah ditebak.
+- Hapus session kuis yang tidak selesai jika user keluar dari halaman.
+- Optimalkan query dengan eager loading jika perlu (misal: saat review).
+- Batasi jumlah soal per session agar tidak membebani server dan user.
+- Gunakan cache untuk progress user jika diperlukan.
+
+================================================================================
+
+================================================================================
+4. SISTEM EXP PER LEVEL
 ================================================================================
 
 BEGINNER LEVEL:
@@ -309,5 +428,57 @@ NOTES:
 - Progressive difficulty
 - Cultural awareness
 - Practical application
+
+================================================================================
+
+================================================================================
+11. TAHAPAN PENGEMBANGAN SISTEM KUIS KOSAKATA
+================================================================================
+
+1. **Analisis & Perencanaan**
+   - Finalisasi model soal, alur pengguna, dan struktur database (SELESAI)
+   - Dokumentasi kebutuhan fitur dan flow (SELESAI)
+
+2. **Setup Database**
+   - Buat/migrasi tabel: users, kosakatas, soal_kosakata, quis_kosakata_sessions, user_kosakatas, riwayat_exp (opsional)
+   - Tambahkan index pada kolom penting (user_id, kosakata_id, level, dsb)
+   - Siapkan seed data kosakata dan contoh bank soal untuk semua level
+
+3. **Pengembangan Backend (API/Controller/Service)**
+   - Endpoint untuk:
+     - List level quis & mode
+     - List kosakata yang sudah dipelajari user
+     - Start session quis (manual & random)
+     - Generate soal & opsi jawaban sesuai mode/level
+     - Submit jawaban & update exp/attempt
+     - Review hasil quis
+   - Implementasi sistem exp, attempt, anti-farming, dan session handling
+   - Validasi keamanan: session ownership, rate limiting, dsb
+
+4. **Pengembangan Frontend (Halaman & Integrasi)**
+   - Halaman pilih level quis (layout & integrasi data)
+   - Halaman pilih mode quis (manual/random)
+   - Halaman pilih list kosakata (manual) & random (otomatis)
+   - Halaman quis (tampilan soal, opsi, timer, show/hide furigana/romaji, submit jawaban)
+   - Halaman review quis (tampilkan hasil, highlight jawaban, dsb)
+   - Onboarding/tips di setiap halaman sesuai level & mode
+   - Integrasi dengan backend (API call, error handling, loading state)
+
+5. **Testing & Quality Assurance**
+   - Unit test backend (logic soal, exp, session, dsb)
+   - Integration test frontend-backend (aliran data, error case, edge case)
+   - Uji UX: navigasi, timer, show/hide, auto-delete session, dsb
+   - Uji keamanan: session ownership, rate limiting, dsb
+   - Uji performa: load data, response time, stress test
+
+6. **Optimasi & Deployment**
+   - Optimasi query, caching, dan penggunaan resource
+   - Deployment ke server/staging
+   - Monitoring error & feedback user
+
+7. **Iterasi & Pengembangan Lanjutan**
+   - Tambah fitur pembahasan, badge/achievement, dsb (jika diperlukan)
+   - Update bank soal & kosakata secara berkala
+   - Perbaikan bug & peningkatan UX/UI
 
 ================================================================================ 

@@ -85,6 +85,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/pilih-level-quis-kosakata',[QuisKosakataController::class,'pilihLevelQuisShow'])->name('pilih-level-quis-kosakata');
     Route::get('/dashboard/pilih-list-quis-kosakata',[QuisKosakataController::class,'pilihListQuisKosakata'])->name('pilih-list-quis-kosakata');
     Route::get('/dashboard/quis-kosakata/{sessionId}',[QuisKosakataController::class,'QuisKosakataShow'])->name('quis-kosakata');
+    Route::post('/dashboard/kuis-kosakata/start', [QuisKosakataController::class, 'startSession'])->name('start-quis-kosakata');
 
     // route progress uses
     Route::post('/user/belajar/update', [UserBelajarController::class, 'updateProgress'])->name('user.belajar.update');

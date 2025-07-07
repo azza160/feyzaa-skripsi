@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use App\Models\Kosakata;
+use App\Models\QuisKosakataSession;
+use App\Models\SoalKosakata;
+use Illuminate\Support\Str;
 
 class QuisKosakataController extends Controller
 {
@@ -75,100 +78,178 @@ class QuisKosakataController extends Controller
         ]);
     }
 
-    public function QuisKosakataShow($sessionId){
+    public function QuisKosakataShow($sessionId)
+    {
         $user = Auth::user();
-        
-        // Untuk sementara, kita gunakan dummy data
-        // Nanti bisa diintegrasikan dengan database
-        $quizData = [
-            [
-                'id' => 1,
-                'question' => 'Apa arti dari kosakata ini?',
-                'kosakata' => [
-                    'kanji' => '学生',
-                    'furigana' => 'がくせい',
-                    'romaji' => 'gakusei'
-                ],
-                'options' => [
-                    ['id' => 'A', 'text' => 'Guru', 'isCorrect' => false],
-                    ['id' => 'B', 'text' => 'Mahasiswa', 'isCorrect' => true],
-                    ['id' => 'C', 'text' => 'Siswa', 'isCorrect' => false],
-                    ['id' => 'D', 'text' => 'Dosen', 'isCorrect' => false]
-                ]
-            ],
-            [
-                'id' => 2,
-                'question' => 'Apa arti dari kosakata ini?',
-                'kosakata' => [
-                    'kanji' => '食べ物',
-                    'furigana' => 'たべもの',
-                    'romaji' => 'tabemono'
-                ],
-                'options' => [
-                    ['id' => 'A', 'text' => 'Minuman', 'isCorrect' => false],
-                    ['id' => 'B', 'text' => 'Makanan', 'isCorrect' => true],
-                    ['id' => 'C', 'text' => 'Pakaian', 'isCorrect' => false],
-                    ['id' => 'D', 'text' => 'Kendaraan', 'isCorrect' => false]
-                ]
-            ],
-            [
-                'id' => 3,
-                'question' => 'Apa arti dari kosakata ini?',
-                'kosakata' => [
-                    'kanji' => '友達',
-                    'furigana' => 'ともだち',
-                    'romaji' => 'tomodachi'
-                ],
-                'options' => [
-                    ['id' => 'A', 'text' => 'Keluarga', 'isCorrect' => false],
-                    ['id' => 'B', 'text' => 'Teman', 'isCorrect' => true],
-                    ['id' => 'C', 'text' => 'Tetangga', 'isCorrect' => false],
-                    ['id' => 'D', 'text' => 'Guru', 'isCorrect' => false]
-                ]
-            ],
-            [
-                'id' => 4,
-                'question' => 'Apa arti dari kosakata ini?',
-                'kosakata' => [
-                    'kanji' => '本',
-                    'furigana' => 'ほん',
-                    'romaji' => 'hon'
-                ],
-                'options' => [
-                    ['id' => 'A', 'text' => 'Buku', 'isCorrect' => true],
-                    ['id' => 'B', 'text' => 'Pensil', 'isCorrect' => false],
-                    ['id' => 'C', 'text' => 'Kertas', 'isCorrect' => false],
-                    ['id' => 'D', 'text' => 'Meja', 'isCorrect' => false]
-                ]
-            ],
-            [
-                'id' => 5,
-                'question' => 'Apa arti dari kosakata ini?',
-                'kosakata' => [
-                    'kanji' => '水',
-                    'furigana' => 'みず',
-                    'romaji' => 'mizu'
-                ],
-                'options' => [
-                    ['id' => 'A', 'text' => 'Api', 'isCorrect' => false],
-                    ['id' => 'B', 'text' => 'Udara', 'isCorrect' => false],
-                    ['id' => 'C', 'text' => 'Air', 'isCorrect' => true],
-                    ['id' => 'D', 'text' => 'Tanah', 'isCorrect' => false]
-                ]
-            ]
-        ];
+        $session = \App\Models\QuisKosakataSession::findOrFail($sessionId);
+
+        // Cek kepemilikan session
+        if ($session->user_id !== $user->id) {
+            abort(403, 'Unauthorized access to this quiz session.');
+        }
+
+        $level = $session->level;
+        $mode = $session->mode;
+        $soalList = [];
+
+        if ($level === 'beginner') {
+            // Soal disimpan di selected_kosakata (array id) dan user_answers (array)
+            // Soal detail di-generate ulang dari kosakata_id di selected_kosakata
+            $kosakatas = Kosakata::whereIn('id', $session->selected_kosakata)->get();
+            foreach ($kosakatas as $kosakata) {
+                $direction = rand(0, 1) === 0 ? 'jp_to_id' : 'id_to_jp';
+                if ($direction === 'jp_to_id') {
+                    $soalList[] = [
+                        'type' => 'jp_to_id',
+                        'kanji' => $kosakata->kanji,
+                        'furigana' => $kosakata->furigana,
+                        'romaji' => $kosakata->romaji,
+                        'question' => 'Apa arti dari kata berikut?',
+                        'options' => $this->generateOptionsIndo($kosakata->arti),
+                        'answer' => $kosakata->arti,
+                        'kosakata_id' => $kosakata->id
+                    ];
+                } else {
+                    $soalList[] = [
+                        'type' => 'id_to_jp',
+                        'arti' => $kosakata->arti,
+                        'question' => 'Apa bahasa Jepang dari kata berikut?',
+                        'options' => $this->generateOptionsJepang($kosakata),
+                        'answer' => $kosakata->kanji,
+                        'kosakata_id' => $kosakata->id
+                    ];
+                }
+            }
+        } else {
+            // Intermediate/Advanced: soal diambil dari tabel soal_kosakata
+            $soalList = SoalKosakata::whereIn('id', $session->selected_soal)->get()->toArray();
+        }
 
         return Inertia::render('User/Quis-Kosakata', [
             'user' => $user,
             'currentLevel' => $user->level,
             'currentExp' => $user->exp,
             'maxExp' => $this->calculateNextLevelExp($user->level),
-            'quizData' => $quizData,
-            'sessionId' => $sessionId,
-            'remainingTime' => 300, // 5 menit
+            'quizData' => $soalList,
+            'sessionId' => $session->id,
+            'remainingTime' => 300, // TODO: bisa diatur sesuai level
             'jenis' => 'Kosakata',
-            'level' => 'Dasar',
-            'currentQuestionIndex' => 0
+            'level' => $level,
+            'currentQuestionIndex' => 0,
+            'mode' => $mode,
+            'userAnswers' => $session->user_answers,
         ]);
+    }
+
+    public function startSession(Request $request)
+    {
+        $user = Auth::user();
+        $mode = $request->input('mode'); // manual/random
+        $level = $request->input('level'); // beginner/intermediate/advanced
+        $selectedKosakata = $request->input('selected_kosakata', []); // array of id (manual)
+        $jumlahSoal = 10;
+        $selectedSoal = [];
+        $soalList = [];
+
+        if ($level === 'beginner') {
+            if ($mode === 'manual') {
+                // Ambil kosakata yang dipilih user (harus sudah dipelajari)
+                $kosakatas = $user->kosakatas()->wherePivot('is_learned', true)->whereIn('kosakatas.id', $selectedKosakata)->get();
+            } else {
+                // Ambil 10 kosakata random dari database
+                $kosakatas = Kosakata::inRandomOrder()->limit($jumlahSoal)->get();
+            }
+            // Generate soal bidirectional (Jepang->Indo atau Indo->Jepang)
+            foreach ($kosakatas as $kosakata) {
+                $direction = rand(0, 1) === 0 ? 'jp_to_id' : 'id_to_jp';
+                if ($direction === 'jp_to_id') {
+                    $soalList[] = [
+                        'type' => 'jp_to_id',
+                        'kanji' => $kosakata->kanji,
+                        'furigana' => $kosakata->furigana,
+                        'romaji' => $kosakata->romaji,
+                        'question' => 'Apa arti dari kata berikut?',
+                        'options' => $this->generateOptionsIndo($kosakata->arti),
+                        'answer' => $kosakata->arti,
+                        'kosakata_id' => $kosakata->id
+                    ];
+                } else {
+                    $soalList[] = [
+                        'type' => 'id_to_jp',
+                        'arti' => $kosakata->arti,
+                        'question' => 'Apa bahasa Jepang dari kata berikut?',
+                        'options' => $this->generateOptionsJepang($kosakata),
+                        'answer' => $kosakata->kanji,
+                        'kosakata_id' => $kosakata->id
+                    ];
+                }
+            }
+            $selectedKosakataIds = $kosakatas->pluck('id')->toArray();
+        } else {
+            // Intermediate/Advanced
+            if ($mode === 'manual') {
+                // Ambil soal dari bank soal berdasarkan kosakata yang dipilih user
+                $soalQuery = SoalKosakata::whereIn('kosakata_id', $selectedKosakata)->where('level', $level);
+            } else {
+                // Ambil soal random dari bank soal
+                $soalQuery = SoalKosakata::where('level', $level)->inRandomOrder();
+            }
+            $soalList = $soalQuery->limit($jumlahSoal)->get()->toArray();
+            $selectedSoal = array_column($soalList, 'id');
+            $selectedKosakataIds = array_column($soalList, 'kosakata_id');
+        }
+
+        // Buat session baru
+        $session = QuisKosakataSession::create([
+            'id' => (string) Str::ulid(),
+            'user_id' => $user->id,
+            'mode' => $mode,
+            'level' => $level,
+            'selected_kosakata' => $selectedKosakataIds,
+            'selected_soal' => $selectedSoal,
+            'user_answers' => [],
+            'started_at' => now(),
+            'ended' => false,
+            'total_exp' => 0,
+        ]);
+
+        // Redirect ke halaman quis dengan sessionId
+        return redirect()->route('quis-kosakata', ['sessionId' => $session->id]);
+    }
+
+    // Helper untuk generate opsi jawaban Indonesia (Beginner)
+    private function generateOptionsIndo($jawabanBenar)
+    {
+        $opsi = [$jawabanBenar];
+        $opsiLain = \App\Models\Kosakata::inRandomOrder()->limit(10)->pluck('arti')->toArray();
+        foreach ($opsiLain as $arti) {
+            if (!in_array($arti, $opsi) && count($opsi) < 4) {
+                $opsi[] = $arti;
+            }
+        }
+        shuffle($opsi);
+        return $opsi;
+    }
+
+    // Helper untuk generate opsi jawaban Jepang (Beginner)
+    private function generateOptionsJepang($kosakata)
+    {
+        $opsi = [[
+            'kanji' => $kosakata->kanji,
+            'furigana' => $kosakata->furigana,
+            'romaji' => $kosakata->romaji
+        ]];
+        $opsiLain = \App\Models\Kosakata::inRandomOrder()->limit(10)->get();
+        foreach ($opsiLain as $kosa) {
+            if ($kosa->id !== $kosakata->id && count($opsi) < 4) {
+                $opsi[] = [
+                    'kanji' => $kosa->kanji,
+                    'furigana' => $kosa->furigana,
+                    'romaji' => $kosa->romaji
+                ];
+            }
+        }
+        shuffle($opsi);
+        return $opsi;
     }
 }
