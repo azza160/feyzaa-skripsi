@@ -330,47 +330,8 @@ PERHITUNGAN ATTEMPT:
 - Attempt 3: EXP 40%
 - Attempt 4+: 0 EXP
 
-================================================================================
-6. PROGRESS TRACKING
-================================================================================
 
-PER KOSAKATA:
-- Learned: Sudah dipelajari
-- Mastered: Sudah dikuasai dengan baik
-- Needs Review: Perlu review ulang
-
-PER LEVEL:
-- Progress percentage
-- Accuracy rate
-- Average completion time
-
-OVERALL:
-- Total kosakata dipelajari
-- Learning streak
-- Achievement unlocked
-
-================================================================================
-7. INTEGRASI DENGAN FITUR LAIN
-================================================================================
-
-FLASHCARD:
-- Kosakata dari kuis masuk ke flashcard
-- Review otomatis
-- Reinforce learning
-
-LEARNING PATH:
-- Kuis → Flashcard → Review
-- Progressive difficulty
-- Personalized learning
-
-ACHIEVEMENT SYSTEM:
-- "Vocabulary Master" (100 kosakata)
-- "Context Expert" (50 soal intermediate)
-- "Natural Speaker" (50 soal advanced)
-- "Daily Learner" (7 hari berturut-turut)
-
-================================================================================
-8. ALUR KUIS KOSAKATA
+5. ALUR KUIS KOSAKATA
 ================================================================================
 
 1. User Login → Dashboard
@@ -383,7 +344,7 @@ ACHIEVEMENT SYSTEM:
 8. Update Learning Progress → Add to Flashcard
 
 ================================================================================
-9. TECHNICAL IMPLEMENTATION
+6. TECHNICAL IMPLEMENTATION
 ================================================================================
 
 DATABASE TABLES:
@@ -401,24 +362,6 @@ PERFORMANCE:
 - Caching untuk user progress
 - Optimized queries dengan indexes
 
-================================================================================
-10. SUCCESS METRICS
-================================================================================
-
-USER ENGAGEMENT:
-- Completion rate per level
-- Average session duration
-- Return user rate
-
-LEARNING EFFECTIVENESS:
-- Accuracy improvement over time
-- Retention rate per kosakata
-- Level progression speed
-
-SYSTEM PERFORMANCE:
-- Response time
-- Error rate
-- Database efficiency
 
 ================================================================================
 NOTES:
@@ -429,56 +372,3 @@ NOTES:
 - Cultural awareness
 - Practical application
 
-================================================================================
-
-================================================================================
-11. TAHAPAN PENGEMBANGAN SISTEM KUIS KOSAKATA
-================================================================================
-
-1. **Analisis & Perencanaan**
-   - Finalisasi model soal, alur pengguna, dan struktur database (SELESAI)
-   - Dokumentasi kebutuhan fitur dan flow (SELESAI)
-
-2. **Setup Database**
-   - Buat/migrasi tabel: users, kosakatas, soal_kosakata, quis_kosakata_sessions, user_kosakatas, riwayat_exp (opsional)
-   - Tambahkan index pada kolom penting (user_id, kosakata_id, level, dsb)
-   - Siapkan seed data kosakata dan contoh bank soal untuk semua level
-
-3. **Pengembangan Backend (API/Controller/Service)**
-   - Endpoint untuk:
-     - List level quis & mode
-     - List kosakata yang sudah dipelajari user
-     - Start session quis (manual & random)
-     - Generate soal & opsi jawaban sesuai mode/level
-     - Submit jawaban & update exp/attempt
-     - Review hasil quis
-   - Implementasi sistem exp, attempt, anti-farming, dan session handling
-   - Validasi keamanan: session ownership, rate limiting, dsb
-
-4. **Pengembangan Frontend (Halaman & Integrasi)**
-   - Halaman pilih level quis (layout & integrasi data)
-   - Halaman pilih mode quis (manual/random)
-   - Halaman pilih list kosakata (manual) & random (otomatis)
-   - Halaman quis (tampilan soal, opsi, timer, show/hide furigana/romaji, submit jawaban)
-   - Halaman review quis (tampilkan hasil, highlight jawaban, dsb)
-   - Onboarding/tips di setiap halaman sesuai level & mode
-   - Integrasi dengan backend (API call, error handling, loading state)
-
-5. **Testing & Quality Assurance**
-   - Unit test backend (logic soal, exp, session, dsb)
-   - Integration test frontend-backend (aliran data, error case, edge case)
-   - Uji UX: navigasi, timer, show/hide, auto-delete session, dsb
-   - Uji keamanan: session ownership, rate limiting, dsb
-   - Uji performa: load data, response time, stress test
-
-6. **Optimasi & Deployment**
-   - Optimasi query, caching, dan penggunaan resource
-   - Deployment ke server/staging
-   - Monitoring error & feedback user
-
-7. **Iterasi & Pengembangan Lanjutan**
-   - Tambah fitur pembahasan, badge/achievement, dsb (jika diperlukan)
-   - Update bank soal & kosakata secara berkala
-   - Perbaikan bug & peningkatan UX/UI
-
-================================================================================ 

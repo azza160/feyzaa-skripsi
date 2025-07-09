@@ -143,12 +143,9 @@ class QuisController extends Controller
             default => 10,
         };
         
-        // For intermediate and advanced levels, both modes require letter requirements
-        // For beginner level, only manual mode requires letter requirements
-        if ($level !== 'beginner' || $mode === 'manual') {
-            if ($progressHuruf < $minLettersRequired) {
-                return redirect()->back()->with('error', "Untuk level $level, kamu perlu mempelajari minimal $minLettersRequired huruf terlebih dahulu.");
-            }
+        // Hanya level intermediate & advanced (mode apapun) yang divalidasi
+        if (($level === 'intermediate' || $level === 'advanced') && $progressHuruf < $minLettersRequired) {
+            return redirect()->back()->with('error', "Untuk level $level, kamu perlu mempelajari minimal $minLettersRequired huruf terlebih dahulu.");
         }
        
         // Base query for letters

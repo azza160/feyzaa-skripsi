@@ -49,8 +49,21 @@ class QuisKosakataController extends Controller
     public function pilihListQuisKosakata(Request $request){
         $user = Auth::user();
         $level = $request->query('level');
+        $mode = $request->query('mode', 'manual');
         
-        // Ambil kosakata yang sudah dipelajari user dari database
+        if ($mode === 'random') {
+            // Mode random: tidak perlu ambil preview kosakata random, hanya info informatif
+            return Inertia::render('User/Pilih-List-Quis-Kosakata', [
+                'user' => $user,
+                'currentLevel' => $user->level,
+                'currentExp' => $user->exp,
+                'maxExp' => $this->calculateNextLevelExp($user->level),
+                'level' => $level,
+                'mode' => $mode,
+                'isRandomMode' => true,
+            ]);
+        }
+        // Mode manual: ambil kosakata yang sudah dipelajari user dari database
         $kosakatas = $user->kosakatas()
             ->wherePivot('is_learned', true)
             ->get()
@@ -74,7 +87,9 @@ class QuisKosakataController extends Controller
             'currentExp' => $user->exp,
             'maxExp' => $this->calculateNextLevelExp($user->level),
             'kosakatas' => $kosakatas,
-            'level' => $level
+            'level' => $level,
+            'mode' => $mode,
+            'isRandomMode' => false
         ]);
     }
 
@@ -150,6 +165,51 @@ class QuisKosakataController extends Controller
         $jumlahSoal = 10;
         $selectedSoal = [];
         $soalList = [];
+
+        // Jika POST dari random mode, langsung buat session dan redirect ke halaman quis
+        if ($request->isMethod('post') && $mode === 'random') {
+            $kosakatas = \App\Models\Kosakata::inRandomOrder()->limit($jumlahSoal)->get();
+            $soalList = [];
+            foreach ($kosakatas as $kosakata) {
+                $direction = rand(0, 1) === 0 ? 'jp_to_id' : 'id_to_jp';
+                if ($direction === 'jp_to_id') {
+                    $soalList[] = [
+                        'type' => 'jp_to_id',
+                        'kanji' => $kosakata->kanji,
+                        'furigana' => $kosakata->furigana,
+                        'romaji' => $kosakata->romaji,
+                        'question' => 'Apa arti dari kata berikut?',
+                        'options' => $this->generateOptionsIndo($kosakata->arti),
+                        'answer' => $kosakata->arti,
+                        'kosakata_id' => $kosakata->id
+                    ];
+                } else {
+                    $soalList[] = [
+                        'type' => 'id_to_jp',
+                        'arti' => $kosakata->arti,
+                        'question' => 'Apa bahasa Jepang dari kata berikut?',
+                        'options' => $this->generateOptionsJepang($kosakata),
+                        'answer' => $kosakata->kanji,
+                        'kosakata_id' => $kosakata->id
+                    ];
+                }
+            }
+            $selectedKosakataIds = $kosakatas->pluck('id')->toArray();
+            $session = QuisKosakataSession::create([
+                'id' => (string) Str::ulid(),
+                'user_id' => $user->id,
+                'mode' => $mode,
+                'level' => $level,
+                'selected_kosakata' => $selectedKosakataIds,
+                'selected_soal' => [],
+                'user_answers' => [],
+                'started_at' => now(),
+                'ended' => false,
+                'total_exp' => 0,
+                'soal' => $soalList,
+            ]);
+            return redirect()->route('quis-kosakata', ['sessionId' => $session->id]);
+        }
 
         if ($level === 'beginner') {
             if ($mode === 'manual') {

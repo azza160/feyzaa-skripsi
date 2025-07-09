@@ -334,12 +334,14 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
 }
 
 export default function VocabularySelector() {
-  const [selectedVocabulary, setSelectedVocabulary] = useState([])
-  const [searchQuery, setSearchQuery] = useState("")
   const [isLoading, setIsLoading] = useState(true)
   const [currentPage, setCurrentPage] = useState(1)
-  const { kosakatas, level, mode } = usePage().props
+  const { kosakatas, level, mode, isRandomMode } = usePage().props
+  const safeKosakatas = kosakatas ?? [];
 
+  // Manual mode state
+  const [selectedVocabulary, setSelectedVocabulary] = useState([])
+  const [searchQuery, setSearchQuery] = useState("")
   const requiredCount = 10
   const itemsPerPage = 5
 
@@ -353,16 +355,16 @@ export default function VocabularySelector() {
 
   // Filter vocabulary based on search query
   const filteredVocabulary = useMemo(() => {
-    if (!searchQuery.trim()) return kosakatas
+    if (!searchQuery.trim()) return safeKosakatas
 
     const query = searchQuery.toLowerCase()
-    return kosakatas.filter(
+    return safeKosakatas.filter(
       (vocab) =>
         vocab.romaji.toLowerCase().includes(query) ||
         vocab.arti.toLowerCase().includes(query) ||
         (vocab.kanji && vocab.kanji.includes(query)),
     )
-  }, [searchQuery, kosakatas])
+  }, [searchQuery, safeKosakatas])
 
   // Pagination logic
   const totalPages = Math.ceil(filteredVocabulary.length / itemsPerPage)
@@ -438,28 +440,10 @@ export default function VocabularySelector() {
   const LevelIcon = levelInfo[level]?.icon || GraduationCap
   const ModeIcon = modeInfo[mode]?.icon || Shuffle
 
-  // Loading component
-  if (isLoading) {
-    return (
-      <DashboardLayout>
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="text-center">
-            <motion.div
-              className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"
-              animate={{ rotate: 360 }}
-              transition={{ duration: 1, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
-            />
-            <p className="text-gray-600 dark:text-gray-400">Memuat kosakata...</p>
-          </div>
-        </div>
-      </DashboardLayout>
-    )
-  }
-
   return (
     <DashboardLayout>
       <div className="max-w-7xl mx-auto p-6 space-y-8">
-        {/* Breadcrumb Navigation */}
+        {/* Header (breadcrumb + motion) */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -467,23 +451,11 @@ export default function VocabularySelector() {
           className="flex items-center space-x-2 text-sm bg-gradient-to-r from-background to-muted/50 dark:from-slate-950 dark:to-slate-900/50 p-3 rounded-lg shadow-sm border border-border/50 dark:border-slate-800/50 mb-[50px] w-fit"
         >
           <div className="flex flex-wrap items-center space-x-2">
-            <Link href={route("dashboard")}>
-              <span className="text-muted-foreground dark:text-slate-400 hover:text-violet-800 dark:hover:text-violet-300 transition-all duration-300">
-                Dashboard
-              </span>
-            </Link>
+            <Link href={route("dashboard")}> <span className="text-muted-foreground dark:text-slate-400 hover:text-violet-800 dark:hover:text-violet-300 transition-all duration-300">Dashboard</span> </Link>
             <span className="text-primary dark:text-violet-400">/</span>
-            <Link href={route("pilih-level-quis-kosakata")}>
-              <span className="text-violet-400 dark:text-violet-600">
-                Kuis Kosakata
-              </span>
-            </Link>
+            <Link href={route("pilih-level-quis-kosakata")}> <span className="text-violet-400 dark:text-violet-600">Kuis Kosakata</span> </Link>
             <span className="text-primary dark:text-violet-400">/</span>
-            <Link href={route("pilih-list-quis-kosakata", { level: level })}>
-              <span className="text-violet-400 dark:text-violet-600">
-                Pilih Kosakata
-              </span>
-            </Link>
+            <span className="text-violet-400 dark:text-violet-600">Pilih Kosakata</span>
           </div>
           <motion.div
             className="h-1 w-1 rounded-full bg-primary/50 dark:bg-violet-500/50"
@@ -492,147 +464,231 @@ export default function VocabularySelector() {
           />
         </motion.div>
 
-        {/* Header Dinamis: badge level & mode, tips/alert */}
+        {/* Hero Section - Selalu tampil di kedua mode */}
         <motion.div
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5 }}
-          className="mb-8 text-center relative"
+          className="mb-12 text-center relative"
         >
-          <div className="flex flex-wrap justify-center gap-3 mb-4">
-            <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-full font-semibold text-sm ${levelInfo[level]?.color || 'bg-gray-300 text-gray-800'}`}>
-              <LevelIcon className="w-5 h-5" />
-              {levelInfo[level]?.label || 'Level' }
-            </span>
-            <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-full font-semibold text-sm ${modeInfo[mode]?.color || 'bg-gray-300 text-gray-800'}`}>
-              <ModeIcon className="w-5 h-5" />
-              {modeInfo[mode]?.label || 'Mode'}
-            </span>
-          </div>
-          <div className="flex flex-col items-center gap-2">
-            <span className="text-base font-medium text-primary dark:text-violet-300">{levelInfo[level]?.tips}</span>
-            <span className="text-sm text-muted-foreground">{modeInfo[mode]?.tips}</span>
-          </div>
-        </motion.div>
-
-        {/* Alert Dinamis sesuai mode */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="mb-6"
-        >
-          <Alert className={mode === 'random' ? 'bg-pink-50 border-pink-200 dark:bg-pink-900/20 dark:border-pink-700' : 'bg-blue-50 border-blue-200 dark:bg-blue-900/20 dark:border-blue-700'}>
-            <AlertDescription className="flex items-center gap-2">
-              <ModeIcon className="w-5 h-5" />
-              <span>{modeInfo[mode]?.alert}</span>
-            </AlertDescription>
-          </Alert>
-        </motion.div>
-
-        {/* Search Bar */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="relative max-w-md mx-auto"
-        >
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-          <Input
-            type="text"
-            placeholder="Cari kosakata (romaji)..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 pr-4 py-3 text-lg rounded-xl border-2 focus:border-primary"
-          />
-          {searchQuery && (
-            <motion.button
-              initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-              onClick={() => setSearchQuery("")}
-            >
-              ×
-            </motion.button>
-          )}
-        </motion.div>
-
-        {/* Results Info */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-          className="text-center text-sm text-gray-600 dark:text-gray-400"
-        >
-          {searchQuery ? (
-            <p>
-              Menampilkan {filteredVocabulary.length} kosakata untuk "{searchQuery}"
-            </p>
-          ) : (
-            <p>Menampilkan {filteredVocabulary.length} kosakata tersedia</p>
-          )}
-        </motion.div>
-
-        {/* Vocabulary Grid */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"
-        >
-          <AnimatePresence mode="popLayout">
-            {currentVocabulary.map((vocabulary, index) => (
-              <motion.div
-                key={vocabulary.id}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8 }}
-                transition={{
-                  duration: 0.3,
-                  delay: Math.min(index * 0.05, 0.5),
-                }}
-                layout
-              >
-                <VocabularyCard
-                  vocabulary={vocabulary}
-                  isSelected={selectedVocabulary.includes(vocabulary.id)}
-                  onClick={() => toggleVocabularySelection(vocabulary.id)}
-                />
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </motion.div>
-
-        {/* No Results */}
-        {filteredVocabulary.length === 0 && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-12">
-            <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Search className="w-8 h-8 text-gray-400" />
+          <div className={isRandomMode
+            ? "py-8 px-4 relative z-0 bg-gradient-to-r from-violet-500/20 via-purple-500/10 to-pink-500/10 dark:from-violet-800/30 dark:via-purple-800/20 dark:to-pink-800/20 rounded-lg"
+            : "py-8 px-4 relative z-0 bg-gradient-to-r from-blue-500/20 via-purple-500/10 to-pink-500/10 dark:from-blue-800/30 dark:via-purple-800/20 dark:to-pink-800/20 rounded-lg"}
+          >
+            <div className="inline-block mb-4 bg-violet-500/20 p-2 rounded-full">
+              {isRandomMode
+                ? <Shuffle className="h-8 w-8 text-slate-900 dark:text-slate-200" />
+                : <BookOpen className="h-8 w-8 text-slate-900 dark:text-slate-200" />}
             </div>
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">Tidak ada kosakata ditemukan</h3>
-            <p className="text-gray-600 dark:text-gray-400">Coba gunakan kata kunci yang berbeda</p>
-          </motion.div>
-        )}
+            <h1 className="text-4xl md:text-5xl font-bold mb-3 text-slate-900 dark:text-slate-200 capitalize">
+              {isRandomMode ? "Random Challenge Mode" : "Pilih Kosakata untuk Kuis"}
+            </h1>
+            <p className="text-slate-500 dark:text-slate-400 text-lg max-w-2xl mx-auto">
+              {isRandomMode
+                ? <>Sistem akan memilih soal secara acak untuk tantangan yang menantang!<br /><span className="text-sm inline-block mt-2 bg-purple-500/10 px-3 py-1 rounded-full text-purple-600 dark:text-purple-400">🎯 Tantangan Acak</span></>
+                : <>Pilih tepat 10 kosakata yang ingin kamu ujikan<br /><span className="text-sm inline-block mt-2 bg-primary/5 px-3 py-1 rounded-full">Pilih kosakata yang ingin kamu latih!</span></>}
+            </p>
+          </div>
+        </motion.div>
 
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-          />
-        )}
+        {/* Konten utama: random atau manual */}
+        {isRandomMode ? (
+          // === RANDOM MODE CONTENT START ===
+          <div className="max-w-6xl mx-auto px-4">
+            {/* Info Box */}
+            <motion.div
+              className="mb-8"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950/30 dark:to-pink-950/30 rounded-xl p-6 border border-purple-200 dark:border-purple-800">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 rounded-xl bg-purple-500 flex items-center justify-center">
+                    <Shuffle className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-purple-800 dark:text-purple-300">Random Challenge Mode</h3>
+                    <p className="text-purple-600 dark:text-purple-400 text-sm">Tantangan dengan kosakata acak!</p>
+                  </div>
+                </div>
+                <div className="bg-white/50 dark:bg-purple-900/30 rounded-lg p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Shuffle className="w-5 h-5 text-purple-500" />
+                    <span className="font-semibold">Sistem Otomatis</span>
+                  </div>
+                  <p className="text-sm text-purple-700 dark:text-purple-300">Soal dipilih secara acak oleh sistem. Tidak perlu memilih kosakata manual.</p>
+                </div>
+                <div className="mt-4 p-3 bg-purple-100 dark:bg-purple-900/50 rounded-lg">
+                  <p className="text-sm text-purple-800 dark:text-purple-300 text-center">
+                    <strong>Mode Tantangan Acak</strong>
+                    <br />
+                    Sistem akan memilih soal secara acak dari semua kosakata yang tersedia!
+                  </p>
+                </div>
+              </div>
+            </motion.div>
 
-        {/* Progress & Actions */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="bg-white dark:bg-gray-800 rounded-2xl border-2 border-gray-200 dark:border-gray-700 p-6 space-y-6"
-        >
-          {/* Progress Section & Preview hanya untuk manual */}
-          {mode !== 'random' ? (
-            <>
+            {/* Summary Card & Action */}
+            <motion.div
+              className="bg-card border rounded-xl p-6"
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.3 }}
+            >
+              <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+                <div className="w-full md:w-2/3">
+                  <div className="space-y-4">
+                    <div className="flex justify-between mb-2">
+                      <span className="text-sm font-medium flex items-center gap-1">
+                        <Shuffle className="w-4 h-4 text-purple-500" />
+                        Random Challenge Mode
+                      </span>
+                      <span className="text-sm text-purple-600 dark:text-purple-400 font-medium">
+                        Siap untuk tantangan!
+                      </span>
+                    </div>
+                    <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950/30 dark:to-pink-950/30 rounded-lg p-4 border border-purple-200 dark:border-purple-800">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium text-purple-800 dark:text-purple-300">
+                            Sistem akan memilih soal secara acak
+                          </p>
+                          <p className="text-xs text-purple-600 dark:text-purple-400 mt-1">
+                            Tidak perlu memilih kosakata manual
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <div className="flex items-center gap-1 text-purple-600 dark:text-purple-400">
+                            <Shuffle className="w-4 h-4" />
+                            <span className="text-sm font-bold">Sistem Otomatis</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex flex-col items-center gap-4">
+                  <Button
+                    size="lg"
+                    className="px-8 py-6 text-lg bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white"
+                    onClick={() => {
+                      router.post(route('start-quis-kosakata'), { mode: 'random', level }, { preserveScroll: true })
+                    }}
+                  >
+                    Mulai Kuis
+                    <Shuffle size={18} className="ml-2" />
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+          // === RANDOM MODE CONTENT END ===
+        ) : (
+          // === MANUAL MODE CONTENT START ===
+          <>
+            {/* Search Bar */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="relative max-w-md mx-auto"
+            >
+              
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Input
+                type="text"
+                placeholder="Cari kosakata (romaji)..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 pr-4 py-3 text-lg rounded-xl border-2 focus:border-primary"
+              />
+              {searchQuery && (
+                <motion.button
+                  initial={{ opacity: 0, scale: 0 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  onClick={() => setSearchQuery("")}
+                >
+                  ×
+                </motion.button>
+              )}
+            </motion.div>
+
+            {/* Results Info */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+              className="text-center text-sm text-gray-600 dark:text-gray-400"
+            >
+              {searchQuery ? (
+                <p>
+                  Menampilkan {filteredVocabulary.length} kosakata untuk "{searchQuery}"
+                </p>
+              ) : (
+                <p>Menampilkan {filteredVocabulary.length} kosakata tersedia</p>
+              )}
+            </motion.div>
+
+            {/* Vocabulary Grid */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"
+            >
+              <AnimatePresence mode="popLayout">
+                {currentVocabulary.map((vocabulary, index) => (
+                  <motion.div
+                    key={vocabulary.id}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    transition={{
+                      duration: 0.3,
+                      delay: Math.min(index * 0.05, 0.5),
+                    }}
+                    layout
+                  >
+                    <VocabularyCard
+                      vocabulary={vocabulary}
+                      isSelected={selectedVocabulary.includes(vocabulary.id)}
+                      onClick={() => toggleVocabularySelection(vocabulary.id)}
+                    />
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </motion.div>
+
+            {/* No Results */}
+            {filteredVocabulary.length === 0 && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-12">
+                <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Search className="w-8 h-8 text-gray-400" />
+                </div>
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">Tidak ada kosakata ditemukan</h3>
+                <p className="text-gray-600 dark:text-gray-400">Coba gunakan kata kunci yang berbeda</p>
+              </motion.div>
+            )}
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+              />
+            )}
+
+            {/* Progress & Actions */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="bg-white dark:bg-gray-800 rounded-2xl border-2 border-gray-200 dark:border-gray-700 p-6 space-y-6"
+            >
+              {/* Progress Section & Preview hanya untuk manual */}
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
@@ -649,7 +705,7 @@ export default function VocabularySelector() {
                 <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">Kosakata Terpilih:</h4>
                 <div className="flex flex-wrap gap-2">
                   {selectedVocabulary.map((id) => {
-                    const vocab = kosakatas.find((v) => v.id === id)
+                    const vocab = safeKosakatas.find((v) => v.id === id)
                     return (
                       <motion.div
                         key={id}
@@ -672,63 +728,59 @@ export default function VocabularySelector() {
                   ))}
                 </div>
               </div>
-            </>
-          ) : (
-            <div className="text-center text-base text-muted-foreground py-8">
-              <Shuffle className="w-8 h-8 mx-auto mb-2 text-pink-500" />
-              <p>Sistem akan memilihkan 10 kosakata secara acak untukmu.<br />Kamu bisa langsung mulai kuis!</p>
-            </div>
-          )}
 
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-between items-center">
-            <Button
-              variant="outline"
-              onClick={autoSelectVocabulary}
-              className="flex items-center gap-2 w-full sm:w-auto bg-transparent"
+              {/* Action Buttons */}
+              <div className="flex flex-col sm:flex-row gap-4 justify-between items-center">
+                <Button
+                  variant="outline"
+                  onClick={autoSelectVocabulary}
+                  className="flex items-center gap-2 w-full sm:w-auto bg-transparent"
+                >
+                  <Shuffle className="w-4 h-4" />
+                  Pilih Otomatis
+                </Button>
+
+                <div className="flex flex-col items-center gap-2">
+                  <Button 
+                    size="lg" 
+                    disabled={!canStartQuiz} 
+                    className="px-8 py-3 text-lg font-semibold w-full sm:w-auto"
+                    onClick={() => {
+                      if (canStartQuiz) {
+                        router.visit(route('quis-kosakata', { sessionId: 'dummy-session-' + Date.now() }))
+                      }
+                    }}
+                  >
+                    <Play className="w-5 h-5 mr-2" />
+                    Mulai Kuis
+                  </Button>
+
+                  {!canStartQuiz && (
+                    <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                      <AlertCircle className="w-4 h-4" />
+                      Pilih tepat {requiredCount} kosakata untuk memulai
+                    </p>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Motivational Footer */}
+            <motion.div
+              className="text-center"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.6 }}
             >
-              <Shuffle className="w-4 h-4" />
-              Pilih Otomatis
-            </Button>
-
-            <div className="flex flex-col items-center gap-2">
-              <Button 
-                size="lg" 
-                disabled={!canStartQuiz} 
-                className="px-8 py-3 text-lg font-semibold w-full sm:w-auto"
-                onClick={() => {
-                  if (canStartQuiz) {
-                    router.visit(route('quis-kosakata', { sessionId: 'dummy-session-' + Date.now() }))
-                  }
-                }}
-              >
-                <Play className="w-5 h-5 mr-2" />
-                Mulai Kuis
-              </Button>
-
-              {!canStartQuiz && (
-                <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1">
-                  <AlertCircle className="w-4 h-4" />
-                  Pilih tepat {requiredCount} kosakata untuk memulai
+              <div className="bg-gradient-to-r from-primary/10 via-chart-2/10 to-chart-1/10 rounded-xl p-6 border">
+                <p className="text-lg font-medium text-foreground">
+                  ✨ Semakin sering berlatih, semakin banyak kosakata yang kamu kuasai! ✨
                 </p>
-              )}
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Motivational Footer */}
-        <motion.div
-          className="text-center"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-        >
-          <div className="bg-gradient-to-r from-primary/10 via-chart-2/10 to-chart-1/10 rounded-xl p-6 border">
-            <p className="text-lg font-medium text-foreground">
-              ✨ Semakin sering berlatih, semakin banyak kosakata yang kamu kuasai! ✨
-            </p>
-          </div>
-        </motion.div>
+              </div>
+            </motion.div>
+          </>
+          // === MANUAL MODE CONTENT END ===
+        )}
       </div>
     </DashboardLayout>
   )

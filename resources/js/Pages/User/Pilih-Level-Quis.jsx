@@ -137,21 +137,7 @@ export default function QuizLevelSelect() {
   }, [])
 
   const handleLevelSelect = (level) => {
-    // Special case for Beginner level: random mode doesn't require letters
-    if (level.id === 'beginner' && isRandomMode) {
-      setSelectedLevel(level.id)
-      setShowModeSelection(true)
-      return
-    }
-    
-    // For all other cases, check letter requirements
-    if (progressHuruf < level.minLettersRequired) {
-      setDialogLevel(level)
-      setShowDialog(true)
-      return
-    }
     setSelectedLevel(level.id)
-    setShowModeSelection(true)
   }
 
   const handleModeSelect = (mode) => {
@@ -161,7 +147,6 @@ export default function QuizLevelSelect() {
         level: selectedLevel
       }));
     } else if (mode === 'random') {
-      // For random mode, we'll create a special route or handle it differently
       router.visit(route('pilih-list-huruf-quis', {
         jenis: jenis,
         level: selectedLevel,
@@ -216,7 +201,7 @@ export default function QuizLevelSelect() {
 
     return (
       <Dialog open={showModeSelection} onOpenChange={setShowModeSelection}>
-        <DialogContent className="w-[95vw] max-w-4xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
+        <DialogContent className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[95vw] max-w-4xl max-h-[90vh] overflow-y-auto p-4 sm:p-6 bg-white dark:bg-slate-900 border border-border shadow-xl z-50">
           <DialogHeader className="mb-4">
             <DialogTitle className="text-xl sm:text-2xl font-bold text-center">
               Pilih Mode Quiz 🎯
@@ -241,6 +226,7 @@ export default function QuizLevelSelect() {
                     "relative overflow-hidden rounded-2xl bg-gradient-to-br transition-all duration-300 border-2 h-full",
                     mode.color,
                     "hover:scale-[1.02] hover:shadow-lg",
+                    selectedLevel === mode.id && 'ring-4 ring-primary scale-105 rounded-2xl',
                   )}>
                     <div className="p-6 flex flex-col h-full">
                       {/* Header */}
@@ -444,14 +430,19 @@ export default function QuizLevelSelect() {
                           initial={{ opacity: 0, y: 30 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ duration: 0.5, delay: index * 0.1 }}
-                          className={cn("group cursor-pointer", isLocked && "opacity-60")}
+                          className={cn(
+                            'group cursor-pointer',
+                            isLocked && 'opacity-60',
+                            selectedLevel === level.id && 'ring-4 ring-primary scale-105 rounded-2xl',
+                          )}
                           onClick={() => !isLocked && handleLevelSelect(level)}
                         >
                           <div
                             className={cn(
-                              "relative overflow-hidden rounded-2xl bg-gradient-to-br transition-all duration-300 border-2 h-full",
+                              'relative overflow-hidden rounded-2xl bg-gradient-to-br transition-all duration-300 border-2 h-full',
                               level.color,
-                              "hover:scale-[1.02] hover:shadow-lg",
+                              'hover:scale-[1.02] hover:shadow-lg',
+                              selectedLevel === level.id && 'ring-2 ring-primary ring-offset-2 shadow-lg rounded-2xl',
                             )}
                           >
                             <CardContent className="p-6 flex flex-col h-full">
@@ -574,6 +565,10 @@ export default function QuizLevelSelect() {
                           <p className="text-sm text-muted-foreground text-center">
                             Pilih mode yang sesuai dengan keinginanmu
                           </p>
+                          <Button variant="outline" onClick={handleBackToLevel} className="flex items-center gap-2">
+                            <ChevronRight className="w-4 h-4 mr-2 rotate-180" />
+                            Kembali ke Pilih Level
+                          </Button>
                         </div>
                       </div>
                     </motion.div>
