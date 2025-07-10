@@ -745,9 +745,14 @@ export default function VocabularySelector() {
                     size="lg" 
                     disabled={!canStartQuiz} 
                     className="px-8 py-3 text-lg font-semibold w-full sm:w-auto"
-                    onClick={() => {
+                    onClick={async () => {
                       if (canStartQuiz) {
-                        router.visit(route('quis-kosakata', { sessionId: 'dummy-session-' + Date.now() }))
+                        // POST ke backend untuk mode manual
+                        router.post(route('start-quis-kosakata'), {
+                          mode: 'manual',
+                          level: level,
+                          selected_kosakata: selectedVocabulary
+                        })
                       }
                     }}
                   >

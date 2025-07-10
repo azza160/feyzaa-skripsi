@@ -55,7 +55,8 @@ const FloatingParticles = () => {
 const QuizCompletion = ({ isTimeUp, answers, totalQuestions, onViewReview, onExitQuis }) => {
   const answeredCount = answers.length;
   const correctCount = answers.filter((a) => a.isCorrect).length;
-  const percent = totalQuestions > 0 ? Math.round((answeredCount / totalQuestions) * 100) : 0;
+  const wrongCount = answeredCount - correctCount;
+  const percent = totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 0;
   return (
     <div className="flex items-center justify-center p-4">
       <motion.div
@@ -83,19 +84,36 @@ const QuizCompletion = ({ isTimeUp, answers, totalQuestions, onViewReview, onExi
             )}
 
             <div className="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/60 dark:to-purple-900/60 rounded-2xl p-6 mb-8 border border-indigo-100 dark:border-indigo-700">
-              <div className="text-4xl font-bold text-indigo-600 dark:text-indigo-300 mb-2">{answeredCount}</div>
-              <p className="text-gray-600 dark:text-gray-300 font-medium">Soal Dikerjakan</p>
-              <div className="text-lg font-semibold text-purple-600 dark:text-purple-300 mt-2">Selesai {percent}%</div>
+              <div className="flex flex-col gap-2 items-center justify-center">
+                <div className="flex items-center gap-4 justify-center mb-2">
+                  <div className="flex flex-col items-center">
+                    <span className="text-3xl font-bold text-green-600 dark:text-green-300">{correctCount}</span>
+                    <span className="text-xs text-green-700 dark:text-green-300">Benar</span>
+                  </div>
+                  <span className="text-2xl font-bold text-gray-400 dark:text-gray-500">/</span>
+                  <div className="flex flex-col items-center">
+                    <span className="text-3xl font-bold text-red-500 dark:text-red-400">{wrongCount}</span>
+                    <span className="text-xs text-red-600 dark:text-red-400">Salah</span>
+                  </div>
+                </div>
+                <div className="text-lg font-semibold text-purple-600 dark:text-purple-300 mt-2">Skor Akhir: {correctCount} dari {totalQuestions} soal ({percent}%)</div>
+              </div>
             </div>
 
+            <div className="bg-red-50 dark:bg-red-900/40 border border-red-200 dark:border-red-700 rounded-xl p-4 mb-6 flex flex-col items-center">
+              <span className="text-red-700 dark:text-red-200 font-semibold text-base mb-1">Peringatan!</span>
+              <span className="text-sm text-red-700 dark:text-red-200 text-center">
+                Jika kamu keluar dari halaman ini tanpa menekan tombol di bawah, data kuis akan dihapus dan EXP tidak akan didapatkan.
+              </span>
+            </div>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button
                 size="lg"
-                className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold py-4 rounded-xl shadow-lg"
+                className="w-full max-w-xs mx-auto bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold py-3 rounded-xl shadow-lg text-[13px] sm:text-base break-words"
                 onClick={onExitQuis}
               >
                 <Eye className="w-5 h-5 mr-2" />
-                Selesai Kuis  Dan Lihat Review Jawaban
+                Selesai Kuis dan Lihat Review Jawaban
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
             </motion.div>
@@ -117,7 +135,6 @@ export default function QuizHurufPage() {
   const [isQuizComplete, setIsQuizComplete] = useState(false)
   const [isTimeUp, setIsTimeUp] = useState(false)
   const [exitDialogOpen, setExitDialogOpen] = useState(false)
-  const [isPaused, setIsPaused] = useState(false)
   const [soundEnabled, setSoundEnabled] = useState(true)
   const [showCompletion, setShowCompletion] = useState(false)
 
@@ -126,14 +143,14 @@ export default function QuizHurufPage() {
 
   // Timer countdown
   useEffect(() => {
-    if (timeLeft > 0 && !isQuizComplete && !isPaused && !showCompletion) {
+    if (timeLeft > 0 && !isQuizComplete && !showCompletion) {
       const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000)
       return () => clearTimeout(timer)
     } else if (timeLeft === 0 && !showCompletion) {
       setIsTimeUp(true)
       handleQuizComplete()
     }
-  }, [timeLeft, isQuizComplete, isPaused, showCompletion])
+  }, [timeLeft, isQuizComplete, showCompletion])
 
   // Character animation on question change
   useEffect(() => {
@@ -229,11 +246,6 @@ export default function QuizHurufPage() {
     router.visit(route('review-quis', { sessionId: sessionId }))
   }
 
-  // Toggle pause
-  const togglePause = () => {
-    setIsPaused(!isPaused)
-  }
-
   // Exit quiz
   const handleExitQuiz = () => {
     setExitDialogOpen(false)
@@ -303,16 +315,6 @@ export default function QuizHurufPage() {
 
                   <div className="flex items-center gap-2">
                   
-
-                    {/* Pause Button */}
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      onClick={togglePause} 
-                      className="text-gray-600 dark:text-gray-400 hover:bg-white/50 dark:hover:bg-slate-800/50"
-                    >
-                      {isPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
-                    </Button>
 
                     {/* Exit Button */}
                     <Dialog open={exitDialogOpen} onOpenChange={setExitDialogOpen}>
@@ -424,7 +426,7 @@ export default function QuizHurufPage() {
                             initial={{ scale: 0.8, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
                             transition={{ delay: 0.4, type: "spring", stiffness: 200 }}
-                            className="inline-flex items-center justify-center w-[300px] h-24 bg-gradient-to-br from-indigo-500 to-purple-600 dark:from-indigo-600 dark:to-purple-700 rounded-2xl shadow-xl text-white text-4xl font-bold relative"
+                            className="inline-flex items-center justify-center w-[230px] md:w-[300px] h-24 bg-gradient-to-br from-indigo-500 to-purple-600 dark:from-indigo-600 dark:to-purple-700 rounded-2xl shadow-xl text-white text-3xl md:text-4xl font-bold relative"
                           >
                             {quizData[currentQuestion].character}
                             <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent rounded-2xl"></div>
@@ -595,18 +597,16 @@ export default function QuizHurufPage() {
             </div>
 
             {/* Progress Indicator */}
-            <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-30">
+            <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-30 w-full px-2">
               <motion.div
                 initial={{ y: 100, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                className="bg-gradient-to-r from-white/90 to-white/80 dark:from-slate-900/90 dark:to-slate-800/80 backdrop-blur-md rounded-2xl shadow-2xl px-6 py-4 border border-white/30 dark:border-slate-700/30 relative overflow-hidden"
+                className="bg-gradient-to-r from-white/90 to-white/80 dark:from-slate-900/90 dark:to-slate-800/80 backdrop-blur-md rounded-2xl shadow-2xl px-2 py-4 border border-white/30 dark:border-slate-700/30 relative overflow-hidden w-full max-w-2xl mx-auto"
+                style={{overflowX: 'auto'}}
               >
-                {/* Background decoration */}
-                <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/5 to-purple-500/5 dark:from-indigo-500/10 dark:to-purple-500/10"></div>
-
-                <div className="relative z-10 flex items-center gap-4">
+                <div className="relative z-10 flex items-center justify-center gap-4 overflow-x-auto">
                   <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Progress:</span>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center justify-center gap-2 overflow-x-auto">
                     {Array.from({ length: quizData.length }, (_, index) => (
                       <motion.div
                         key={index}

@@ -19,6 +19,9 @@ return new class extends Migration
             $table->json('selected_kosakata')->nullable();
             $table->json('selected_soal')->nullable();
             $table->json('user_answers')->nullable();
+            // Tambahkan field soal untuk menyimpan array soal kuis
+            $table->json('soal')->nullable();
+            $table->integer('remaining_time')->default(300);
             $table->timestamp('started_at');
             $table->timestamp('ended_at')->nullable();
             $table->boolean('ended')->default(false);

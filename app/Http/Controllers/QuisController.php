@@ -304,6 +304,10 @@ class QuisController extends Controller
         
         // Get soal data from IDs stored in JSON
         $soals = SoalQuisHuruf::whereIn('id', $selectedSoalIds)->get();
+        // --- FIX: Sort soals to match selectedSoalIds order ---
+        $soals = $soals->sortBy(function($soal) use ($selectedSoalIds) {
+            return array_search($soal->id, $selectedSoalIds);
+        })->values();
         
         // Get answered questions from JSON field
         $userAnswers = $session->user_answers ?? [];
@@ -368,10 +372,10 @@ class QuisController extends Controller
             ];
         }
 
-        // Shuffle questions for random mode
-        if ($session->mode === 'random') {
-            $transformedSoal = collect($transformedSoal)->shuffle()->toArray();
-        }
+        // --- FIX: Remove shuffle on render, order is now always from selected_soals ---
+        // if ($session->mode === 'random') {
+        //     $transformedSoal = collect($transformedSoal)->shuffle()->toArray();
+        // }
 
         // Set current question index ke soal yang belum dijawab
         $currentQuestionIndex = $answeredQuestions;
@@ -406,6 +410,10 @@ class QuisController extends Controller
         
         // Get soal data from IDs stored in JSON
         $soals = SoalQuisHuruf::whereIn('id', $selectedSoalIds)->get();
+        // --- FIX: Sort soals to match selectedSoalIds order ---
+        $soals = $soals->sortBy(function($soal) use ($selectedSoalIds) {
+            return array_search($soal->id, $selectedSoalIds);
+        })->values();
         
         // Get answered questions from JSON field
         $userAnswers = $session->user_answers ?? [];

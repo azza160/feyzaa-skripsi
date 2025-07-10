@@ -128,7 +128,57 @@ class KosakataSeeder extends Seeder
                 'audio' => 'https://res.cloudinary.com/dzozxilf6/video/upload/v1748799785/suru-10_ctxbod.mp3',
             ],
 
-            
+            // Tambahan 5 kosakata baru
+            [
+                'id' => 'KOSA-011',
+                'kanji' => '山',
+                'furigana' => 'やま',
+                'romaji' => 'yama',
+                'arti' => 'gunung',
+                'deskripsi' => 'Kata benda yang berarti gunung atau pegunungan.',
+                'catatan' => 'Digunakan untuk menyebut gunung secara umum.',
+                'audio' => 'https://res.cloudinary.com/dzozxilf6/video/upload/v1748799900/yama-11.mp3',
+            ],
+            [
+                'id' => 'KOSA-012',
+                'kanji' => '川',
+                'furigana' => 'かわ',
+                'romaji' => 'kawa',
+                'arti' => 'sungai',
+                'deskripsi' => 'Kata benda yang berarti sungai.',
+                'catatan' => 'Sering digunakan dalam nama tempat.',
+                'audio' => 'https://res.cloudinary.com/dzozxilf6/video/upload/v1748799910/kawa-12.mp3',
+            ],
+            [
+                'id' => 'KOSA-013',
+                'kanji' => '空',
+                'furigana' => 'そら',
+                'romaji' => 'sora',
+                'arti' => 'langit',
+                'deskripsi' => 'Kata benda yang berarti langit.',
+                'catatan' => 'Biasa digunakan dalam puisi atau percakapan sehari-hari.',
+                'audio' => 'https://res.cloudinary.com/dzozxilf6/video/upload/v1748799920/sora-13.mp3',
+            ],
+            [
+                'id' => 'KOSA-014',
+                'kanji' => '花',
+                'furigana' => 'はな',
+                'romaji' => 'hana',
+                'arti' => 'bunga',
+                'deskripsi' => 'Kata benda yang berarti bunga.',
+                'catatan' => 'Digunakan untuk menyebut bunga secara umum.',
+                'audio' => 'https://res.cloudinary.com/dzozxilf6/video/upload/v1748799930/hana-14.mp3',
+            ],
+            [
+                'id' => 'KOSA-015',
+                'kanji' => '魚',
+                'furigana' => 'さかな',
+                'romaji' => 'sakana',
+                'arti' => 'ikan',
+                'deskripsi' => 'Kata benda yang berarti ikan.',
+                'catatan' => 'Sering digunakan dalam percakapan tentang makanan.',
+                'audio' => 'https://res.cloudinary.com/dzozxilf6/video/upload/v1748799940/sakana-15.mp3',
+            ],
         ]);
     }
 }

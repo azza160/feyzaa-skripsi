@@ -63,10 +63,22 @@ const NoExpAlert = ({ onClose }) => {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.4 }}
                     >
-                      <h2 className="text-xl font-medium text-slate-700 dark:text-slate-300 mb-1">Perhatian</h2>
+                      <h2 className="text-xl font-medium text-slate-700 dark:text-slate-300 mb-1">注意！</h2>
                       <h1 className="text-2xl font-bold mb-2 text-slate-900 dark:text-white">
-                        EXP yang kamu dapatkan dari kuis ini: <span className="text-red-600 dark:text-red-400 font-bold">0</span>
+                        Tidak Ada EXP
                       </h1>
+                    </motion.div>
+
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.6 }}
+                      className="mb-6"
+                    >
+                      <p className="text-slate-600 dark:text-slate-400">
+                        Anda tidak mendapatkan EXP karena sudah menggunakan soal di kuis ini lebih dari 3 kali. 
+                        Coba kuis lain untuk mendapatkan EXP!
+                      </p>
                     </motion.div>
 
                     <motion.div
@@ -127,8 +139,26 @@ const AchievementParticles = ({ show }) => {
   )
 }
 
-export default function ReviewQuisPage() {
+// Wrapper
+export default function ReviewQuisPageWrapper() {
   const { quizResults, user, currentLevel, currentExp, maxExp, nextLevelExp } = usePage().props
+  if (!quizResults || !user || currentLevel === undefined || currentExp === undefined || maxExp === undefined) {
+    return <div className="text-center text-red-500 p-10">Data review quiz tidak lengkap. Silakan kembali ke dashboard.</div>;
+  }
+  return (
+    <ReviewQuisPage
+      quizResults={quizResults}
+      user={user}
+      currentLevel={currentLevel}
+      currentExp={currentExp}
+      maxExp={maxExp}
+      nextLevelExp={nextLevelExp}
+    />
+  )
+}
+
+// Komponen utama, semua hooks di sini
+function ReviewQuisPage({ quizResults, user, currentLevel, currentExp, maxExp, nextLevelExp }) {
   const [isVisible, setIsVisible] = useState(true)
   const [currentView, setCurrentView] = useState("overview")
   const [expandedItems, setExpandedItems] = useState([])
@@ -252,8 +282,8 @@ export default function ReviewQuisPage() {
                 </span>
               </Link>
               <span className="text-primary dark:text-violet-400">/</span>
-              <Link href={route("huruf")}>
-                <span className="text-violet-400 dark:text-violet-600">Huruf Jepang</span>
+              <Link href={route("list-kosakata")}>
+                <span className="text-violet-400 dark:text-violet-600">Kosakata Jepang</span>
               </Link>
               <span className="text-primary dark:text-violet-400">/</span>
               <span className="text-violet-400 dark:text-violet-600">Review Kuis</span>
@@ -317,11 +347,11 @@ export default function ReviewQuisPage() {
               </h1>
 
               {/* Main Stats Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-8">
                 {/* Score */}
                 <div className="text-center">
                   <motion.div
-                    className="text-4xl md:text-6xl font-bold text-primary mb-2"
+                    className="text-5xl md:text-6xl font-bold text-primary mb-2"
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ delay: 0.5, type: "spring" }}
@@ -334,35 +364,35 @@ export default function ReviewQuisPage() {
                     >
                       {displayScore}
                     </motion.span>
-                    <span className="text-muted-foreground text-2xl md:text-3xl">/{quizResults.totalQuestions}</span>
+                    <span className="text-muted-foreground text-3xl">/{quizResults.totalQuestions}</span>
                   </motion.div>
-                  <p className="text-xs md:text-sm text-muted-foreground font-medium">Jawaban Benar</p>
+                  <p className="text-sm text-muted-foreground font-medium">Jawaban Benar</p>
                 </div>
 
                 {/* Percentage */}
                 <div className="text-center">
                   <motion.div
-                    className="text-4xl md:text-6xl font-bold text-primary mb-2"
+                    className="text-5xl md:text-6xl font-bold text-primary mb-2"
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ delay: 0.7, type: "spring" }}
                   >
                     {quizResults.percentage}%
                   </motion.div>
-                  <p className="text-xs md:text-sm text-muted-foreground font-medium">Persentase</p>
+                  <p className="text-sm text-muted-foreground font-medium">Persentase</p>
                 </div>
 
                 {/* Time Spent */}
                 <div className="text-center">
                   <motion.div
-                    className="text-4xl md:text-6xl font-bold text-primary mb-2"
+                    className="text-5xl md:text-6xl font-bold text-primary mb-2"
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ delay: 0.9, type: "spring" }}
                   >
                     {Math.floor(quizResults.timeSpent / 60)}:{(quizResults.timeSpent % 60).toString().padStart(2, "0")}
                   </motion.div>
-                  <p className="text-xs md:text-sm text-muted-foreground font-medium">Waktu</p>
+                  <p className="text-sm text-muted-foreground font-medium">Waktu</p>
                 </div>
               </div>
 
@@ -542,9 +572,16 @@ export default function ReviewQuisPage() {
                                 </div>
                                 <div className="text-left">
                                   <div className="font-bold text-gray-800 text-lg mb-1">
-                                    Karakter: <span className="text-3xl text-indigo-600 ml-2">{answer.character}</span>
+                                    {answer.kanji || answer.romaji ? (
+                                      <>
+                                        <span className="text-3xl text-indigo-600 ml-2">{answer.kanji}</span>
+                                        <span className="text-lg text-gray-600 ml-2">({answer.romaji || ''})</span>
+                                      </>
+                                    ) : (
+                                      <span className="text-base text-gray-500 ml-2">(Soal: Indonesia → Jepang)</span>
+                                    )}
                                   </div>
-                                  <div className="text-sm text-gray-600 mb-2">{answer.question}</div>
+                                  <div className="text-sm text-gray-600 mb-2">{answer.arti}</div>
                                   <div className="flex items-center gap-2">
                                     <Badge className="text-xs bg-yellow-100 text-yellow-700">
                                       <Zap className="w-3 h-3 mr-1" />+{answer.expGained} EXP
@@ -612,29 +649,30 @@ export default function ReviewQuisPage() {
                                     Opsi Jawaban:
                                   </h4>
                                   <div className="grid grid-cols-2 gap-3">
-                                    {answer.options.map((option, idx) => (
-                                      <div
-                                        key={option.id}
-                                        className={`p-3 rounded-lg border flex items-center gap-2 ${
-                                          option.id === answer.correctAnswer
-                                            ? "border-green-300 bg-green-50 dark:bg-green-900/60"
-                                            : option.id === answer.userAnswer
-                                            ? "border-red-300 bg-red-50 dark:bg-red-900/60"
-                                            : "border-gray-200 bg-gray-50 dark:bg-slate-800/80"
-                                        }`}
-                                      >
-                                        <span className="font-bold text-base md:text-lg text-gray-700 dark:text-white mr-2">
-                                          {String.fromCharCode(65 + idx)}.
-                                        </span>
-                                        <span className="font-medium text-gray-900 dark:text-white text-sm md:text-base">{option.text}</span>
-                                        {option.id === answer.correctAnswer && (
-                                          <CheckCircle className="w-5 h-5 text-green-500 ml-auto" />
-                                        )}
-                                        {option.id === answer.userAnswer && !answer.isCorrect && (
-                                          <XCircle className="w-5 h-5 text-red-500 ml-auto" />
-                                        )}
-                                      </div>
-                                    ))}
+                                    {Array.isArray(answer.options) ? answer.options.map((option) => {
+                                      const isUser = option.id === answer.userAnswer;
+                                      const isCorrect = option.text === answer.correctAnswer;
+                                      // Opsi yang dipilih user dan benar
+                                      const isUserAndCorrect = isUser && isCorrect;
+                                      // Opsi yang dipilih user tapi salah
+                                      const isUserAndWrong = isUser && !isCorrect;
+                                      // Opsi yang benar tapi bukan pilihan user
+                                      const isCorrectOnly = isCorrect && !isUser;
+                                      let className = "p-3 rounded-lg border flex items-center gap-2";
+                                      if (isUserAndCorrect) className += " border-green-400 bg-green-50 text-green-800 font-bold";
+                                      else if (isUserAndWrong) className += " border-red-400 bg-red-50 text-red-800 font-bold";
+                                      else if (isCorrectOnly) className += " border-green-300 bg-green-100 text-green-800";
+                                      else className += " border-gray-200 bg-gray-50";
+                                      return (
+                                        <div key={option.id} className={className}>
+                                          <span className="inline-block w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 font-bold text-center mr-2">{option.id}</span>
+                                          <span>{option.text}</span>
+                                          {isUserAndCorrect && <CheckCircle className="w-5 h-5 text-green-500 ml-auto" />}
+                                          {isUserAndWrong && <XCircle className="w-5 h-5 text-red-500 ml-auto" />}
+                                          {isCorrectOnly && <CheckCircle className="w-5 h-5 text-green-400 ml-auto" />}
+                                        </div>
+                                      );
+                                    }) : null}
                                   </div>
                                 </div>
                               </div>
