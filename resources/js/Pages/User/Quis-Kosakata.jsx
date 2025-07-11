@@ -200,11 +200,11 @@ const FloatingParticles = () => {
 }
 
 // Quiz completion component
-const QuizCompletion = ({ isTimeUp, answers, totalQuestions, onViewReview, onExitQuis }) => {
-  const answeredCount = answers.length
-  const correctCount = answers.filter((a) => a.isCorrect).length
-  const percent = totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 0
-
+const QuizCompletion = ({ isTimeUp, backendAnswers, totalQuestions, onViewReview, onExitQuis }) => {
+  const answeredCount = backendAnswers.length;
+  const correctCount = backendAnswers.filter((a) => a.isCorrect).length;
+  const wrongCount = answeredCount - correctCount;
+  const percent = totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 0;
   return (
     <div className="flex items-center justify-center p-4">
       <motion.div
@@ -227,36 +227,41 @@ const QuizCompletion = ({ isTimeUp, answers, totalQuestions, onViewReview, onExi
               <>
                 <Trophy className="w-20 h-20 text-yellow-500 mx-auto mb-6" />
                 <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-4">Kuis Selesai!</h1>
-                <p className="text-gray-600 dark:text-gray-300 mb-6">
-                  Selamat! Kamu telah menyelesaikan semua soal dalam kuis ini.
-                </p>
+                <p className="text-gray-600 dark:text-gray-300 mb-6">Selamat! Kamu telah menyelesaikan semua soal dalam kuis ini.</p>
               </>
             )}
 
             <div className="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/60 dark:to-purple-900/60 rounded-2xl p-6 mb-8 border border-indigo-100 dark:border-indigo-700">
-              <div className="grid grid-cols-2 gap-4 mb-4">
-                <div>
-                  <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-300">{correctCount}</div>
-                  <p className="text-gray-600 dark:text-gray-300 font-medium">Benar</p>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-purple-600 dark:text-purple-300">
-                    {answeredCount - correctCount}
+              <div className="flex flex-col gap-2 items-center justify-center">
+                <div className="flex items-center gap-4 justify-center mb-2">
+                  <div className="flex flex-col items-center">
+                    <span className="text-3xl font-bold text-green-600 dark:text-green-300">{correctCount}</span>
+                    <span className="text-xs text-green-700 dark:text-green-300">Benar</span>
                   </div>
-                  <p className="text-gray-600 dark:text-gray-300 font-medium">Salah</p>
+                  <span className="text-2xl font-bold text-gray-400 dark:text-gray-500">/</span>
+                  <div className="flex flex-col items-center">
+                    <span className="text-3xl font-bold text-red-500 dark:text-red-400">{wrongCount}</span>
+                    <span className="text-xs text-red-600 dark:text-red-400">Salah</span>
+                  </div>
                 </div>
+                <div className="text-lg font-semibold text-purple-600 dark:text-purple-300 mt-2">Skor Akhir: {correctCount} dari {totalQuestions} soal ({percent}%)</div>
               </div>
-              <div className="text-lg font-semibold text-purple-600 dark:text-purple-300">Skor: {percent}%</div>
             </div>
 
+            <div className="bg-red-50 dark:bg-red-900/40 border border-red-200 dark:border-red-700 rounded-xl p-4 mb-6 flex flex-col items-center">
+              <span className="text-red-700 dark:text-red-200 font-semibold text-base mb-1">Peringatan!</span>
+              <span className="text-sm text-red-700 dark:text-red-200 text-center">
+                Jika kamu keluar dari halaman ini tanpa menekan tombol di bawah, data kuis akan dihapus dan EXP tidak akan didapatkan.
+              </span>
+            </div>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button
                 size="lg"
-                className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold py-4 rounded-xl shadow-lg"
+                className="w-full max-w-xs mx-auto bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold py-3 rounded-xl shadow-lg text-[13px] sm:text-base break-words"
                 onClick={onViewReview}
               >
                 <Eye className="w-5 h-5 mr-2" />
-                Selesai Kuis Dan Lihat Review Jawaban
+                Selesai Kuis dan Lihat Review Jawaban
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
             </motion.div>
@@ -268,8 +273,10 @@ const QuizCompletion = ({ isTimeUp, answers, totalQuestions, onViewReview, onExi
 }
 
 export default function VocabularyQuizPage() {
-  const { quizData, remainingTime: initialTime, sessionId, jenis, level, currentQuestionIndex } = usePage().props
+  const { quizData, remainingTime: initialTime, sessionId, jenis, level, currentQuestionIndex, userAnswers } = usePage().props
 
+  // State untuk jawaban backend agar selalu akurat
+  const [backendAnswers, setBackendAnswers] = useState(userAnswers || [])
   // Panggil semua hooks di sini dulu!
   const [currentQuestion, setCurrentQuestion] = useState(currentQuestionIndex)
   const [selectedAnswer, setSelectedAnswer] = useState(null)
@@ -403,8 +410,24 @@ export default function VocabularyQuizPage() {
   }
 
   // Complete quiz
-  const handleQuizComplete = () => {
+  const handleQuizComplete = async () => {
     setIsQuizComplete(true)
+    // Fetch endpoint review-quis-kosakata agar backendAnswers selalu benar
+    try {
+      const response = await fetch(route('review-quis-kosakata', { sessionId }), {
+        headers: { 'Accept': 'application/json' },
+        credentials: 'same-origin',
+      })
+      if (response.ok) {
+        const data = await response.json()
+        // Cek jika data.quizResults.answers ada dan array
+        if (data && data.props && Array.isArray(data.props.quizResults?.answers)) {
+          setBackendAnswers(data.props.quizResults.answers)
+        }
+      }
+    } catch (err) {
+      // fallback: tetap pakai userAnswers dari props
+    }
     setShowCompletion(true)
   }
 
@@ -530,6 +553,13 @@ export default function VocabularyQuizPage() {
     return null
   }
 
+  // Saat showCompletion, update backendAnswers dari props (agar tetap sync walau refresh)
+  useEffect(() => {
+    if (showCompletion && userAnswers) {
+      setBackendAnswers(userAnswers)
+    }
+  }, [showCompletion, userAnswers])
+
   return (
     <DashboardLayout>
       {/* Cek jika data quiz tidak ada */}
@@ -540,7 +570,7 @@ export default function VocabularyQuizPage() {
       ) : showCompletion ? (
         <QuizCompletion
           isTimeUp={isTimeUp}
-          answers={answers}
+          backendAnswers={backendAnswers}
           totalQuestions={quizData.length}
           onViewReview={handleViewReview}
           onExitQuis={handleExitQuis}

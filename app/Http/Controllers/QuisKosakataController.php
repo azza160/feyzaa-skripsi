@@ -8,6 +8,7 @@ use Inertia\Inertia;
 use App\Models\Kosakata;
 use App\Models\QuisKosakataSession;
 use App\Models\SoalKosakata;
+use App\Models\User;
 use Illuminate\Support\Str;
 
 class QuisKosakataController extends Controller
@@ -30,11 +31,79 @@ class QuisKosakataController extends Controller
         return $levelConfigs[$currentLevel]['max_exp'] ?? null;
     }
 
+    private function getUnlockedFeatures($level)
+    {
+        $features = [];
+        
+        switch ($level) {
+            case 2:
+                $features = ['Akses ke Kuis Level 2', 'Fitur Latihan Tambahan'];
+                break;
+            case 3:
+                $features = ['Akses ke Kuis Level 3', 'Fitur Flashcard'];
+                break;
+            case 4:
+                $features = ['Akses ke Kuis Level 4', 'Fitur Review Otomatis'];
+                break;
+            case 5:
+                $features = ['Akses ke Kuis Level 5', 'Fitur Statistik Belajar'];
+                break;
+            default:
+                $features = ['Fitur Baru Terbuka!'];
+        }
+        
+        return $features;
+    }
+
+    /**
+     * Calculate EXP for beginner level based on attempt count
+     * Attempt 1: 21 EXP, Attempt 2: 13 EXP, Attempt 3: 5 EXP, Attempt 4+: 0 EXP
+     */
+    private function calculateExpForBeginner($attempt)
+    {
+        return match($attempt) {
+            1 => 21,
+            2 => 13,
+            3 => 5,
+            default => 0,
+        };
+    }
+
+    /**
+     * Get global attempt count for a specific kosakata across all sessions
+     * Optionally exclude a session (for current session calculation)
+     */
+    private function getGlobalAttemptCount($user, $kosakataId, $excludeSessionId = null)
+    {
+        $sessions = QuisKosakataSession::where('user_id', $user->id)
+            ->whereNotNull('soal')
+            ->when($excludeSessionId, function($q) use ($excludeSessionId) {
+                $q->where('id', '!=', $excludeSessionId);
+            })
+            ->get();
+
+        $totalAttempts = 0;
+        foreach ($sessions as $session) {
+            $soalList = $session->soal ?? [];
+            foreach ($soalList as $soal) {
+                $currentKosakataId = $soal['kosakata_id'] ?? null;
+                if ($currentKosakataId === $kosakataId) {
+                    $userAnswers = $session->user_answers ?? [];
+                    $soalIndex = array_search($soal, $soalList);
+                    if (isset($userAnswers[$soalIndex])) {
+                        $totalAttempts++;
+                    }
+                }
+            }
+        }
+        return $totalAttempts;
+    }
+
     public function pilihLevelQuisShow(){
         $user = Auth::user();
         // Ambil progress kosakata yang sebenarnya dari database
-        $progressKosakata = $user->kosakatas()->wherePivot('is_learned', true)->count();
-        $totalKosakata = \App\Models\Kosakata::count();
+        $progressKosakata = \App\Models\User::find($user->id)->kosakatas()->wherePivot('is_learned', true)->count();
+        $totalKosakata = Kosakata::count();
 
         return Inertia::render('User/Pilih-Level-Quis-kosakata', [
             'user' => $user,
@@ -64,7 +133,7 @@ class QuisKosakataController extends Controller
             ]);
         }
         // Mode manual: ambil kosakata yang sudah dipelajari user dari database
-        $kosakatas = $user->kosakatas()
+        $kosakatas = \App\Models\User::find($user->id)->kosakatas()
             ->wherePivot('is_learned', true)
             ->get()
             ->map(function($kosakata) {
@@ -144,6 +213,11 @@ class QuisKosakataController extends Controller
         $selectedSoal = [];
         $soalList = [];
 
+        // FOKUS HANYA PADA LEVEL BEGINNER
+        if ($level !== 'beginner') {
+            abort(400, 'Level ini belum tersedia. Hanya level beginner yang tersedia saat ini.');
+        }
+
         if ($request->isMethod('post') && $mode === 'random') {
             $kosakatas = \App\Models\Kosakata::inRandomOrder()->limit($jumlahSoal)->get();
             $soalList = [];
@@ -176,6 +250,10 @@ class QuisKosakataController extends Controller
                 }
             }
             $selectedKosakataIds = $kosakatas->pluck('id')->toArray();
+            
+            // --- FIX: Shuffle soalList sekali saja saat pertama kali dibuat ---
+            shuffle($soalList);
+            
             $session = QuisKosakataSession::create([
                 'id' => (string) Str::ulid(),
                 'user_id' => $user->id,
@@ -193,52 +271,45 @@ class QuisKosakataController extends Controller
             return redirect()->route('quis-kosakata', ['sessionId' => $session->id]);
         }
 
-        if ($level === 'beginner') {
-            if ($mode === 'manual') {
-                $kosakatas = $user->kosakatas()->wherePivot('is_learned', true)->whereIn('kosakatas.id', $selectedKosakata)->get();
-            } else {
-                $kosakatas = Kosakata::inRandomOrder()->limit($jumlahSoal)->get();
-            }
-            foreach ($kosakatas as $kosakata) {
-                $direction = rand(0, 1) === 0 ? 'jp_to_id' : 'id_to_jp';
-                if ($direction === 'jp_to_id') {
-                    $opsi = $this->generateOptionsIndo($kosakata->arti);
-                    $soalList[] = [
-                        'type' => 'jp_to_id',
-                        'kanji' => $kosakata->kanji,
-                        'furigana' => $kosakata->furigana,
-                        'romaji' => $kosakata->romaji,
-                        'question' => 'Apa arti dari kata berikut?',
-                        'options' => $opsi,
-                        'answer' => $kosakata->arti,
-                        'kosakata_id' => $kosakata->id,
-                        'direction' => 'jp_to_id',
-                    ];
-                } else {
-                    $opsi = $this->generateOptionsJepang($kosakata);
-                    $soalList[] = [
-                        'type' => 'id_to_jp',
-                        'arti' => $kosakata->arti,
-                        'question' => 'Apa bahasa Jepang dari kata berikut?',
-                        'options' => $opsi,
-                        'answer' => $kosakata->kanji,
-                        'kosakata_id' => $kosakata->id,
-                        'direction' => 'id_to_jp',
-                    ];
-                }
-            }
-            $selectedKosakataIds = $kosakatas->pluck('id')->toArray();
+        // HANYA UNTUK LEVEL BEGINNER
+        if ($mode === 'manual') {
+            $kosakatas = \App\Models\User::find($user->id)->kosakatas()->wherePivot('is_learned', true)->whereIn('kosakatas.id', $selectedKosakata)->get();
         } else {
-            if ($mode === 'manual') {
-                $soalQuery = SoalKosakata::whereIn('kosakata_id', $selectedKosakata)->where('level', $level);
-            } else {
-                $soalQuery = SoalKosakata::where('level', $level)->inRandomOrder();
-            }
-            $soalList = $soalQuery->limit($jumlahSoal)->get()->toArray();
-            $selectedSoal = array_column($soalList, 'id');
-            $selectedKosakataIds = array_column($soalList, 'kosakata_id');
+            $kosakatas = Kosakata::inRandomOrder()->limit($jumlahSoal)->get();
         }
-        // --- FIX: Jangan shuffle ulang soalList, urutan sudah fix saat dibuat ---
+        
+        foreach ($kosakatas as $kosakata) {
+            $direction = rand(0, 1) === 0 ? 'jp_to_id' : 'id_to_jp';
+            if ($direction === 'jp_to_id') {
+                $opsi = $this->generateOptionsIndo($kosakata->arti);
+                $soalList[] = [
+                    'type' => 'jp_to_id',
+                    'kanji' => $kosakata->kanji,
+                    'furigana' => $kosakata->furigana,
+                    'romaji' => $kosakata->romaji,
+                    'question' => 'Apa arti dari kata berikut?',
+                    'options' => $opsi,
+                    'answer' => $kosakata->arti,
+                    'kosakata_id' => $kosakata->id,
+                    'direction' => 'jp_to_id',
+                ];
+            } else {
+                $opsi = $this->generateOptionsJepang($kosakata);
+                $soalList[] = [
+                    'type' => 'id_to_jp',
+                    'arti' => $kosakata->arti,
+                    'question' => 'Apa bahasa Jepang dari kata berikut?',
+                    'options' => $opsi,
+                    'answer' => $kosakata->kanji,
+                    'kosakata_id' => $kosakata->id,
+                    'direction' => 'id_to_jp',
+                ];
+            }
+        }
+        $selectedKosakataIds = $kosakatas->pluck('id')->toArray();
+        
+        // --- FIX: Shuffle soalList sekali saja saat pertama kali dibuat ---
+        shuffle($soalList);
         $session = QuisKosakataSession::create([
             'id' => (string) Str::ulid(),
             'user_id' => $user->id,
@@ -310,23 +381,30 @@ class QuisKosakataController extends Controller
         if (!$soalList || !is_array($soalList) || count($soalList) === 0) {
             abort(500, 'Data soal pada sesi kuis ini tidak ditemukan. Silakan mulai ulang kuis.');
         }
+        
         $answers = [];
         $totalExp = 0;
-        $expPerSoal = 18;
         $kosakataAttempts = [];
+        
         foreach ($soalList as $idx => $soal) {
             $kosakataId = $soal['kosakata_id'] ?? $soal['id'];
-            // Hitung attempt per kosakata
+            // Hitung attempt di seluruh session KECUALI session sekarang
             if (!isset($kosakataAttempts[$kosakataId])) {
-                $kosakataAttempts[$kosakataId] = \App\Models\QuisKosakataSession::where('user_id', $user->id)
-                    ->where('ended', true)
-                    ->whereJsonContains('selected_kosakata', $kosakataId)
-                    ->count();
+                $kosakataAttempts[$kosakataId] = $this->getGlobalAttemptCount($user, $kosakataId, $session->id);
             }
+            $pastAttempt = $kosakataAttempts[$kosakataId];
             $answered = $userAnswers[$idx] ?? null;
             $isCorrect = $answered ? ($answered['isCorrect'] ?? false) : false;
-            // EXP hanya diberikan jika attempt kosakata < 3
-            $exp = ($kosakataAttempts[$kosakataId] < 3 && $isCorrect) ? $expPerSoal : 0;
+            // Attempt = attempt sebelumnya + 1 jika dijawab di session ini
+            $currentAttempt = $pastAttempt;
+            if ($answered) {
+                $currentAttempt++;
+            }
+            // Hitung EXP berdasarkan attempt dan level beginner
+            $exp = 0;
+            if ($isCorrect) {
+                $exp = $this->calculateExpForBeginner($currentAttempt);
+            }
             $totalExp += $exp;
             $direction = $soal['direction'] ?? 'jp_to_id';
             $options = $soal['options'];
@@ -345,13 +423,15 @@ class QuisKosakataController extends Controller
                 'userAnswer' => $answered['selectedAnswer'] ?? null,
                 'isCorrect' => $isCorrect,
                 'expGained' => $exp,
-                'attempt' => $kosakataAttempts[$kosakataId],
+                'attempt' => $currentAttempt,
             ];
         }
+        
         $totalQuestions = count($answers);
         $correctAnswers = count(array_filter($answers, fn($a) => $a['isCorrect']));
         $percentage = $totalQuestions > 0 ? round(($correctAnswers / $totalQuestions) * 100) : 0;
         $sessionAlreadyCompleted = $session->ended;
+        
         if (!$sessionAlreadyCompleted) {
             $expToAdd = $totalExp;
             $newExp = $user->exp + $expToAdd;
@@ -372,7 +452,7 @@ class QuisKosakataController extends Controller
             $session->update([
                 'total_exp' => $expToAdd,
                 'ended' => true,
-                // ended_at tetap diisi di sini (pertama kali review)
+                'ended_at' => now(),
             ]);
         } else {
             $leveledUp = false;
@@ -380,11 +460,13 @@ class QuisKosakataController extends Controller
             $unlockedFeatures = [];
             $nextLevelExp = $this->calculateNextLevelExp($user->level);
         }
+        
         $maxExp = $nextLevelExp ?? $user->exp;
         // --- Gunakan remaining_time untuk timeSpent ---
         $waktuKuis = 300; // detik (5 menit)
         $timeSpent = $waktuKuis - ($session->remaining_time ?? 0);
         if ($timeSpent < 0) $timeSpent = 0;
+        
         $quizResults = [
             'totalQuestions' => $totalQuestions,
             'correctAnswers' => $correctAnswers,
@@ -399,6 +481,7 @@ class QuisKosakataController extends Controller
             'unlockedFeatures' => $unlockedFeatures,
             'timeSpent' => $timeSpent,
         ];
+        
         return Inertia::render('User/Review-Quis-Kosakata', [
             'user' => $user,
             'currentLevel' => $user->level,
