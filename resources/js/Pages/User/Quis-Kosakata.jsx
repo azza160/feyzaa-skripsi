@@ -200,11 +200,19 @@ const FloatingParticles = () => {
 }
 
 // Quiz completion component
-const QuizCompletion = ({ isTimeUp, backendAnswers, totalQuestions, onViewReview, onExitQuis }) => {
-  const answeredCount = backendAnswers.length;
-  const correctCount = backendAnswers.filter((a) => a.isCorrect).length;
-  const wrongCount = answeredCount - correctCount;
-  const percent = totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 0;
+const QuizCompletion = ({ isTimeUp, reviewResult, reviewLoading, reviewError, onViewReview, onExitQuis }) => {
+  if (reviewLoading) {
+    return <div className="flex items-center justify-center p-8">Loading hasil kuis...</div>
+  }
+  if (reviewError) {
+    return <div className="flex items-center justify-center p-8 text-red-500">{reviewError}</div>
+  }
+  if (!reviewResult) {
+    return null
+  }
+  const { correctAnswers, totalQuestions, answers = [] } = reviewResult
+  const wrongCount = totalQuestions - correctAnswers
+  const percent = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0
   return (
     <div className="flex items-center justify-center p-4">
       <motion.div
@@ -235,7 +243,7 @@ const QuizCompletion = ({ isTimeUp, backendAnswers, totalQuestions, onViewReview
               <div className="flex flex-col gap-2 items-center justify-center">
                 <div className="flex items-center gap-4 justify-center mb-2">
                   <div className="flex flex-col items-center">
-                    <span className="text-3xl font-bold text-green-600 dark:text-green-300">{correctCount}</span>
+                    <span className="text-3xl font-bold text-green-600 dark:text-green-300">{correctAnswers}</span>
                     <span className="text-xs text-green-700 dark:text-green-300">Benar</span>
                   </div>
                   <span className="text-2xl font-bold text-gray-400 dark:text-gray-500">/</span>
@@ -244,7 +252,7 @@ const QuizCompletion = ({ isTimeUp, backendAnswers, totalQuestions, onViewReview
                     <span className="text-xs text-red-600 dark:text-red-400">Salah</span>
                   </div>
                 </div>
-                <div className="text-lg font-semibold text-purple-600 dark:text-purple-300 mt-2">Skor Akhir: {correctCount} dari {totalQuestions} soal ({percent}%)</div>
+                <div className="text-lg font-semibold text-purple-600 dark:text-purple-300 mt-2">Skor Akhir: {correctAnswers} dari {totalQuestions} soal ({percent}%)</div>
               </div>
             </div>
 
@@ -273,7 +281,7 @@ const QuizCompletion = ({ isTimeUp, backendAnswers, totalQuestions, onViewReview
 }
 
 export default function VocabularyQuizPage() {
-  const { quizData, remainingTime: initialTime, sessionId, jenis, level, currentQuestionIndex, userAnswers } = usePage().props
+  const { quizData, remainingTime: initialTime, sessionId, jenis, level, currentQuestionIndex, userAnswers, ended } = usePage().props
 
   // State untuk jawaban backend agar selalu akurat
   const [backendAnswers, setBackendAnswers] = useState(userAnswers || [])
@@ -287,14 +295,24 @@ export default function VocabularyQuizPage() {
   const [isQuizComplete, setIsQuizComplete] = useState(false)
   const [isTimeUp, setIsTimeUp] = useState(false)
   const [exitDialogOpen, setExitDialogOpen] = useState(false)
-  const [showCompletion, setShowCompletion] = useState(false)
+  // Inisialisasi showCompletion dengan ended dari backend
+  const [showCompletion, setShowCompletion] = useState(!!ended)
   const [hideFurigana, setHideFurigana] = useState(false)
   const [hideRomaji, setHideRomaji] = useState(false)
   // Tambah state untuk timer per soal
   const [questionStartTime, setQuestionStartTime] = useState(Date.now())
+  // Tambahkan state untuk hasil review
+  const [reviewResult, setReviewResult] = useState(null)
+  const [reviewLoading, setReviewLoading] = useState(false)
+  const [reviewError, setReviewError] = useState(null)
 
   const controls = useAnimation()
   const vocabularyRef = useRef(null)
+
+  // Sync showCompletion jika ended berubah ke true
+  useEffect(() => {
+    if (ended) setShowCompletion(true)
+  }, [ended])
 
   // Timer countdown
   useEffect(() => {
@@ -553,12 +571,29 @@ export default function VocabularyQuizPage() {
     return null
   }
 
-  // Saat showCompletion, update backendAnswers dari props (agar tetap sync walau refresh)
+  // Saat showCompletion true, fetch hasil review dari backend
   useEffect(() => {
-    if (showCompletion && userAnswers) {
-      setBackendAnswers(userAnswers)
+    if (showCompletion && sessionId) {
+      setReviewLoading(true)
+      setReviewError(null)
+      fetch(route('review-quis-kosakata', { sessionId }), {
+        headers: { 'Accept': 'application/json' },
+        credentials: 'same-origin',
+      })
+        .then(res => {
+          if (!res.ok) throw new Error('Gagal mengambil hasil review')
+          return res.json()
+        })
+        .then(data => {
+          setReviewResult(data.quizResults)
+          setReviewLoading(false)
+        })
+        .catch(err => {
+          setReviewError('Gagal mengambil hasil review dari server.')
+          setReviewLoading(false)
+        })
     }
-  }, [showCompletion, userAnswers])
+  }, [showCompletion, sessionId])
 
   return (
     <DashboardLayout>
@@ -570,8 +605,9 @@ export default function VocabularyQuizPage() {
       ) : showCompletion ? (
         <QuizCompletion
           isTimeUp={isTimeUp}
-          backendAnswers={backendAnswers}
-          totalQuestions={quizData.length}
+          reviewResult={reviewResult}
+          reviewLoading={reviewLoading}
+          reviewError={reviewError}
           onViewReview={handleViewReview}
           onExitQuis={handleExitQuis}
         />

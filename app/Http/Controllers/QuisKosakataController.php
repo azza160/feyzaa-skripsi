@@ -200,6 +200,7 @@ class QuisKosakataController extends Controller
             'currentQuestionIndex' => $currentQuestionIndex,
             'mode' => $mode,
             'userAnswers' => $session->user_answers,
+            'ended' => $session->ended,
         ]);
     }
 
@@ -481,6 +482,18 @@ class QuisKosakataController extends Controller
             'unlockedFeatures' => $unlockedFeatures,
             'timeSpent' => $timeSpent,
         ];
+        
+        // Tambahkan dukungan response JSON
+        if (request()->wantsJson()) {
+            return response()->json([
+                'quizResults' => $quizResults,
+                'user' => $user,
+                'currentLevel' => $user->level,
+                'currentExp' => $user->exp,
+                'maxExp' => $maxExp,
+                'nextLevelExp' => $nextLevelExp,
+            ]);
+        }
         
         return Inertia::render('User/Review-Quis-Kosakata', [
             'user' => $user,
