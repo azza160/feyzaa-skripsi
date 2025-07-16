@@ -431,9 +431,16 @@ class QuisKosakataController extends Controller
         $totalQuestions = count($answers);
         $correctAnswers = count(array_filter($answers, fn($a) => $a['isCorrect']));
         $percentage = $totalQuestions > 0 ? round(($correctAnswers / $totalQuestions) * 100) : 0;
-        $sessionAlreadyCompleted = $session->ended;
+        $sessionAlreadyCompleted = $session->ended_at !== null;
         
-        if (!$sessionAlreadyCompleted) {
+        // Jika request JSON (fetch untuk card completion): hanya set ended=true jika belum
+        if (!$session->ended && request()->wantsJson()) {
+            $session->update([
+                'ended' => true,
+            ]);
+        }
+        // Jika request HTML (user benar-benar ke halaman review): set ended, ended_at, total_exp, exp user jika ended_at masih null
+        else if (!$sessionAlreadyCompleted && !request()->wantsJson()) {
             $expToAdd = $totalExp;
             $newExp = $user->exp + $expToAdd;
             $leveledUp = false;
@@ -455,7 +462,8 @@ class QuisKosakataController extends Controller
                 'ended' => true,
                 'ended_at' => now(),
             ]);
-        } else {
+        }
+        else {
             $leveledUp = false;
             $newLevel = $user->level;
             $unlockedFeatures = [];
