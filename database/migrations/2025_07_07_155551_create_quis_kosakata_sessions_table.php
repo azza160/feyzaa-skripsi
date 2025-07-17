@@ -26,6 +26,7 @@ return new class extends Migration
             $table->timestamp('ended_at')->nullable();
             $table->boolean('ended')->default(false);
             $table->integer('total_exp')->default(0);
+            $table->unsignedInteger('review_visit_count')->default(0); // Tambahan: jumlah kunjungan review
             $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });

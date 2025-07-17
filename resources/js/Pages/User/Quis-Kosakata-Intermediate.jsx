@@ -280,6 +280,12 @@ const QuizCompletion = ({ isTimeUp, reviewResult, reviewLoading, reviewError, on
   )
 }
 
+// 1. Add helper for random blank style
+const blankVariants = ["____", "______", "___", ".....", "???"];
+function getRandomBlank() {
+  return blankVariants[Math.floor(Math.random() * blankVariants.length)];
+}
+
 export default function VocabularyQuizPage() {
   const { quizData, remainingTime: initialTime, sessionId, jenis, level, currentQuestionIndex, userAnswers, ended } = usePage().props
 
@@ -305,6 +311,14 @@ export default function VocabularyQuizPage() {
   const [reviewResult, setReviewResult] = useState(null)
   const [reviewLoading, setReviewLoading] = useState(false)
   const [reviewError, setReviewError] = useState(null)
+
+  // 2. In VocabularyQuizPage, add state for blank style per question
+  const [blankStyles, setBlankStyles] = useState([]);
+  useEffect(() => {
+    if (quizData && quizData.length > 0 && blankStyles.length !== quizData.length) {
+      setBlankStyles(Array.from({ length: quizData.length }, () => getRandomBlank()));
+    }
+  }, [quizData]);
 
   const controls = useAnimation()
   const vocabularyRef = useRef(null)
@@ -354,26 +368,32 @@ export default function VocabularyQuizPage() {
 
   // Handle answer selection
   const handleAnswerSelect = async (optionId) => {
-    if (isAnswered) return
-    const soal = quizData[currentQuestion]
-    let selectedOption, isCorrect, selectedText
-    // Mapping index ke opsi
-    const idx = optionId.charCodeAt(0) - 65
-    if (soal.type === 'jp_to_id') {
-      selectedOption = soal.options[idx]
-      isCorrect = selectedOption === soal.answer
-      selectedText = selectedOption
+    console.log('handleAnswerSelect called', { optionId, currentQuestion, quizData }); // DEBUG
+    if (isAnswered) return;
+    const soal = quizData[currentQuestion];
+    const idx = optionId.charCodeAt(0) - 65;
+    let selectedOption = soal.options[idx];
+    let isCorrect = false;
+    let selectedText = '';
+
+    // --- INTERMEDIATE: gunakan isCorrect jika ada ---
+    if (selectedOption && typeof selectedOption.isCorrect === 'boolean') {
+      isCorrect = selectedOption.isCorrect;
+      selectedText = selectedOption.kanji || '';
+    } else if (soal.type === 'jp_to_id') {
+      // Legacy/Beginner fallback
+      isCorrect = selectedOption === soal.answer;
+      selectedText = selectedOption;
     } else if (soal.type === 'id_to_jp') {
-      selectedOption = soal.options[idx]
-      isCorrect = selectedOption && selectedOption.kanji === soal.answer
-      selectedText = selectedOption ? selectedOption.kanji : ''
+      isCorrect = selectedOption && selectedOption.kanji === soal.answer;
+      selectedText = selectedOption ? selectedOption.kanji : '';
     }
-    if (!selectedOption) return // prevent error
-    setSelectedAnswer(optionId)
-    setIsAnswered(true)
-    setShowFeedback(true)
+    if (!selectedOption) return; // prevent error
+    setSelectedAnswer(optionId);
+    setIsAnswered(true);
+    setShowFeedback(true);
     // Hitung waktu jawab
-    const waktuJawab = Math.floor((Date.now() - questionStartTime) / 1000)
+    const waktuJawab = Math.floor((Date.now() - questionStartTime) / 1000);
     // Save ke backend
     try {
       await fetch(route('save-quis-kosakata-answer'), {
@@ -385,15 +405,15 @@ export default function VocabularyQuizPage() {
         body: JSON.stringify({
           sessionId,
           questionIndex: currentQuestion,
-          selectedAnswer: optionId,
+          selectedAnswer: optionId.toLowerCase(), // <-- lowercase for backend
           isCorrect,
           waktuJawab,
           remainingTime: timeLeft,
         }),
         credentials: 'same-origin',
-      })
+      });
     } catch (err) {
-      alert('Gagal menyimpan jawaban ke server!')
+      alert('Gagal menyimpan jawaban ke server!');
     }
     // Save answer locally
     const newAnswer = {
@@ -402,30 +422,30 @@ export default function VocabularyQuizPage() {
       isCorrect,
       question: soal.question,
       kosakata: soal.kanji || soal.arti,
-      correctAnswer: soal.answer,
+      correctAnswer: soal.answer || soal.correct_answer,
       selectedText,
       waktuJawab,
-    }
-    setAnswers((prev) => [...prev, newAnswer])
+    };
+    setAnswers((prev) => [...prev, newAnswer]);
     // Vocabulary shake animation for wrong answer
     if (!isCorrect) {
       controls.start({
         x: [-8, 8, -8, 8, 0],
         transition: { duration: 0.4 },
-      })
+      });
     }
     // Auto advance after feedback
     setTimeout(() => {
       if (currentQuestion < quizData.length - 1) {
-        setCurrentQuestion((prev) => prev + 1)
-        setSelectedAnswer(null)
-        setIsAnswered(false)
-        setShowFeedback(false)
+        setCurrentQuestion((prev) => prev + 1);
+        setSelectedAnswer(null);
+        setIsAnswered(false);
+        setShowFeedback(false);
       } else {
-        handleQuizComplete()
+        handleQuizComplete();
       }
-    }, 1500)
-  }
+    }, 1500);
+  };
 
   // Complete quiz
   const handleQuizComplete = async () => {
@@ -452,7 +472,7 @@ export default function VocabularyQuizPage() {
   // View review
   const handleViewReview = () => {
     // Redirect ke halaman review quis kosakata
-    router.visit(route('review-quis-kosakata', { sessionId }))
+    router.visit(route('review-quis-kosakata-intermediate', { sessionId }));
   }
 
   // Tambah handler keluar
@@ -479,96 +499,49 @@ export default function VocabularyQuizPage() {
 
   // Helper: Render options for both types
   const renderOptions = (soal, onSelect, selected, isAnswered, showFeedback) => {
-    if (soal.type === 'jp_to_id') {
-      // Opsi: array of string (arti)
-      return (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {soal.options.map((option, idx) => {
-            const optionId = String.fromCharCode(65 + idx) // 'A', 'B', ...
-            const isSelected = selected === optionId
-            const isCorrect = option === soal.answer
-            const showResult = showFeedback && isSelected
-            return (
-              <motion.div
-                key={optionId}
-                initial={{ opacity: 0, y: 30, scale: 0.9 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ delay: 0.2 + idx * 0.1, duration: 0.4, type: "spring" }}
-                whileHover={!isAnswered ? { scale: 1.03, y: -4 } : {}}
-                whileTap={!isAnswered ? { scale: 0.97 } : {}}
-                className="relative group"
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {soal.options.map((option, idx) => {
+          const optionId = String.fromCharCode(65 + idx)
+          const isSelected = selected === optionId
+          const isCorrect = option.isCorrect
+          const showResult = showFeedback && isSelected
+          return (
+            <motion.div
+              key={optionId}
+              initial={{ opacity: 0, y: 30, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ delay: 0.2 + idx * 0.1, duration: 0.4, type: "spring" }}
+              whileHover={!isAnswered ? { scale: 1.03, y: -4 } : {}}
+              whileTap={!isAnswered ? { scale: 0.97 } : {}}
+              className="relative group"
+            >
+              <div
+                className={`relative overflow-hidden rounded-2xl cursor-pointer transition-all duration-300 ${isAnswered ? "cursor-not-allowed" : ""}`}
+                onClick={() => onSelect(optionId)}
               >
-                <div
-                  className={`relative overflow-hidden rounded-2xl cursor-pointer transition-all duration-300 ${isAnswered ? "cursor-not-allowed" : ""}`}
-                  onClick={() => onSelect(optionId)}
-                >
-                  {/* Background gradient, border, etc. (reuse existing logic) */}
-                  <div className={`absolute inset-0 transition-all duration-300 ${showResult ? (isCorrect ? "bg-gradient-to-br from-green-400 via-green-500 to-emerald-600 dark:from-green-500 dark:via-green-600 dark:to-emerald-700" : "bg-gradient-to-br from-red-400 via-red-500 to-rose-600 dark:from-red-500 dark:via-red-600 dark:to-rose-700") : isSelected ? "bg-gradient-to-br from-indigo-400 via-indigo-500 to-purple-600 dark:from-indigo-500 dark:via-indigo-600 dark:to-purple-700" : "bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-slate-800 dark:via-slate-700 dark:to-slate-600 group-hover:from-indigo-50 group-hover:via-blue-50 group-hover:to-indigo-100 dark:group-hover:from-indigo-900 dark:group-hover:via-blue-900 dark:group-hover:to-indigo-800"}`}/>
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent dark:from-white/5" />
-                  <div className={`absolute inset-0 rounded-2xl border-2 transition-all duration-300 ${showResult ? (isCorrect ? "border-green-300 dark:border-green-500" : "border-red-300 dark:border-red-500") : isSelected ? "border-indigo-300 dark:border-indigo-500" : "border-gray-200 dark:border-slate-700 group-hover:border-indigo-200 dark:group-hover:border-indigo-500"}`}/>
-                  <div className="relative z-10 p-6 flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <motion.div className={`w-14 h-14 rounded-xl flex items-center justify-center font-bold text-xl shadow-lg transition-all duration-300 ${showResult ? (isCorrect ? "bg-white dark:bg-slate-800 text-green-600 dark:text-green-400" : "bg-white dark:bg-slate-800 text-red-600 dark:text-red-400") : isSelected ? "bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400" : "bg-gradient-to-br from-indigo-500 to-purple-600 dark:from-indigo-600 dark:to-purple-700 text-white group-hover:from-indigo-600 group-hover:to-purple-700 dark:group-hover:from-indigo-700 dark:group-hover:to-purple-800"}`} whileHover={!isAnswered ? { scale: 1.1, rotate: 5 } : {}} whileTap={!isAnswered ? { scale: 0.9 } : {}}>{optionId}</motion.div>
-                      <span className={`text-xl font-bold transition-all duration-300 ${showResult || isSelected ? "text-white" : "text-gray-800 dark:text-gray-200 group-hover:text-indigo-700 dark:group-hover:text-indigo-300"}`}>{option}</span>
-                    </div>
-                    {showResult && (
-                      <motion.div initial={{ scale: 0, rotate: -90 }} animate={{ scale: 1, rotate: 0 }} transition={{ delay: 0.2, type: "spring", stiffness: 200 }} className="bg-white dark:bg-slate-800 rounded-full p-2">
-                        {isCorrect ? <CheckCircle className="w-6 h-6 text-green-500 dark:text-green-400" /> : <XCircle className="w-6 h-6 text-red-500 dark:text-red-400" />}
-                      </motion.div>
-                    )}
+                <div className={`absolute inset-0 transition-all duration-300 ${showResult ? (isCorrect ? "bg-gradient-to-br from-green-400 via-green-500 to-emerald-600 dark:from-green-500 dark:via-green-600 dark:to-emerald-700" : "bg-gradient-to-br from-red-400 via-red-500 to-rose-600 dark:from-red-500 dark:via-red-600 dark:to-rose-700") : isSelected ? "bg-gradient-to-br from-indigo-400 via-indigo-500 to-purple-600 dark:from-indigo-500 dark:via-indigo-600 dark:to-purple-700" : "bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-slate-800 dark:via-slate-700 dark:to-slate-600 group-hover:from-indigo-50 group-hover:via-blue-50 group-hover:to-indigo-100 dark:group-hover:from-indigo-900 dark:group-hover:via-blue-900 dark:group-hover:to-indigo-800"}`}/>
+                <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent dark:from-white/5" />
+                <div className={`absolute inset-0 rounded-2xl border-2 transition-all duration-300 ${showResult ? (isCorrect ? "border-green-300 dark:border-green-500" : "border-red-300 dark:border-red-500") : isSelected ? "border-indigo-300 dark:border-indigo-500" : "border-gray-200 dark:border-slate-700 group-hover:border-indigo-200 dark:group-hover:border-indigo-500"}`}/>
+                <div className="relative z-10 p-6 flex items-center justify-between">
+                  <div className="flex flex-col gap-1">
+                    <span className="text-2xl font-bold">{option.kanji}</span>
+                    {!hideFurigana && <span className="text-md text-indigo-200">{option.furigana}</span>}
+                    {!hideRomaji && <span className="text-sm text-indigo-300">{option.romaji}</span>}
                   </div>
-                  {!isAnswered && (<motion.div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent dark:via-white/5" initial={{ x: "-100%" }} whileHover={{ x: "100%" }} transition={{ duration: 0.6 }}/>) }
+                  {showResult && (
+                    <motion.div initial={{ scale: 0, rotate: -90 }} animate={{ scale: 1, rotate: 0 }} transition={{ delay: 0.2, type: "spring", stiffness: 200 }} className="bg-white dark:bg-slate-800 rounded-full p-2">
+                      {isCorrect ? <CheckCircle className="w-6 h-6 text-green-500 dark:text-green-400" /> : <XCircle className="w-6 h-6 text-red-500 dark:text-red-400" />}
+                    </motion.div>
+                  )}
                 </div>
-              </motion.div>
-            )})}
-        </div>
-      )
-    } else if (soal.type === 'id_to_jp') {
-      // Opsi: array of {kanji, furigana, romaji}
-      return (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {soal.options.map((option, idx) => {
-            const optionId = String.fromCharCode(65 + idx)
-            const isSelected = selected === optionId
-            const isCorrect = option.kanji === soal.answer
-            const showResult = showFeedback && isSelected
-            return (
-              <motion.div
-                key={optionId}
-                initial={{ opacity: 0, y: 30, scale: 0.9 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ delay: 0.2 + idx * 0.1, duration: 0.4, type: "spring" }}
-                whileHover={!isAnswered ? { scale: 1.03, y: -4 } : {}}
-                whileTap={!isAnswered ? { scale: 0.97 } : {}}
-                className="relative group"
-              >
-                <div
-                  className={`relative overflow-hidden rounded-2xl cursor-pointer transition-all duration-300 ${isAnswered ? "cursor-not-allowed" : ""}`}
-                  onClick={() => onSelect(optionId)}
-                >
-                  <div className={`absolute inset-0 transition-all duration-300 ${showResult ? (isCorrect ? "bg-gradient-to-br from-green-400 via-green-500 to-emerald-600 dark:from-green-500 dark:via-green-600 dark:to-emerald-700" : "bg-gradient-to-br from-red-400 via-red-500 to-rose-600 dark:from-red-500 dark:via-red-600 dark:to-rose-700") : isSelected ? "bg-gradient-to-br from-indigo-400 via-indigo-500 to-purple-600 dark:from-indigo-500 dark:via-indigo-600 dark:to-purple-700" : "bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-slate-800 dark:via-slate-700 dark:to-slate-600 group-hover:from-indigo-50 group-hover:via-blue-50 group-hover:to-indigo-100 dark:group-hover:from-indigo-900 dark:group-hover:via-blue-900 dark:group-hover:to-indigo-800"}`}/>
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent dark:from-white/5" />
-                  <div className={`absolute inset-0 rounded-2xl border-2 transition-all duration-300 ${showResult ? (isCorrect ? "border-green-300 dark:border-green-500" : "border-red-300 dark:border-red-500") : isSelected ? "border-indigo-300 dark:border-indigo-500" : "border-gray-200 dark:border-slate-700 group-hover:border-indigo-200 dark:group-hover:border-indigo-500"}`}/>
-                  <div className="relative z-10 p-6 flex items-center justify-between">
-                    <div className="flex flex-col gap-1">
-                      <span className="text-2xl font-bold">{option.kanji}</span>
-                      {!hideFurigana && <span className="text-md text-indigo-200">{option.furigana}</span>}
-                      {!hideRomaji && <span className="text-sm text-indigo-300">{option.romaji}</span>}
-                    </div>
-                    {showResult && (
-                      <motion.div initial={{ scale: 0, rotate: -90 }} animate={{ scale: 1, rotate: 0 }} transition={{ delay: 0.2, type: "spring", stiffness: 200 }} className="bg-white dark:bg-slate-800 rounded-full p-2">
-                        {isCorrect ? <CheckCircle className="w-6 h-6 text-green-500 dark:text-green-400" /> : <XCircle className="w-6 h-6 text-red-500 dark:text-red-400" />}
-                      </motion.div>
-                    )}
-                  </div>
-                  {!isAnswered && (<motion.div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent dark:via-white/5" initial={{ x: "-100%" }} whileHover={{ x: "100%" }} transition={{ duration: 0.6 }}/>) }
-                </div>
-              </motion.div>
-            )})}
-        </div>
-      )
-    }
-    return null
+                {!isAnswered && (<motion.div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent dark:via-white/5" initial={{ x: "-100%" }} whileHover={{ x: "100%" }} transition={{ duration: 0.6 }}/>) }
+              </div>
+            </motion.div>
+          )
+        })}
+      </div>
+    )
   }
 
   // Saat showCompletion true, fetch hasil review dari backend
@@ -796,6 +769,9 @@ export default function VocabularyQuizPage() {
                         transition={{ delay: 0.1, duration: 0.4 }}
                         className="relative"
                       >
+                        <div className="mb-4 text-lg md:text-xl font-semibold text-indigo-700 dark:text-indigo-200 text-center">
+                          Lengkapi kalimat berikut dengan jawaban yang paling tepat!
+                        </div>
                         <div className="bg-gradient-to-br from-white via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-indigo-900 backdrop-blur-sm rounded-md shadow-md p-8 mb-6 border border-white/30 dark:border-slate-700/30 relative overflow-hidden">
                           {/* Decorative elements */}
                           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div>
@@ -826,33 +802,34 @@ export default function VocabularyQuizPage() {
                               {quizData[currentQuestion].question}
                             </motion.h2>
 
-                            {/* Render soal utama sesuai tipe */}
-                            {quizData[currentQuestion].type === 'jp_to_id' ? (
+                            {/* Render soal utama sesuai struktur intermediate */}
+                            {quizData[currentQuestion] && (
                               <motion.div
                                 ref={vocabularyRef}
                                 animate={controls}
                                 initial={{ scale: 0.8, opacity: 0 }}
                                 whileInView={{ scale: 1, opacity: 1 }}
                                 transition={{ delay: 0.4, type: "spring", stiffness: 200 }}
-                                className="inline-flex flex-col items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-600 dark:from-indigo-600 dark:to-purple-700 rounded-2xl shadow-xl text-white p-6 relative min-w-[320px]"
+                                className="inline-flex flex-col items-center justify-center bg-gradient-to-br from-indigo-600 to-purple-700 dark:from-indigo-700 dark:to-purple-800 rounded-3xl shadow-2xl text-white p-10 md:p-14 relative min-w-[340px] max-w-2xl mx-auto border-4 border-indigo-200 dark:border-indigo-700 animate-pulse-slow"
                               >
-                                <div className="text-5xl font-bold mb-2">{quizData[currentQuestion].kanji}</div>
-                                {!hideFurigana && <div className="text-lg text-indigo-100 dark:text-indigo-200 mb-1">{quizData[currentQuestion].furigana}</div>}
-                                {!hideRomaji && <div className="text-sm text-indigo-200 dark:text-indigo-300 font-medium">{quizData[currentQuestion].romaji}</div>}
+                                <div className="text-3xl md:text-4xl font-extrabold mb-3 tracking-wide select-none">
+                                  {/* Replace blank in soal_kanji with the random blank style */}
+                                  <span>{quizData[currentQuestion].soal_kanji.replace(/_{2,}|\.\.\.|\?{2,}/g, blankStyles[currentQuestion] || "____")}</span>
+                                </div>
+                                {/* Only show furigana if not hidden */}
+                                {!hideFurigana && (
+                                  <div className="text-xl md:text-2xl text-indigo-100 dark:text-indigo-200 mb-2 select-none">
+                                    {quizData[currentQuestion].soal_furigana}
+                                  </div>
+                                )}
+                                {/* Only show romaji if not hidden */}
+                                {!hideRomaji && (
+                                  <div className="text-lg md:text-xl text-indigo-200 dark:text-indigo-300 font-medium select-none">
+                                    {quizData[currentQuestion].soal_romaji}
+                                  </div>
+                                )}
                               </motion.div>
-                            ) : quizData[currentQuestion].type === 'id_to_jp' ? (
-                              <motion.div
-                                ref={vocabularyRef}
-                                animate={controls}
-                                initial={{ scale: 0.8, opacity: 0 }}
-                                whileInView={{ scale: 1, opacity: 1 }}
-                                transition={{ delay: 0.4, type: "spring", stiffness: 200 }}
-                                className="inline-flex flex-col items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-600 dark:from-indigo-600 dark:to-purple-700 rounded-2xl shadow-xl text-white p-6 relative min-w-[320px]"
-                              >
-                                <div className="text-2xl font-bold mb-2">{quizData[currentQuestion].arti}</div>
-                                <div className="text-sm text-indigo-200 dark:text-indigo-300 font-medium">(Bahasa Indonesia)</div>
-                              </motion.div>
-                            ) : null}
+                            )}
                           </div>
                         </div>
                       </motion.div>
@@ -878,17 +855,36 @@ export default function VocabularyQuizPage() {
                                 : "bg-gradient-to-r from-red-100 to-red-200 dark:from-red-900/50 dark:to-red-800/50 text-red-800 dark:text-red-300 border border-red-300 dark:border-red-700"
                             }`}
                           >
-                            {isAnswered && answers[answers.length - 1]?.isCorrect ? (
-                              <>
-                                <CheckCircle className="w-6 h-6" />
-                                Benar! {quizData[currentQuestion].type === 'jp_to_id' ? quizData[currentQuestion].kanji : quizData[currentQuestion].arti} berarti {quizData[currentQuestion].type === 'jp_to_id' ? quizData[currentQuestion].answer : quizData[currentQuestion].answer}
-                              </>
-                            ) : (
-                              <>
-                                <XCircle className="w-6 h-6" />
-                                Salah. {quizData[currentQuestion].type === 'jp_to_id' ? quizData[currentQuestion].kanji : quizData[currentQuestion].arti} berarti {quizData[currentQuestion].type === 'jp_to_id' ? quizData[currentQuestion].answer : quizData[currentQuestion].answer}
-                              </>
-                            )}
+                            {(() => {
+                              // Ambil soal dan jawaban benar
+                              const soal = quizData[currentQuestion];
+                              let correctOption = null;
+                              // Cek struktur intermediate (isCorrect di options)
+                              if (soal.options && typeof soal.options[0]?.isCorrect === 'boolean') {
+                                correctOption = soal.options.find(o => o.isCorrect);
+                              }
+                              // Cek struktur beginner (type)
+                              const isBeginner = !!soal.type;
+                              if (isAnswered && answers[answers.length - 1]?.isCorrect) {
+                                return (
+                                  <>
+                                    <CheckCircle className="w-6 h-6" />
+                                    Benar! {isBeginner
+                                      ? (soal.type === 'jp_to_id' ? soal.kanji : soal.arti) + ' berarti ' + soal.answer
+                                      : correctOption ? `Jawaban: ${correctOption.kanji}${correctOption.furigana ? '（' + correctOption.furigana + '）' : ''}${correctOption.romaji ? ' - ' + correctOption.romaji : ''}` : ''}
+                                  </>
+                                );
+                              } else {
+                                return (
+                                  <>
+                                    <XCircle className="w-6 h-6" />
+                                    Salah. {isBeginner
+                                      ? (soal.type === 'jp_to_id' ? soal.kanji : soal.arti) + ' berarti ' + soal.answer
+                                      : correctOption ? `Jawaban: ${correctOption.kanji}${correctOption.furigana ? '（' + correctOption.furigana + '）' : ''}${correctOption.romaji ? ' - ' + correctOption.romaji : ''}` : ''}
+                                  </>
+                                );
+                              }
+                            })()}
                           </div>
                         </motion.div>
                       )}

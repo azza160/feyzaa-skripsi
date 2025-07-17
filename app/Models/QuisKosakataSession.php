@@ -15,7 +15,7 @@ class QuisKosakataSession extends Model
 
     protected $fillable = [
         'id', 'user_id', 'mode', 'level', 'selected_kosakata', 'selected_soal', 'user_answers',
-        'started_at', 'ended_at', 'ended', 'total_exp', 'remaining_time', 'soal'
+        'started_at', 'ended_at', 'ended', 'total_exp', 'remaining_time', 'soal', 'review_visit_count'
     ];
 
     protected $casts = [
@@ -27,6 +27,7 @@ class QuisKosakataSession extends Model
         'ended_at' => 'datetime',
         'ended' => 'boolean',
         'remaining_time' => 'integer',
+        'review_visit_count' => 'integer',
     ];
 
     public function user()

@@ -572,16 +572,17 @@ function ReviewQuisPage({ quizResults, user, currentLevel, currentExp, maxExp, n
                                 </div>
                                 <div className="text-left">
                                   <div className="font-bold text-gray-800 text-lg mb-1">
-                                    {answer.kanji || answer.romaji ? (
+                                    {/* Tampilkan label kosakata: kanji (romaji) */}
+                                    {answer.kosakata_label_kanji || answer.kosakata_label_romaji ? (
                                       <>
-                                        <span className="text-3xl text-indigo-600 ml-2">{answer.kanji}</span>
-                                        <span className="text-lg text-gray-600 ml-2">({answer.romaji || ''})</span>
+                                        <span className="text-3xl text-indigo-700 dark:text-yellow-200 ml-2">{answer.kosakata_label_kanji}</span>
+                                        <span className="text-lg text-gray-600 ml-2">({answer.kosakata_label_romaji || ''})</span>
                                       </>
                                     ) : (
-                                      <span className="text-base text-gray-500 ml-2">(Soal: Indonesia → Jepang)</span>
+                                      <span className="text-base text-gray-500 ml-2">(Soal Kosakata)</span>
                                     )}
                                   </div>
-                                  <div className="text-sm text-gray-600 mb-2">{answer.arti}</div>
+                                  <div className="text-sm text-gray-600 mb-2">{answer.soal_arti}</div>
                                   <div className="flex items-center gap-2">
                                     <Badge className="text-xs bg-yellow-100 text-yellow-700">
                                       <Zap className="w-3 h-3 mr-1" />+{answer.expGained} EXP
@@ -592,91 +593,133 @@ function ReviewQuisPage({ quizResults, user, currentLevel, currentExp, maxExp, n
                             </div>
                           </AccordionTrigger>
                           <AccordionContent>
-                              <div className="space-y-4 p-4">
-                                  <div>
-                                    <h4 className="font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                                      <Target className="w-4 h-4 text-indigo-600" />
-                                      Jawaban Kamu:
-                                    </h4>
-                                    {answer.userAnswer ? (
-                                      <div
-                                        className={`p-4 rounded-xl border-2 ${
-                                          answer.isCorrect
-                                            ? "border-green-300 bg-gradient-to-r from-green-50 to-green-100 text-green-800"
-                                            : "border-red-300 bg-gradient-to-r from-red-50 to-red-100 text-red-800"
-                                        }`}
-                                      >
-                                        <div className="flex items-center justify-between">
-                                          <span className="font-bold text-xl">{answer.userAnswer}</span>
-                                          {answer.isCorrect ? (
-                                            <CheckCircle className="w-6 h-6" />
-                                          ) : (
-                                            <XCircle className="w-6 h-6" />
-                                          )}
-                                        </div>
-                                        <p className="text-sm mt-2 opacity-80">
-                                          {answer.isCorrect
-                                            ? "Jawaban kamu benar!"
-                                            : "Jawaban kamu kurang tepat"}
-                                        </p>
-                                      </div>
-                                    ) : (
-                                      <div className="p-4 rounded-xl border-2 border-gray-300 bg-gradient-to-r from-gray-50 to-gray-100 text-gray-700">
-                                        <span className="font-bold text-xl">-</span>
-                                        <p className="text-sm mt-2 opacity-80">Kamu tidak menjawab soal ini</p>
-                                      </div>
-                                    )}
-                                  </div>
+  <div className="space-y-6 p-4">
+    {/* Soal Blank */}
+    <div>
+      <h4 className="font-semibold text-gray-700 mb-2 flex items-center gap-2">
+        <Target className="w-4 h-4 text-indigo-600" />
+        Soal (Blank):
+      </h4>
+      <div className="space-y-3">
+        {/* Kanji */}
+        <div className="rounded-xl border bg-white dark:bg-slate-900 shadow-sm p-4 flex flex-col items-start">
+          <span className="text-xs font-semibold uppercase text-gray-500 mb-1">Kanji</span>
+          <span className="text-lg font-mono tracking-wide text-gray-900 dark:text-white">{(answer.soal_kanji || '').replace(/_{2,}/g, '「____」')}</span>
+        </div>
+        {/* Furigana */}
+        <div className="rounded-xl border bg-white dark:bg-slate-900 shadow-sm p-4 flex flex-col items-start">
+          <span className="text-xs font-semibold uppercase text-gray-500 mb-1">Furigana</span>
+          <span className="text-lg font-mono tracking-wide text-gray-900 dark:text-white">{(answer.soal_furigana || '').replace(/_{2,}/g, '「____」')}</span>
+        </div>
+        {/* Romaji */}
+        <div className="rounded-xl border bg-white dark:bg-slate-900 shadow-sm p-4 flex flex-col items-start">
+          <span className="text-xs font-semibold uppercase text-gray-500 mb-1">Romaji</span>
+          <span className="text-lg font-mono tracking-wide text-gray-900 dark:text-white">{(answer.soal_romaji || '').replace(/_{2,}/g, '「____」')}</span>
+        </div>
+        {/* Arti */}
+        <div className="rounded-xl border bg-white dark:bg-slate-900 shadow-sm p-4 flex flex-col items-start">
+          <span className="text-xs font-semibold uppercase text-gray-500 mb-1">Arti</span>
+          <span className="text-lg font-mono tracking-wide text-gray-900 dark:text-white">{(answer.soal_arti || '').replace(/_{2,}/g, '「____」')}</span>
+        </div>
+      </div>
+    </div>
 
-                                  {!answer.isCorrect && (
-                                    <div>
-                                      <h4 className="font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                                      <Target className="w-4 h-4 text-indigo-600" />
-                                        Jawaban Benar:
-                                      </h4>
-                                      <div className="p-4 rounded-xl border-2 border-green-300 bg-gradient-to-r from-green-50 to-green-100 text-green-800">
-                                        <div className="flex items-center justify-between">
-                                          <span className="font-bold text-xl">{answer.correctAnswer}</span>
-                                          <CheckCircle className="w-6 h-6" />
-                                      </div>
-                                      </div>
-                                    </div>
-                                  )}
+    {/* Jawaban Pengguna */}
+    <div>
+      <h4 className="font-semibold text-gray-700 mb-2 flex items-center gap-2">
+        <List className="w-4 h-4 text-indigo-600" />
+        Jawaban Kamu:
+      </h4>
+      {answer.options.find(opt => opt.id === answer.userAnswer) ? (
+        <div className={`p-4 rounded-xl border-2 ${answer.isCorrect ? "border-green-300 bg-green-50 text-green-800" : "border-red-300 bg-red-50 text-red-800"} flex flex-col gap-1`}>
+          <span className="font-bold mr-2">{answer.options.find(opt => opt.id === answer.userAnswer).id.toUpperCase()}.</span>
+          <span className="text-lg text-indigo-700 dark:text-yellow-200">{answer.options.find(opt => opt.id === answer.userAnswer).kanji}</span>
+          <span className="text-indigo-500">{answer.options.find(opt => opt.id === answer.userAnswer).furigana}</span>
+          <span className="text-indigo-400">{answer.options.find(opt => opt.id === answer.userAnswer).romaji}</span>
+          <span className="text-gray-700">{answer.options.find(opt => opt.id === answer.userAnswer).arti}</span>
+        </div>
+      ) : (
+        <div className="p-4 rounded-xl border-2 border-gray-300 bg-gradient-to-r from-gray-50 to-gray-100 text-gray-700">
+          <span className="font-bold text-xl">-</span>
+          <p className="text-sm mt-2 opacity-80">Kamu tidak menjawab soal ini</p>
+        </div>
+      )}
+    </div>
 
-                                  <div>
-                                  <h4 className="font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                                    <List className="w-4 h-4 text-indigo-600" />
-                                    Opsi Jawaban:
-                                  </h4>
-                                  <div className="grid grid-cols-2 gap-3">
-                                    {Array.isArray(answer.options) ? answer.options.map((option) => {
-                                      const isUser = option.id === answer.userAnswer;
-                                      const isCorrect = option.text === answer.correctAnswer;
-                                      // Opsi yang dipilih user dan benar
-                                      const isUserAndCorrect = isUser && isCorrect;
-                                      // Opsi yang dipilih user tapi salah
-                                      const isUserAndWrong = isUser && !isCorrect;
-                                      // Opsi yang benar tapi bukan pilihan user
-                                      const isCorrectOnly = isCorrect && !isUser;
-                                      let className = "p-3 rounded-lg border flex items-center gap-2";
-                                      if (isUserAndCorrect) className += " border-green-400 bg-green-50 text-green-800 font-bold";
-                                      else if (isUserAndWrong) className += " border-red-400 bg-red-50 text-red-800 font-bold";
-                                      else if (isCorrectOnly) className += " border-green-300 bg-green-100 text-green-800";
-                                      else className += " border-gray-200 bg-gray-50";
-                                      return (
-                                        <div key={option.id} className={className}>
-                                          <span className="inline-block w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 font-bold text-center mr-2">{option.id}</span>
-                                          <span>{option.text}</span>
-                                          {isUserAndCorrect && <CheckCircle className="w-5 h-5 text-green-500 ml-auto" />}
-                                          {isUserAndWrong && <XCircle className="w-5 h-5 text-red-500 ml-auto" />}
-                                          {isCorrectOnly && <CheckCircle className="w-5 h-5 text-green-400 ml-auto" />}
-                                        </div>
-                                      );
-                                    }) : null}
-                                  </div>
-                                </div>
-                              </div>
-                          </AccordionContent>
+    {/* Jawaban Benar */}
+    <div>
+      <h4 className="font-semibold text-gray-700 mb-2 flex items-center gap-2">
+        <CheckCircle className="w-4 h-4 text-green-600" />
+        Jawaban Benar:
+      </h4>
+      {answer.correctAnswer ? (
+        <div className="p-4 rounded-xl border-2 border-green-300 bg-gradient-to-r from-green-50 to-green-100 text-green-800 flex flex-col gap-1">
+          <span className="font-bold mr-2">{answer.correctAnswer.id.toUpperCase()}.</span>
+          <span className="text-lg text-indigo-700 dark:text-yellow-200">{answer.correctAnswer.kanji}</span>
+          <span className="text-indigo-500">{answer.correctAnswer.furigana}</span>
+          <span className="text-indigo-400">{answer.correctAnswer.romaji}</span>
+          <span className="text-gray-700">{answer.correctAnswer.arti}</span>
+        </div>
+      ) : null}
+    </div>
+
+    {/* Opsi Jawaban */}
+    <div>
+      <h4 className="font-semibold text-gray-700 mb-2 flex items-center gap-2">
+        <List className="w-4 h-4 text-indigo-600" />
+        Opsi Jawaban:
+      </h4>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        {answer.options.map((option, idx) => {
+          let className = "p-3 rounded-lg border flex flex-col gap-1";
+          if (option.id === answer.userAnswer && option.id === answer.correctAnswer?.id) className += " border-green-400 bg-green-50 text-green-800 font-bold";
+          else if (option.id === answer.userAnswer && option.id !== answer.correctAnswer?.id) className += " border-red-400 bg-red-50 text-red-800 font-bold";
+          else if (option.id === answer.correctAnswer?.id) className += " border-green-300 bg-green-100 text-green-800";
+          else className += " border-gray-200 bg-white dark:bg-slate-800";
+          return (
+            <div key={option.id} className={className}>
+              <span className="font-bold mr-2">{option.id.toUpperCase()}.</span>
+              <span className="text-lg text-indigo-700 dark:text-yellow-200">{option.kanji}</span>
+              <span className="text-indigo-500">{option.furigana}</span>
+              <span className="text-indigo-400">{option.romaji}</span>
+              <span className="text-gray-700">{option.arti}</span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+
+    {/* Soal Filled */}
+    <div>
+      <h4 className="font-semibold text-gray-700 mb-2 flex items-center gap-2">
+        <CheckCircle className="w-4 h-4 text-green-600" />
+        Soal (Filled):
+      </h4>
+      <div className="space-y-3">
+        {/* Kanji */}
+        <div className="rounded-xl border bg-green-50 dark:bg-green-900/30 shadow-sm p-4 flex flex-col items-start">
+          <span className="text-xs font-semibold uppercase text-gray-500 mb-1">Kanji</span>
+          <span className="text-lg font-mono tracking-wide text-gray-900 dark:text-white">{answer.soal_filled_kanji}</span>
+        </div>
+        {/* Furigana */}
+        <div className="rounded-xl border bg-green-50 dark:bg-green-900/30 shadow-sm p-4 flex flex-col items-start">
+          <span className="text-xs font-semibold uppercase text-gray-500 mb-1">Furigana</span>
+          <span className="text-lg font-mono tracking-wide text-gray-900 dark:text-white">{answer.soal_filled_furigana}</span>
+        </div>
+        {/* Romaji */}
+        <div className="rounded-xl border bg-green-50 dark:bg-green-900/30 shadow-sm p-4 flex flex-col items-start">
+          <span className="text-xs font-semibold uppercase text-gray-500 mb-1">Romaji</span>
+          <span className="text-lg font-mono tracking-wide text-gray-900 dark:text-white">{answer.soal_filled_romaji}</span>
+        </div>
+        {/* Arti */}
+        <div className="rounded-xl border bg-green-50 dark:bg-green-900/30 shadow-sm p-4 flex flex-col items-start">
+          <span className="text-xs font-semibold uppercase text-gray-500 mb-1">Arti</span>
+          <span className="text-lg font-mono tracking-wide text-gray-900 dark:text-white">{answer.soal_filled_arti}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</AccordionContent>
                         </AccordionItem>
                       ))}
                     </Accordion>

@@ -573,6 +573,11 @@ export default function VocabularySelector() {
                     size="lg"
                     className="px-8 py-6 text-lg bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white"
                     onClick={() => {
+                      if (level === 'intermediate') {
+                        // Mode random intermediate
+                        router.post(route('start-quis-kosakata-intermediate'), { mode: 'random', level }, { preserveScroll: true })
+                        return
+                      }
                       router.post(route('start-quis-kosakata'), { mode: 'random', level }, { preserveScroll: true })
                     }}
                   >
@@ -746,14 +751,22 @@ export default function VocabularySelector() {
                     disabled={!canStartQuiz} 
                     className="px-8 py-3 text-lg font-semibold w-full sm:w-auto"
                     onClick={async () => {
-                      if (canStartQuiz) {
-                        // POST ke backend untuk mode manual
-                        router.post(route('start-quis-kosakata'), {
+                      if (!canStartQuiz) return
+                      if (level === 'intermediate') {
+                        // Mode manual intermediate
+                        router.post(route('start-quis-kosakata-intermediate'), {
                           mode: 'manual',
                           level: level,
                           selected_kosakata: selectedVocabulary
                         })
+                        return
                       }
+                      // POST ke backend untuk mode manual (beginner)
+                      router.post(route('start-quis-kosakata'), {
+                        mode: 'manual',
+                        level: level,
+                        selected_kosakata: selectedVocabulary
+                      })
                     }}
                   >
                     <Play className="w-5 h-5 mr-2" />

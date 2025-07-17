@@ -26,7 +26,8 @@ class DatabaseSeeder extends Seeder
             BentukKosakataSeeder::class,
             ContohKalimatSeeder::class,
             PembelajaranSeeder::class,
-            SoalQuisSeeder::class
+            SoalQuisSeeder::class,
+            SoalKosakataSeeder::class
         ]);
 
         User::create([

@@ -86,9 +86,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/pilih-list-quis-kosakata',[QuisKosakataController::class,'pilihListQuisKosakata'])->name('pilih-list-quis-kosakata');
     Route::get('/dashboard/quis-kosakata/{sessionId}',[QuisKosakataController::class,'QuisKosakataShow'])->name('quis-kosakata');
     Route::post('/dashboard/kuis-kosakata/start', [QuisKosakataController::class, 'startSession'])->name('start-quis-kosakata');
+    // Tambahkan endpoint baru untuk intermediate
+    Route::post('/dashboard/kuis-kosakata/intermediate/start', [QuisKosakataController::class, 'startIntermediateSession'])->name('start-quis-kosakata-intermediate');
     Route::post('/dashboard/quis-kosakata/save-answer', [\App\Http\Controllers\QuisKosakataController::class, 'saveAnswer'])->name('save-quis-kosakata-answer');
     Route::post('/dashboard/quis-kosakata/delete-session', [\App\Http\Controllers\QuisKosakataController::class, 'deleteSession'])->name('delete-quis-kosakata-session');
     Route::get('/dashboard/review-quis-kosakata/{sessionId}', [\App\Http\Controllers\QuisKosakataController::class, 'ReviewQuisKosakataShow'])->name('review-quis-kosakata');
+    Route::get('/dashboard/quis-kosakata-intermediate/{sessionId}', [QuisKosakataController::class, 'QuisKosakataIntermediateShow'])->name('quis-kosakata-intermediate');
+    Route::get('/dashboard/review-quis-kosakata-intermediate/{sessionId}', [QuisKosakataController::class, 'ReviewQuisKosakataIntermediateShow'])->name('review-quis-kosakata-intermediate');
 
     // route progress uses
     Route::post('/user/belajar/update', [UserBelajarController::class, 'updateProgress'])->name('user.belajar.update');
