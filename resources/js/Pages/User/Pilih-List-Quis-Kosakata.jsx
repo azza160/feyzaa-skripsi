@@ -578,6 +578,11 @@ export default function VocabularySelector() {
                         router.post(route('start-quis-kosakata-intermediate'), { mode: 'random', level }, { preserveScroll: true })
                         return
                       }
+                      if (level === 'advanced') {
+                        // Mode random advanced
+                        router.post(route('start-quis-kosakata-advanced'), { mode: 'random', level }, { preserveScroll: true })
+                        return
+                      }
                       router.post(route('start-quis-kosakata'), { mode: 'random', level }, { preserveScroll: true })
                     }}
                   >
@@ -755,6 +760,15 @@ export default function VocabularySelector() {
                       if (level === 'intermediate') {
                         // Mode manual intermediate
                         router.post(route('start-quis-kosakata-intermediate'), {
+                          mode: 'manual',
+                          level: level,
+                          selected_kosakata: selectedVocabulary
+                        })
+                        return
+                      }
+                      if (level === 'advanced') {
+                        // Mode manual advanced
+                        router.post(route('start-quis-kosakata-advanced'), {
                           mode: 'manual',
                           level: level,
                           selected_kosakata: selectedVocabulary

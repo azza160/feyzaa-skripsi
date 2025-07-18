@@ -506,6 +506,150 @@ class QuisKosakataController extends Controller
         return redirect()->route('quis-kosakata-intermediate', ['sessionId' => $session->id]);
     }
 
+    public function startAdvancedSession(Request $request)
+    {
+        $user = Auth::user();
+        $mode = $request->input('mode'); // manual/random
+        $level = $request->input('level'); // harus 'advanced'
+        $selectedKosakata = $request->input('selected_kosakata', []); // array of id (manual)
+        $jumlahSoal = 10;
+        $soalList = [];
+
+        if ($level !== 'advanced') {
+            abort(400, 'Level ini hanya untuk advanced.');
+        }
+
+        if ($mode === 'manual') {
+            $soalQuery = \App\Models\SoalKosakata::where('level', 'advanced')
+                ->whereIn('kosakata_id', $selectedKosakata)
+                ->get()
+                ->groupBy('kosakata_id');
+            $soalPerKosakata = [];
+            foreach ($selectedKosakata as $kosakataId) {
+                $soals = $soalQuery->get($kosakataId, collect());
+                if ($soals->count() > 0) {
+                    $soalPerKosakata[] = $soals->random();
+                }
+            }
+            $soalList = collect($soalPerKosakata)->shuffle()->take($jumlahSoal)->values()->all();
+        } else if ($mode === 'random') {
+            $allSoal = \App\Models\SoalKosakata::where('level', 'advanced')->get()->groupBy('kosakata_id');
+            $uniqueSoal = [];
+            foreach ($allSoal as $group) {
+                $uniqueSoal[] = $group->random();
+            }
+            $soalList = collect($uniqueSoal)->shuffle()->take($jumlahSoal)->values()->all();
+        } else {
+            abort(400, 'Mode tidak valid.');
+        }
+
+        $selectedSoalIds = collect($soalList)->pluck('id')->toArray();
+
+        $session = \App\Models\QuisKosakataSession::create([
+            'id' => (string) \Illuminate\Support\Str::ulid(),
+            'user_id' => $user->id,
+            'mode' => $mode,
+            'level' => $level,
+            'selected_kosakata' => null,
+            'selected_soal' => $selectedSoalIds,
+            'user_answers' => [],
+            'started_at' => now(),
+            'ended' => false,
+            'total_exp' => 0,
+            'soal' => null,
+            'remaining_time' => 720, // 12 menit untuk advanced
+        ]);
+
+        return redirect()->route('quis-kosakata-advanced', ['sessionId' => $session->id]);
+    }
+
+    public function QuisKosakataAdvancedShow($sessionId)
+    {
+        $user = Auth::user();
+        $session = \App\Models\QuisKosakataSession::findOrFail($sessionId);
+
+        if ($session->user_id !== $user->id) {
+            abort(403, 'Unauthorized access to this quiz session.');
+        }
+
+        $level = $session->level;
+        $mode = $session->mode;
+        $quizData = [];
+
+        if ($level === 'advanced') {
+            $soalIds = $session->selected_soal ?? [];
+            if (!is_array($soalIds) || count($soalIds) === 0) {
+                abort(500, 'Data soal tidak ditemukan.');
+            }
+            $soalList = \App\Models\SoalKosakata::whereIn('id', $soalIds)->get();
+            $soalList = $soalList->sortBy(function($soal) use ($soalIds) {
+                return array_search($soal->id, $soalIds);
+            })->values();
+            $quizData = $soalList->map(function($soal) {
+                return [
+                    'id' => $soal->id,
+                    'soal_kanji' => $soal->soal_kanji,
+                    'soal_furigana' => $soal->soal_furigana,
+                    'soal_romaji' => $soal->soal_romaji,
+                    'soal_arti' => $soal->soal_arti,
+                    'options' => [
+                        [
+                            'kanji' => $soal->opsi_a_kanji,
+                            'furigana' => $soal->opsi_a_furigana,
+                            'romaji' => $soal->opsi_a_romaji,
+                            'arti' => $soal->opsi_a_arti,
+                            'isCorrect' => $soal->jawaban_benar === 'a',
+                        ],
+                        [
+                            'kanji' => $soal->opsi_b_kanji,
+                            'furigana' => $soal->opsi_b_furigana,
+                            'romaji' => $soal->opsi_b_romaji,
+                            'arti' => $soal->opsi_b_arti,
+                            'isCorrect' => $soal->jawaban_benar === 'b',
+                        ],
+                        [
+                            'kanji' => $soal->opsi_c_kanji,
+                            'furigana' => $soal->opsi_c_furigana,
+                            'romaji' => $soal->opsi_c_romaji,
+                            'arti' => $soal->opsi_c_arti,
+                            'isCorrect' => $soal->jawaban_benar === 'c',
+                        ],
+                        [
+                            'kanji' => $soal->opsi_d_kanji,
+                            'furigana' => $soal->opsi_d_furigana,
+                            'romaji' => $soal->opsi_d_romaji,
+                            'arti' => $soal->opsi_d_arti,
+                            'isCorrect' => $soal->jawaban_benar === 'd',
+                        ],
+                    ],
+                    'correct_answer' => $soal->jawaban_benar,
+                    'kosakata_id' => $soal->kosakata_id,
+                ];
+            })->toArray();
+        } else {
+            abort(400, 'Level ini hanya untuk advanced.');
+        }
+
+        $currentQuestionIndex = is_array($session->user_answers) ? count($session->user_answers) : 0;
+        $remainingTime = $session->remaining_time;
+
+        return Inertia::render('User/Quis-Kosakata-Advanced', [
+            'user' => $user,
+            'currentLevel' => $user->level,
+            'currentExp' => $user->exp,
+            'maxExp' => $this->calculateNextLevelExp($user->level),
+            'quizData' => $quizData,
+            'sessionId' => $session->id,
+            'remainingTime' => $remainingTime,
+            'jenis' => 'Kosakata',
+            'level' => $level,
+            'currentQuestionIndex' => $currentQuestionIndex,
+            'mode' => $mode,
+            'userAnswers' => $session->user_answers,
+            'ended' => $session->ended,
+        ]);
+    }
+
     public function saveAnswer(Request $request)
     {
         $user = Auth::user();
@@ -550,215 +694,144 @@ class QuisKosakataController extends Controller
 
     public function ReviewQuisKosakataShow($sessionId)
     {
-        $user = Auth::user();
-        $session = \App\Models\QuisKosakataSession::where('id', $sessionId)
-            ->where('user_id', $user->id)
-            ->first();
+        try {
+            $user = Auth::user();
+            $session = \App\Models\QuisKosakataSession::where('id', $sessionId)
+                ->where('user_id', $user->id)
+                ->first();
 
-        if (!$session) {
-            $errorMsg = 'Session tidak ditemukan atau bukan milik user.';
-            if (request()->wantsJson()) {
-                return response()->json(['error' => $errorMsg], 404);
-            }
-            abort(404, $errorMsg);
-        }
-
-        $userAnswers = $session->user_answers ?? [];
-        $isIntermediate = $session->level === 'intermediate';
-
-        // Ambil soalList sesuai level
-        if ($isIntermediate) {
-            $soalIds = $session->selected_soal ?? [];
-            if (!is_array($soalIds) || count($soalIds) === 0) {
-                $soalList = [];
-            } else {
-                $soalList = \App\Models\SoalKosakata::whereIn('id', $soalIds)->get()->toArray();
-            }
-        } else {
-            $soalList = $session->soal;
-        }
-
-        if (!$soalList || !is_array($soalList) || count($soalList) === 0) {
-            $errorMsg = 'Data soal pada sesi kuis ini tidak ditemukan. Silakan mulai ulang kuis.';
-            if (request()->wantsJson()) {
-                return response()->json(['error' => $errorMsg], 500);
-            }
-            abort(500, $errorMsg);
-        }
-
-        $answers = [];
-        $totalExp = 0;
-        $kosakataAttempts = [];
-
-        foreach ($soalList as $idx => $soal) {
-            $kosakataId = $isIntermediate
-                ? ($soal['kosakata_id'] ?? $soal['id'] ?? null)
-                : ($soal['kosakata_id'] ?? $soal['id']);
-            if (!$kosakataId) continue;
-            if (!isset($kosakataAttempts[$kosakataId])) {
-                $kosakataAttempts[$kosakataId] = $this->getGlobalAttemptCount($user, $kosakataId, $session->id);
-            }
-            $pastAttempt = $kosakataAttempts[$kosakataId];
-            $answered = $userAnswers[$idx] ?? null;
-            $isCorrect = $answered ? ($answered['isCorrect'] ?? false) : false;
-            $currentAttempt = $pastAttempt;
-            if ($answered) {
-                $currentAttempt++;
-            }
-            $exp = 0;
-            if ($isCorrect && $session->level === 'beginner') {
-                $exp = $this->calculateExpForBeginner($currentAttempt);
-            }
-            $totalExp += $exp;
-            if ($isIntermediate) {
-                $correctOption = null;
-                $options = [
-                    [
-                        'kanji' => $soal['opsi_a_kanji'] ?? '',
-                        'furigana' => $soal['opsi_a_furigana'] ?? '',
-                        'romaji' => $soal['opsi_a_romaji'] ?? '',
-                        'isCorrect' => ($soal['jawaban_benar'] ?? '') === 'a',
-                    ],
-                    [
-                        'kanji' => $soal['opsi_b_kanji'] ?? '',
-                        'furigana' => $soal['opsi_b_furigana'] ?? '',
-                        'romaji' => $soal['opsi_b_romaji'] ?? '',
-                        'isCorrect' => ($soal['jawaban_benar'] ?? '') === 'b',
-                    ],
-                    [
-                        'kanji' => $soal['opsi_c_kanji'] ?? '',
-                        'furigana' => $soal['opsi_c_furigana'] ?? '',
-                        'romaji' => $soal['opsi_c_romaji'] ?? '',
-                        'isCorrect' => ($soal['jawaban_benar'] ?? '') === 'c',
-                    ],
-                    [
-                        'kanji' => $soal['opsi_d_kanji'] ?? '',
-                        'furigana' => $soal['opsi_d_furigana'] ?? '',
-                        'romaji' => $soal['opsi_d_romaji'] ?? '',
-                        'isCorrect' => ($soal['jawaban_benar'] ?? '') === 'd',
-                    ],
-                ];
-                foreach ($options as $i => $opt) {
-                    if (!empty($opt['isCorrect'])) {
-                        $correctOption = [
-                            'id' => chr(97 + $i), // 'a', 'b', 'c', 'd'
-                            'kanji' => $opt['kanji'] ?? '',
-                            'furigana' => $opt['furigana'] ?? '',
-                            'romaji' => $opt['romaji'] ?? '',
-                        ]; 
-                        break;
-                    }
+            if (!$session) {
+                $errorMsg = 'Session tidak ditemukan atau bukan milik user.';
+                if (request()->wantsJson()) {
+                    return response()->json(['error' => $errorMsg], 200);
                 }
-                $answers[] = [
-                    'id' => $kosakataId,
-                    'soal_kanji' => $soal['soal_kanji'] ?? '',
-                    'soal_furigana' => $soal['soal_furigana'] ?? '',
-                    'soal_romaji' => $soal['soal_romaji'] ?? '',
-                    'options' => array_map(function($opt, $i) {
-                        return [
-                            'id' => chr(97 + $i),
-                            'kanji' => $opt['kanji'] ?? '',
-                            'furigana' => $opt['furigana'] ?? '',
-                            'romaji' => $opt['romaji'] ?? '',
-                        ];
-                    }, $options, array_keys($options)),
-                    'correctAnswer' => $correctOption,
-                    'userAnswer' => $answered['selectedAnswer'] ?? null,
-                    'isCorrect' => $isCorrect,
-                    'expGained' => $exp,
-                    'attempt' => $currentAttempt,
-                ];
+                abort(404, $errorMsg);
+            }
+
+            $userAnswers = $session->user_answers ?? [];
+            $isIntermediate = $session->level === 'intermediate';
+            $isAdvanced = $session->level === 'advanced';
+
+            // Ambil soalList sesuai level
+            if ($isIntermediate || $isAdvanced) {
+                $soalIds = $session->selected_soal ?? [];
+                if (!is_array($soalIds) || count($soalIds) === 0) {
+                    $soalList = [];
+                } else {
+                    $soalList = \App\Models\SoalKosakata::whereIn('id', $soalIds)->get()->toArray();
+                }
             } else {
-                // Mapping untuk beginner (lama)
-                $direction = $soal['direction'] ?? 'jp_to_id';
-                $options = $soal['options'];
-                $answers[] = [
-                    'id' => $kosakataId,
-                    'kanji' => $soal['kanji'] ?? '',
-                    'arti' => $soal['arti'] ?? '',
-                    'romaji' => $soal['romaji'] ?? '',
-                    'options' => array_map(function($opt, $i) use ($direction) {
-                        return [
-                            'id' => chr(65 + $i),
-                            'text' => is_array($opt) ? ($direction === 'id_to_jp' ? $opt['kanji'] : $opt) : $opt
-                        ];
-                    }, $options, array_keys($options)),
-                    'correctAnswer' => $soal['answer'] ?? null,
-                    'userAnswer' => $answered['selectedAnswer'] ?? null,
-                    'isCorrect' => $isCorrect,
-                    'expGained' => $exp,
-                    'attempt' => $currentAttempt,
-                ];
+                $soalList = $session->soal;
             }
-        }
 
-        $totalQuestions = count($answers);
-        $correctAnswers = count(array_filter($answers, fn($a) => $a['isCorrect']));
-        $percentage = $totalQuestions > 0 ? round(($correctAnswers / $totalQuestions) * 100) : 0;
-        $sessionAlreadyCompleted = $session->ended_at !== null;
-
-        // === PATCH: Gunakan review_visit_count untuk awarding EXP hanya pada kunjungan pertama ===
-        if ($session->review_visit_count < 1 && !request()->wantsJson()) {
-            // Pastikan $user adalah instance Eloquent User
-            if (!($user instanceof \App\Models\User)) {
-                $user = \App\Models\User::find($user['id']);
+            if (!$soalList || !is_array($soalList) || count($soalList) === 0) {
+                $errorMsg = 'Data soal pada sesi kuis ini tidak ditemukan. Silakan mulai ulang kuis.';
+                if (request()->wantsJson()) {
+                    return response()->json(['error' => $errorMsg], 200);
+                }
+                abort(500, $errorMsg);
             }
-            $expToAdd = $totalExp;
-            $newExp = $user->exp + $expToAdd;
-            $leveledUp = false;
-            $oldLevel = $user->level;
-            $nextLevelExp = $this->calculateNextLevelExp($oldLevel);
-            $maxLevel = max(array_keys(config('exp.levels')));
-            $newLevel = $oldLevel;
-            $unlockedFeatures = [];
-            if ($nextLevelExp && $newExp >= $nextLevelExp && $oldLevel < $maxLevel) {
-                $leveledUp = true;
-                $newLevel = $oldLevel + 1;
-                $unlockedFeatures = $this->getUnlockedFeatures($newLevel);
-                $user->level = $newLevel;
+
+            $answers = [];
+            $totalExp = 0;
+            $kosakataAttempts = [];
+            $maxExp = $this->calculateNextLevelExp($user->level) ?? $user->exp;
+
+            foreach ($soalList as $idx => $soal) {
+                $isCorrect = false;
+                $exp = 0;
+                $currentAttempt = 0;
+                if ($isIntermediate || $isAdvanced) {
+                    $kosakataId = $soal['kosakata_id'] ?? $soal['id'] ?? null;
+                    if (!$kosakataId) continue;
+                    if (!isset($kosakataAttempts[$kosakataId])) {
+                        $kosakataAttempts[$kosakataId] = $this->getGlobalAttemptCount($user, $kosakataId, $session->id);
+                    }
+                    $pastAttempt = $kosakataAttempts[$kosakataId];
+                    $answered = $userAnswers[$idx] ?? null;
+                    $isCorrect = $answered ? ($answered['isCorrect'] ?? false) : false;
+                    $currentAttempt = $pastAttempt;
+                    if ($answered) {
+                        $currentAttempt++;
+                    }
+                    if ($isCorrect && $isIntermediate) {
+                        $exp = $this->calculateExpForIntermediate($currentAttempt);
+                    }
+                    // Untuk advanced, exp bisa diatur di sini jika sudah ada logic
+                    $totalExp += $exp;
+                    $options = [
+                        [
+                            'kanji' => $soal['opsi_a_kanji'] ?? '',
+                            'furigana' => $soal['opsi_a_furigana'] ?? '',
+                            'romaji' => $soal['opsi_a_romaji'] ?? '',
+                            'arti' => $soal['opsi_a_arti'] ?? '',
+                            'isCorrect' => ($soal['jawaban_benar'] ?? '') === 'a',
+                        ],
+                        [
+                            'kanji' => $soal['opsi_b_kanji'] ?? '',
+                            'furigana' => $soal['opsi_b_furigana'] ?? '',
+                            'romaji' => $soal['opsi_b_romaji'] ?? '',
+                            'arti' => $soal['opsi_b_arti'] ?? '',
+                            'isCorrect' => ($soal['jawaban_benar'] ?? '') === 'b',
+                        ],
+                        [
+                            'kanji' => $soal['opsi_c_kanji'] ?? '',
+                            'furigana' => $soal['opsi_c_furigana'] ?? '',
+                            'romaji' => $soal['opsi_c_romaji'] ?? '',
+                            'arti' => $soal['opsi_c_arti'] ?? '',
+                            'isCorrect' => ($soal['jawaban_benar'] ?? '') === 'c',
+                        ],
+                        [
+                            'kanji' => $soal['opsi_d_kanji'] ?? '',
+                            'furigana' => $soal['opsi_d_furigana'] ?? '',
+                            'romaji' => $soal['opsi_d_romaji'] ?? '',
+                            'arti' => $soal['opsi_d_arti'] ?? '',
+                            'isCorrect' => ($soal['jawaban_benar'] ?? '') === 'd',
+                        ],
+                    ];
+                    $correctOption = collect($options)->first(fn($opt) => $opt['isCorrect']);
+                    $answers[] = [
+                        'id' => $kosakataId,
+                        'soal_kanji' => $soal['soal_kanji'] ?? '',
+                        'soal_furigana' => $soal['soal_furigana'] ?? '',
+                        'soal_romaji' => $soal['soal_romaji'] ?? '',
+                        'soal_arti' => $soal['soal_arti'] ?? '',
+                        'options' => $options,
+                        'correctAnswer' => $correctOption,
+                        'userAnswer' => $answered['selectedAnswer'] ?? null,
+                        'isCorrect' => $isCorrect,
+                        'expGained' => $exp,
+                        'attempt' => $currentAttempt,
+                    ];
+                } else {
+                    // Mapping untuk beginner (lama)
+                    $direction = $soal['direction'] ?? 'jp_to_id';
+                    $options = $soal['options'];
+                    $answers[] = [
+                        'id' => $soal['kosakata_id'] ?? $soal['id'],
+                        'kanji' => $soal['kanji'] ?? '',
+                        'arti' => $soal['arti'] ?? '',
+                        'romaji' => $soal['romaji'] ?? '',
+                        'options' => array_map(function($opt, $i) use ($direction) {
+                            return [
+                                'id' => chr(65 + $i),
+                                'text' => is_array($opt) ? ($direction === 'id_to_jp' ? $opt['kanji'] : $opt) : $opt
+                            ];
+                        }, $options, array_keys($options)),
+                        'correctAnswer' => $soal['answer'] ?? null,
+                        'userAnswer' => $answered['selectedAnswer'] ?? null,
+                        'isCorrect' => $isCorrect,
+                        'expGained' => $exp,
+                        'attempt' => $currentAttempt,
+                    ];
+                }
             }
-            $user->exp = $newExp;
-            $user->save();
-            $user->refresh();
-            $session->update([
-                'total_exp' => $expToAdd,
-                'ended' => true,
-                'ended_at' => now(),
-                'review_visit_count' => $session->review_visit_count + 1,
-            ]);
-        } else if ($session->review_visit_count >= 1 && !request()->wantsJson()) {
-            // Sudah pernah review, hanya render hasil
-            $leveledUp = false;
-            $newLevel = $user->level;
-            $unlockedFeatures = [];
-            $nextLevelExp = $this->calculateNextLevelExp($user->level);
-        }
 
-        $maxExp = $this->calculateNextLevelExp($user->level) ?? $user->exp;
-        $waktuKuis = $session->level === 'intermediate' ? 600 : 300;
-        $timeSpent = $waktuKuis - ($session->remaining_time ?? 0);
-        if ($timeSpent < 0) $timeSpent = 0;
+            $totalQuestions = count($answers);
+            $correctAnswers = count(array_filter($answers, fn($a) => $a['isCorrect']));
+            $percentage = $totalQuestions > 0 ? round(($correctAnswers / $totalQuestions) * 100) : 0;
+            $sessionAlreadyCompleted = $session->ended_at !== null;
 
-        $quizResults = [
-            'totalQuestions' => $totalQuestions,
-            'correctAnswers' => $correctAnswers,
-            'percentage' => $percentage,
-            'totalScore' => $totalExp,
-            'answers' => $answers,
-            'expGained' => $totalExp,
-            'currentExp' => $user->exp,
-            'nextLevelExp' => $this->calculateNextLevelExp($user->level),
-            'leveledUp' => $leveledUp ?? false,
-            'newLevel' => $newLevel ?? $user->level,
-            'unlockedFeatures' => $unlockedFeatures ?? [],
-            'timeSpent' => $timeSpent,
-        ];
-
-        // PATCH: Handle request JSON (card completion) - PASTIKAN DITEMPATKAN DI SINI!
-        if (request()->wantsJson()) {
-            if (!$session->ended) {
-                $session->update(['ended' => true]);
-            }
             $quizResults = [
                 'totalQuestions' => $totalQuestions,
                 'correctAnswers' => $correctAnswers,
@@ -771,26 +844,43 @@ class QuisKosakataController extends Controller
                 'leveledUp' => false,
                 'newLevel' => $user->level,
                 'unlockedFeatures' => [],
-                'timeSpent' => $timeSpent,
+                'timeSpent' => $timeSpent ?? 0,
             ];
-            return response()->json([
-                'quizResults' => $quizResults,
+
+            // PATCH: Handle request JSON (card completion) - PASTIKAN DITEMPATKAN DI SINI!
+            if (request()->wantsJson()) {
+                if (!$session->ended) {
+                    $session->update(['ended' => true]);
+                }
+                return response()->json([
+                    'quizResults' => $quizResults,
+                    'user' => $user,
+                    'currentLevel' => $user->level,
+                    'currentExp' => $user->exp,
+                    'maxExp' => $maxExp,
+                    'nextLevelExp' => $this->calculateNextLevelExp($user->level),
+                ], 200);
+            }
+
+            // PATCH: Untuk advanced, set ended=true juga pada render Inertia jika belum
+            if ($session->level === 'advanced' && !$session->ended) {
+                $session->update(['ended' => true]);
+            }
+
+            return Inertia::render('User/Review-Quis-Kosakata', [
                 'user' => $user,
                 'currentLevel' => $user->level,
                 'currentExp' => $user->exp,
                 'maxExp' => $maxExp,
                 'nextLevelExp' => $this->calculateNextLevelExp($user->level),
+                'quizResults' => $quizResults,
             ]);
+        } catch (\Throwable $e) {
+            if (request()->wantsJson()) {
+                return response()->json(['error' => 'Terjadi error di server: ' . $e->getMessage()], 200);
+            }
+            abort(500, 'Terjadi error di server: ' . $e->getMessage());
         }
-
-        return Inertia::render('User/Review-Quis-Kosakata', [
-            'user' => $user,
-            'currentLevel' => $user->level,
-            'currentExp' => $user->exp,
-            'maxExp' => $maxExp,
-            'nextLevelExp' => $this->calculateNextLevelExp($user->level),
-            'quizResults' => $quizResults,
-        ]);
     }
 
     public function ReviewQuisKosakataIntermediateShow($sessionId)
@@ -1010,6 +1100,158 @@ class QuisKosakataController extends Controller
             'currentExp' => $user->exp,
             'maxExp' => $maxExp,
             'nextLevelExp' => $nextLevelExp,
+        ]);
+    }
+
+    public function ReviewQuisKosakataAdvancedShow($sessionId)
+    {
+        $user = Auth::user();
+        $session = \App\Models\QuisKosakataSession::where('id', $sessionId)
+            ->where('user_id', $user->id)
+            ->firstOrFail();
+
+        $userAnswers = $session->user_answers ?? [];
+        $soalIds = $session->selected_soal ?? [];
+        if (!is_array($soalIds) || count($soalIds) === 0) {
+            abort(500, 'Data soal pada sesi kuis ini tidak ditemukan.');
+        }
+        $soalList = \App\Models\SoalKosakata::whereIn('id', $soalIds)->get();
+        // Urutkan soalList sesuai urutan $soalIds
+        $soalList = $soalList->sortBy(function($soal) use ($soalIds) {
+            return array_search($soal->id, $soalIds);
+        })->values();
+        $soalListArr = $soalList->toArray();
+        $answers = [];
+        $totalExp = 0;
+        $soalAttempts = [];
+        foreach ($soalListArr as $idx => $soal) {
+            $soalId = $soal['id'];
+            $kosakataId = $soal['kosakata_id'];
+            // Selalu ambil data kosakata dari tabel Kosakata
+            $kosakataModel = \App\Models\Kosakata::find($kosakataId);
+            $kosakata_kanji = $kosakataModel ? $kosakataModel->kanji : '';
+            $kosakata_furigana = $kosakataModel ? $kosakataModel->furigana : '';
+            $kosakata_romaji = $kosakataModel ? $kosakataModel->romaji : '';
+            // Hitung attempt di seluruh session KECUALI session sekarang (pakai soal_id untuk advanced)
+            if (!isset($soalAttempts[$soalId])) {
+                $soalAttempts[$soalId] = $this->getGlobalAttemptCount($user, $soalId, $session->id, true);
+            }
+            $pastAttempt = $soalAttempts[$soalId];
+            $answered = $userAnswers[$idx] ?? null;
+            $isCorrect = $answered ? ($answered['isCorrect'] ?? false) : false;
+            $currentAttempt = $pastAttempt;
+            if ($answered) {
+                $currentAttempt++;
+            }
+            // Tambahkan logic EXP advanced di sini
+            $exp = 0;
+            if ($isCorrect) {
+                $exp = $this->calculateExpForIntermediate($currentAttempt); // EXP advanced = intermediate
+            }
+            $totalExp += $exp;
+            $options = [
+                [
+                    'id' => 'a',
+                    'kanji' => $soal['opsi_a_kanji'] ?? '',
+                    'furigana' => $soal['opsi_a_furigana'] ?? '',
+                    'romaji' => $soal['opsi_a_romaji'] ?? '',
+                    'arti' => $soal['opsi_a_arti'] ?? '',
+                    'isCorrect' => ($soal['jawaban_benar'] ?? '') === 'a',
+                ],
+                [
+                    'id' => 'b',
+                    'kanji' => $soal['opsi_b_kanji'] ?? '',
+                    'furigana' => $soal['opsi_b_furigana'] ?? '',
+                    'romaji' => $soal['opsi_b_romaji'] ?? '',
+                    'arti' => $soal['opsi_b_arti'] ?? '',
+                    'isCorrect' => ($soal['jawaban_benar'] ?? '') === 'b',
+                ],
+                [
+                    'id' => 'c',
+                    'kanji' => $soal['opsi_c_kanji'] ?? '',
+                    'furigana' => $soal['opsi_c_furigana'] ?? '',
+                    'romaji' => $soal['opsi_c_romaji'] ?? '',
+                    'arti' => $soal['opsi_c_arti'] ?? '',
+                    'isCorrect' => ($soal['jawaban_benar'] ?? '') === 'c',
+                ],
+                [
+                    'id' => 'd',
+                    'kanji' => $soal['opsi_d_kanji'] ?? '',
+                    'furigana' => $soal['opsi_d_furigana'] ?? '',
+                    'romaji' => $soal['opsi_d_romaji'] ?? '',
+                    'arti' => $soal['opsi_d_arti'] ?? '',
+                    'isCorrect' => ($soal['jawaban_benar'] ?? '') === 'd',
+                ],
+            ];
+            $correctOption = collect($options)->first(fn($opt) => $opt['isCorrect']);
+            $answers[] = [
+                'id' => $soal['id'],
+                'kosakata_label_kanji' => $kosakata_kanji,
+                'kosakata_label_furigana' => $kosakata_furigana,
+                'kosakata_label_romaji' => $kosakata_romaji,
+                'soal_arti' => $soal['soal_arti'] ?? '',
+                'options' => $options,
+                'correctAnswer' => $correctOption,
+                'userAnswer' => $answered['selectedAnswer'] ?? null,
+                'isCorrect' => $isCorrect,
+                'expGained' => $exp,
+            ];
+        }
+        $totalQuestions = count($answers);
+        $correctAnswers = count(array_filter($answers, fn($a) => $a['isCorrect']));
+        $percentage = $totalQuestions > 0 ? round(($correctAnswers / $totalQuestions) * 100) : 0;
+        $waktuKuis = 720;
+        $timeSpent = $waktuKuis - ($session->remaining_time ?? 0);
+        if ($timeSpent < 0) $timeSpent = 0;
+
+        // Awarding EXP hanya pada kunjungan pertama (bukan JSON)
+        if ($session->review_visit_count < 1) {
+            if (!($user instanceof \App\Models\User)) {
+                $user = \App\Models\User::find($user['id']);
+            }
+            $expAfter = $user->exp + $totalExp;
+            $leveledUp = false;
+            $oldLevel = $user->level;
+            $nextLevelExp = $this->calculateNextLevelExp($oldLevel);
+            $maxLevel = max(array_keys(config('exp.levels')));
+            $newLevel = $oldLevel;
+            $unlockedFeatures = [];
+            if ($nextLevelExp && $expAfter >= $nextLevelExp && $oldLevel < $maxLevel) {
+                $leveledUp = true;
+                $newLevel = $oldLevel + 1;
+                $unlockedFeatures = $this->getUnlockedFeatures($newLevel);
+                $user->level = $newLevel;
+            }
+            $user->exp = $expAfter;
+            $user->save();
+            $user->refresh();
+            $session->update([
+                'total_exp' => $totalExp,
+                'ended' => true,
+                'ended_at' => now(),
+                'review_visit_count' => $session->review_visit_count + 1,
+            ]);
+        }
+        $maxExp = $this->calculateNextLevelExp($user->level) ?? $user->exp;
+        return Inertia::render('User/Review-Quis-Kosakata-Advanced', [
+            'quizResults' => [
+                'totalQuestions' => $totalQuestions,
+                'correctAnswers' => $correctAnswers,
+                'percentage' => $percentage,
+                'answers' => $answers,
+                'expGained' => $totalExp,
+                'timeSpent' => $timeSpent,
+                'leveledUp' => $leveledUp ?? false,
+                'newLevel' => $newLevel ?? $user->level,
+                'unlockedFeatures' => $unlockedFeatures ?? [],
+                'currentExp' => $user->exp,
+                'nextLevelExp' => $this->calculateNextLevelExp($user->level),
+            ],
+            'user' => $user,
+            'currentLevel' => $user->level,
+            'currentExp' => $user->exp,
+            'maxExp' => $maxExp,
+            'nextLevelExp' => $this->calculateNextLevelExp($user->level),
         ]);
     }
 

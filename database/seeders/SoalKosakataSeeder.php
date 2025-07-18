@@ -354,5 +354,958 @@ class SoalKosakataSeeder extends Seeder
             'opsi_d_arti' => 'Saya makan pena.',
             'jawaban_benar' => 'a',
         ]);
+
+        // ================= SOAL ADVANCED UNTUK SETIAP KOSAKATA =================
+        $advancedQuestions = [
+            // KOSA-001: watashi
+            [
+                'soal_arti' => 'Pilih kalimat yang paling natural untuk penggunaan "saya" dalam situasi formal.',
+                'opsi' => [
+                    [
+                        'kanji' => '私は会社員です。',
+                        'furigana' => 'わたしはかいしゃいんです。',
+                        'romaji' => 'Watashi wa kaishain desu.',
+                        'arti' => 'Saya adalah pegawai perusahaan.'
+                    ],
+                    [
+                        'kanji' => '私が魚を泳ぎます。',
+                        'furigana' => 'わたしがさかなをおよぎます。',
+                        'romaji' => 'Watashi ga sakana o oyogimasu.',
+                        'arti' => 'Saya berenang sebagai ikan.'
+                    ],
+                    [
+                        'kanji' => '彼は私を食べます。',
+                        'furigana' => 'かれはわたしをたべます。',
+                        'romaji' => 'Kare wa watashi o tabemasu.',
+                        'arti' => 'Dia memakan saya.'
+                    ],
+                    [
+                        'kanji' => '私は花です。',
+                        'furigana' => 'わたしははなです。',
+                        'romaji' => 'Watashi wa hana desu.',
+                        'arti' => 'Saya adalah bunga.'
+                    ],
+                ],
+                'jawaban' => 'a',
+            ],
+            [
+                'soal_arti' => 'Pilih kalimat yang paling tepat untuk memperkenalkan diri.',
+                'opsi' => [
+                    [
+                        'kanji' => '私は田中です。',
+                        'furigana' => 'わたしはたなかです。',
+                        'romaji' => 'Watashi wa Tanaka desu.',
+                        'arti' => 'Saya adalah Tanaka.'
+                    ],
+                    [
+                        'kanji' => '私は川を食べます。',
+                        'furigana' => 'わたしはかわをたべます。',
+                        'romaji' => 'Watashi wa kawa o tabemasu.',
+                        'arti' => 'Saya makan sungai.'
+                    ],
+                    [
+                        'kanji' => '私は空を飲みます。',
+                        'furigana' => 'わたしはそらをのみます。',
+                        'romaji' => 'Watashi wa sora o nomimasu.',
+                        'arti' => 'Saya minum langit.'
+                    ],
+                    [
+                        'kanji' => '私は魚です。',
+                        'furigana' => 'わたしはさかなです。',
+                        'romaji' => 'Watashi wa sakana desu.',
+                        'arti' => 'Saya adalah ikan.'
+                    ],
+                ],
+                'jawaban' => 'a',
+            ],
+            // KOSA-002: kare
+            [
+                'soal_arti' => 'Pilih kalimat yang paling natural untuk penggunaan "dia (laki-laki)" dalam percakapan.',
+                'opsi' => [
+                    [
+                        'kanji' => '彼は先生です。',
+                        'furigana' => 'かれはせんせいです。',
+                        'romaji' => 'Kare wa sensei desu.',
+                        'arti' => 'Dia adalah guru.'
+                    ],
+                    [
+                        'kanji' => '彼女は彼です。',
+                        'furigana' => 'かのじょはかれです。',
+                        'romaji' => 'Kanojo wa kare desu.',
+                        'arti' => 'Dia (perempuan) adalah dia (laki-laki).'
+                    ],
+                    [
+                        'kanji' => '彼は花を食べます。',
+                        'furigana' => 'かれははなをたべます。',
+                        'romaji' => 'Kare wa hana o tabemasu.',
+                        'arti' => 'Dia makan bunga.'
+                    ],
+                    [
+                        'kanji' => '彼は空です。',
+                        'furigana' => 'かれはそらです。',
+                        'romaji' => 'Kare wa sora desu.',
+                        'arti' => 'Dia adalah langit.'
+                    ],
+                ],
+                'jawaban' => 'a',
+            ],
+            [
+                'soal_arti' => 'Pilih kalimat yang paling tepat untuk menjelaskan seseorang yang tidak hadir.',
+                'opsi' => [
+                    [
+                        'kanji' => '彼は今日学校を休みました。',
+                        'furigana' => 'かれはきょうがっこうをやすみました。',
+                        'romaji' => 'Kare wa kyou gakkou o yasumimashita.',
+                        'arti' => 'Dia tidak masuk sekolah hari ini.'
+                    ],
+                    [
+                        'kanji' => '彼は魚を飲みます。',
+                        'furigana' => 'かれはさかなをのみます。',
+                        'romaji' => 'Kare wa sakana o nomimasu.',
+                        'arti' => 'Dia minum ikan.'
+                    ],
+                    [
+                        'kanji' => '彼は山です。',
+                        'furigana' => 'かれはやまです。',
+                        'romaji' => 'Kare wa yama desu.',
+                        'arti' => 'Dia adalah gunung.'
+                    ],
+                    [
+                        'kanji' => '彼は名前を食べます。',
+                        'furigana' => 'かれはなまえをたべます。',
+                        'romaji' => 'Kare wa namae o tabemasu.',
+                        'arti' => 'Dia makan nama.'
+                    ],
+                ],
+                'jawaban' => 'a',
+            ],
+            // KOSA-003: kanojo
+            [
+                'soal_arti' => 'Pilih kalimat yang paling natural untuk penggunaan "dia (perempuan)".',
+                'opsi' => [
+                    [
+                        'kanji' => '彼女は歌が上手です。',
+                        'furigana' => 'かのじょはうたがじょうずです。',
+                        'romaji' => 'Kanojo wa uta ga jouzu desu.',
+                        'arti' => 'Dia pandai bernyanyi.'
+                    ],
+                    [
+                        'kanji' => '彼女は魚を食べます。',
+                        'furigana' => 'かのじょはさかなをたべます。',
+                        'romaji' => 'Kanojo wa sakana o tabemasu.',
+                        'arti' => 'Dia makan ikan.'
+                    ],
+                    [
+                        'kanji' => '彼女は山です。',
+                        'furigana' => 'かのじょはやまです。',
+                        'romaji' => 'Kanojo wa yama desu.',
+                        'arti' => 'Dia adalah gunung.'
+                    ],
+                    [
+                        'kanji' => '彼女は空を飲みます。',
+                        'furigana' => 'かのじょはそらをのみます。',
+                        'romaji' => 'Kanojo wa sora o nomimasu.',
+                        'arti' => 'Dia minum langit.'
+                    ],
+                ],
+                'jawaban' => 'a',
+            ],
+            [
+                'soal_arti' => 'Pilih kalimat yang paling tepat untuk memperkenalkan teman perempuan.',
+                'opsi' => [
+                    [
+                        'kanji' => '彼女は私の友達です。',
+                        'furigana' => 'かのじょはわたしのともだちです。',
+                        'romaji' => 'Kanojo wa watashi no tomodachi desu.',
+                        'arti' => 'Dia adalah teman saya.'
+                    ],
+                    [
+                        'kanji' => '彼女は川を食べます。',
+                        'furigana' => 'かのじょはかわをたべます。',
+                        'romaji' => 'Kanojo wa kawa o tabemasu.',
+                        'arti' => 'Dia makan sungai.'
+                    ],
+                    [
+                        'kanji' => '彼女は魚です。',
+                        'furigana' => 'かのじょはさかなです。',
+                        'romaji' => 'Kanojo wa sakana desu.',
+                        'arti' => 'Dia adalah ikan.'
+                    ],
+                    [
+                        'kanji' => '彼女は花を飲みます。',
+                        'furigana' => 'かのじょははなをのみます。',
+                        'romaji' => 'Kanojo wa hana o nomimasu.',
+                        'arti' => 'Dia minum bunga.'
+                    ],
+                ],
+                'jawaban' => 'a',
+            ],
+            // KOSA-004: namae
+            [
+                'soal_arti' => 'Pilih kalimat yang paling tepat untuk menanyakan nama seseorang.',
+                'opsi' => [
+                    [
+                        'kanji' => 'あなたの名前は何ですか。',
+                        'furigana' => 'あなたのなまえはなんですか。',
+                        'romaji' => 'Anata no namae wa nan desu ka?',
+                        'arti' => 'Siapa nama Anda?'
+                    ],
+                    [
+                        'kanji' => 'あなたの魚は何ですか。',
+                        'furigana' => 'あなたのさかなはなんですか。',
+                        'romaji' => 'Anata no sakana wa nan desu ka?',
+                        'arti' => 'Apa ikan Anda?'
+                    ],
+                    [
+                        'kanji' => 'あなたの山は何ですか。',
+                        'furigana' => 'あなたのやまはなんですか。',
+                        'romaji' => 'Anata no yama wa nan desu ka?',
+                        'arti' => 'Apa gunung Anda?'
+                    ],
+                    [
+                        'kanji' => 'あなたの空は何ですか。',
+                        'furigana' => 'あなたのそらはなんですか。',
+                        'romaji' => 'Anata no sora wa nan desu ka?',
+                        'arti' => 'Apa langit Anda?'
+                    ],
+                ],
+                'jawaban' => 'a',
+            ],
+            [
+                'soal_arti' => 'Pilih kalimat yang paling natural untuk memperkenalkan nama sendiri.',
+                'opsi' => [
+                    [
+                        'kanji' => '私の名前は佐藤です。',
+                        'furigana' => 'わたしのなまえはさとうです。',
+                        'romaji' => 'Watashi no namae wa Satou desu.',
+                        'arti' => 'Nama saya Satou.'
+                    ],
+                    [
+                        'kanji' => '私の名前は魚です。',
+                        'furigana' => 'わたしのなまえはさかなです。',
+                        'romaji' => 'Watashi no namae wa sakana desu.',
+                        'arti' => 'Nama saya ikan.'
+                    ],
+                    [
+                        'kanji' => '私の名前は山です。',
+                        'furigana' => 'わたしのなまえはやまです。',
+                        'romaji' => 'Watashi no namae wa yama desu.',
+                        'arti' => 'Nama saya gunung.'
+                    ],
+                    [
+                        'kanji' => '私の名前は空です。',
+                        'furigana' => 'わたしのなまえはそらです。',
+                        'romaji' => 'Watashi no namae wa sora desu.',
+                        'arti' => 'Nama saya langit.'
+                    ],
+                ],
+                'jawaban' => 'a',
+            ],
+            // KOSA-005: jikan
+            [
+                'soal_arti' => 'Pilih kalimat yang paling tepat untuk menanyakan waktu saat ini.',
+                'opsi' => [
+                    [
+                        'kanji' => '今何時ですか。',
+                        'furigana' => 'いまなんじですか。',
+                        'romaji' => 'Ima nanji desu ka?',
+                        'arti' => 'Sekarang jam berapa?'
+                    ],
+                    [
+                        'kanji' => '今何山ですか。',
+                        'furigana' => 'いまなにやまですか。',
+                        'romaji' => 'Ima nani yama desu ka?',
+                        'arti' => 'Sekarang gunung apa?'
+                    ],
+                    [
+                        'kanji' => '今何魚ですか。',
+                        'furigana' => 'いまなにさかなですか。',
+                        'romaji' => 'Ima nani sakana desu ka?',
+                        'arti' => 'Sekarang ikan apa?'
+                    ],
+                    [
+                        'kanji' => '今何花ですか。',
+                        'furigana' => 'いまなにはなですか。',
+                        'romaji' => 'Ima nani hana desu ka?',
+                        'arti' => 'Sekarang bunga apa?'
+                    ],
+                ],
+                'jawaban' => 'a',
+            ],
+            [
+                'soal_arti' => 'Pilih kalimat yang paling natural untuk mengingatkan pentingnya waktu.',
+                'opsi' => [
+                    [
+                        'kanji' => '時間を守りましょう。',
+                        'furigana' => 'じかんをまもりましょう。',
+                        'romaji' => 'Jikan o mamorimashou.',
+                        'arti' => 'Mari kita jaga waktu.'
+                    ],
+                    [
+                        'kanji' => '魚を守りましょう。',
+                        'furigana' => 'さかなをまもりましょう。',
+                        'romaji' => 'Sakana o mamorimashou.',
+                        'arti' => 'Mari kita jaga ikan.'
+                    ],
+                    [
+                        'kanji' => '山を守りましょう。',
+                        'furigana' => 'やまをまもりましょう。',
+                        'romaji' => 'Yama o mamorimashou.',
+                        'arti' => 'Mari kita jaga gunung.'
+                    ],
+                    [
+                        'kanji' => '花を守りましょう。',
+                        'furigana' => 'はなをまもりましょう。',
+                        'romaji' => 'Hana o mamorimashou.',
+                        'arti' => 'Mari kita jaga bunga.'
+                    ],
+                ],
+                'jawaban' => 'a',
+            ],
+            // KOSA-006: taberu
+            [
+                'soal_arti' => 'Pilih kalimat yang paling natural untuk menyatakan kegiatan makan.',
+                'opsi' => [
+                    [
+                        'kanji' => '私はご飯を食べます。',
+                        'furigana' => 'わたしはごはんをたべます。',
+                        'romaji' => 'Watashi wa gohan o tabemasu.',
+                        'arti' => 'Saya makan nasi.'
+                    ],
+                    [
+                        'kanji' => '私は本を食べます。',
+                        'furigana' => 'わたしはほんをたべます。',
+                        'romaji' => 'Watashi wa hon o tabemasu.',
+                        'arti' => 'Saya makan buku.'
+                    ],
+                    [
+                        'kanji' => '私は水を食べます。',
+                        'furigana' => 'わたしはみずをたべます。',
+                        'romaji' => 'Watashi wa mizu o tabemasu.',
+                        'arti' => 'Saya makan air.'
+                    ],
+                    [
+                        'kanji' => '私はペンを食べます。',
+                        'furigana' => 'わたしはぺんをたべます。',
+                        'romaji' => 'Watashi wa pen o tabemasu.',
+                        'arti' => 'Saya makan pena.'
+                    ],
+                ],
+                'jawaban' => 'a',
+            ],
+            [
+                'soal_arti' => 'Pilih kalimat yang paling tepat untuk menyatakan suka makan pagi.',
+                'opsi' => [
+                    [
+                        'kanji' => '私は朝ごはんを食べるのが好きです。',
+                        'furigana' => 'わたしはあさごはんをたべるのがすきです。',
+                        'romaji' => 'Watashi wa asagohan o taberu no ga suki desu.',
+                        'arti' => 'Saya suka makan sarapan pagi.'
+                    ],
+                    [
+                        'kanji' => '私は山を食べるのが好きです。',
+                        'furigana' => 'わたしはやまをたべるのがすきです。',
+                        'romaji' => 'Watashi wa yama o taberu no ga suki desu.',
+                        'arti' => 'Saya suka makan gunung.'
+                    ],
+                    [
+                        'kanji' => '私は空を食べるのが好きです。',
+                        'furigana' => 'わたしはそらをたべるのがすきです。',
+                        'romaji' => 'Watashi wa sora o taberu no ga suki desu.',
+                        'arti' => 'Saya suka makan langit.'
+                    ],
+                    [
+                        'kanji' => '私は魚を食べるのが好きです。',
+                        'furigana' => 'わたしはさかなをたべるのがすきです。',
+                        'romaji' => 'Watashi wa sakana o taberu no ga suki desu.',
+                        'arti' => 'Saya suka makan ikan.'
+                    ],
+                ],
+                'jawaban' => 'a',
+            ],
+            // KOSA-007: iku
+            [
+                'soal_arti' => 'Pilih kalimat yang paling tepat untuk menanyakan waktu saat ini.',
+                'opsi' => [
+                    [
+                        'kanji' => '今何時ですか。',
+                        'furigana' => 'いまなんじですか。',
+                        'romaji' => 'Ima nanji desu ka?',
+                        'arti' => 'Sekarang jam berapa?'
+                    ],
+                    [
+                        'kanji' => '今何山ですか。',
+                        'furigana' => 'いまなにやまですか。',
+                        'romaji' => 'Ima nani yama desu ka?',
+                        'arti' => 'Sekarang gunung apa?'
+                    ],
+                    [
+                        'kanji' => '今何魚ですか。',
+                        'furigana' => 'いまなにさかなですか。',
+                        'romaji' => 'Ima nani sakana desu ka?',
+                        'arti' => 'Sekarang ikan apa?'
+                    ],
+                    [
+                        'kanji' => '今何花ですか。',
+                        'furigana' => 'いまなにはなですか。',
+                        'romaji' => 'Ima nani hana desu ka?',
+                        'arti' => 'Sekarang bunga apa?'
+                    ],
+                ],
+                'jawaban' => 'a',
+            ],
+            [
+                'soal_arti' => 'Pilih kalimat yang paling natural untuk mengingatkan pentingnya waktu.',
+                'opsi' => [
+                    [
+                        'kanji' => '時間を守りましょう。',
+                        'furigana' => 'じかんをまもりましょう。',
+                        'romaji' => 'Jikan o mamorimashou.',
+                        'arti' => 'Mari kita jaga waktu.'
+                    ],
+                    [
+                        'kanji' => '魚を守りましょう。',
+                        'furigana' => 'さかなをまもりましょう。',
+                        'romaji' => 'Sakana o mamorimashou.',
+                        'arti' => 'Mari kita jaga ikan.'
+                    ],
+                    [
+                        'kanji' => '山を守りましょう。',
+                        'furigana' => 'やまをまもりましょう。',
+                        'romaji' => 'Yama o mamorimashou.',
+                        'arti' => 'Mari kita jaga gunung.'
+                    ],
+                    [
+                        'kanji' => '花を守りましょう。',
+                        'furigana' => 'はなをまもりましょう。',
+                        'romaji' => 'Hana o mamorimashou.',
+                        'arti' => 'Mari kita jaga bunga.'
+                    ],
+                ],
+                'jawaban' => 'a',
+            ],
+            // KOSA-008: miru
+            [
+                'soal_arti' => 'Pilih kalimat yang paling tepat untuk menanyakan waktu saat ini.',
+                'opsi' => [
+                    [
+                        'kanji' => '今何時ですか。',
+                        'furigana' => 'いまなんじですか。',
+                        'romaji' => 'Ima nanji desu ka?',
+                        'arti' => 'Sekarang jam berapa?'
+                    ],
+                    [
+                        'kanji' => '今何山ですか。',
+                        'furigana' => 'いまなにやまですか。',
+                        'romaji' => 'Ima nani yama desu ka?',
+                        'arti' => 'Sekarang gunung apa?'
+                    ],
+                    [
+                        'kanji' => '今何魚ですか。',
+                        'furigana' => 'いまなにさかなですか。',
+                        'romaji' => 'Ima nani sakana desu ka?',
+                        'arti' => 'Sekarang ikan apa?'
+                    ],
+                    [
+                        'kanji' => '今何花ですか。',
+                        'furigana' => 'いまなにはなですか。',
+                        'romaji' => 'Ima nani hana desu ka?',
+                        'arti' => 'Sekarang bunga apa?'
+                    ],
+                ],
+                'jawaban' => 'a',
+            ],
+            [
+                'soal_arti' => 'Pilih kalimat yang paling natural untuk mengingatkan pentingnya waktu.',
+                'opsi' => [
+                    [
+                        'kanji' => '時間を守りましょう。',
+                        'furigana' => 'じかんをまもりましょう。',
+                        'romaji' => 'Jikan o mamorimashou.',
+                        'arti' => 'Mari kita jaga waktu.'
+                    ],
+                    [
+                        'kanji' => '魚を守りましょう。',
+                        'furigana' => 'さかなをまもりましょう。',
+                        'romaji' => 'Sakana o mamorimashou.',
+                        'arti' => 'Mari kita jaga ikan.'
+                    ],
+                    [
+                        'kanji' => '山を守りましょう。',
+                        'furigana' => 'やまをまもりましょう。',
+                        'romaji' => 'Yama o mamorimashou.',
+                        'arti' => 'Mari kita jaga gunung.'
+                    ],
+                    [
+                        'kanji' => '花を守りましょう。',
+                        'furigana' => 'はなをまもりましょう。',
+                        'romaji' => 'Hana o mamorimashou.',
+                        'arti' => 'Mari kita jaga bunga.'
+                    ],
+                ],
+                'jawaban' => 'a',
+            ],
+            // KOSA-009: kuru
+            [
+                'soal_arti' => 'Pilih kalimat yang paling tepat untuk menanyakan waktu saat ini.',
+                'opsi' => [
+                    [
+                        'kanji' => '今何時ですか。',
+                        'furigana' => 'いまなんじですか。',
+                        'romaji' => 'Ima nanji desu ka?',
+                        'arti' => 'Sekarang jam berapa?'
+                    ],
+                    [
+                        'kanji' => '今何山ですか。',
+                        'furigana' => 'いまなにやまですか。',
+                        'romaji' => 'Ima nani yama desu ka?',
+                        'arti' => 'Sekarang gunung apa?'
+                    ],
+                    [
+                        'kanji' => '今何魚ですか。',
+                        'furigana' => 'いまなにさかなですか。',
+                        'romaji' => 'Ima nani sakana desu ka?',
+                        'arti' => 'Sekarang ikan apa?'
+                    ],
+                    [
+                        'kanji' => '今何花ですか。',
+                        'furigana' => 'いまなにはなですか。',
+                        'romaji' => 'Ima nani hana desu ka?',
+                        'arti' => 'Sekarang bunga apa?'
+                    ],
+                ],
+                'jawaban' => 'a',
+            ],
+            [
+                'soal_arti' => 'Pilih kalimat yang paling natural untuk mengingatkan pentingnya waktu.',
+                'opsi' => [
+                    [
+                        'kanji' => '時間を守りましょう。',
+                        'furigana' => 'じかんをまもりましょう。',
+                        'romaji' => 'Jikan o mamorimashou.',
+                        'arti' => 'Mari kita jaga waktu.'
+                    ],
+                    [
+                        'kanji' => '魚を守りましょう。',
+                        'furigana' => 'さかなをまもりましょう。',
+                        'romaji' => 'Sakana o mamorimashou.',
+                        'arti' => 'Mari kita jaga ikan.'
+                    ],
+                    [
+                        'kanji' => '山を守りましょう。',
+                        'furigana' => 'やまをまもりましょう。',
+                        'romaji' => 'Yama o mamorimashou.',
+                        'arti' => 'Mari kita jaga gunung.'
+                    ],
+                    [
+                        'kanji' => '花を守りましょう。',
+                        'furigana' => 'はなをまもりましょう。',
+                        'romaji' => 'Hana o mamorimashou.',
+                        'arti' => 'Mari kita jaga bunga.'
+                    ],
+                ],
+                'jawaban' => 'a',
+            ],
+            // KOSA-010: suru
+            [
+                'soal_arti' => 'Pilih kalimat yang paling tepat untuk menanyakan waktu saat ini.',
+                'opsi' => [
+                    [
+                        'kanji' => '今何時ですか。',
+                        'furigana' => 'いまなんじですか。',
+                        'romaji' => 'Ima nanji desu ka?',
+                        'arti' => 'Sekarang jam berapa?'
+                    ],
+                    [
+                        'kanji' => '今何山ですか。',
+                        'furigana' => 'いまなにやまですか。',
+                        'romaji' => 'Ima nani yama desu ka?',
+                        'arti' => 'Sekarang gunung apa?'
+                    ],
+                    [
+                        'kanji' => '今何魚ですか。',
+                        'furigana' => 'いまなにさかなですか。',
+                        'romaji' => 'Ima nani sakana desu ka?',
+                        'arti' => 'Sekarang ikan apa?'
+                    ],
+                    [
+                        'kanji' => '今何花ですか。',
+                        'furigana' => 'いまなにはなですか。',
+                        'romaji' => 'Ima nani hana desu ka?',
+                        'arti' => 'Sekarang bunga apa?'
+                    ],
+                ],
+                'jawaban' => 'a',
+            ],
+            [
+                'soal_arti' => 'Pilih kalimat yang paling natural untuk mengingatkan pentingnya waktu.',
+                'opsi' => [
+                    [
+                        'kanji' => '時間を守りましょう。',
+                        'furigana' => 'じかんをまもりましょう。',
+                        'romaji' => 'Jikan o mamorimashou.',
+                        'arti' => 'Mari kita jaga waktu.'
+                    ],
+                    [
+                        'kanji' => '魚を守りましょう。',
+                        'furigana' => 'さかなをまもりましょう。',
+                        'romaji' => 'Sakana o mamorimashou.',
+                        'arti' => 'Mari kita jaga ikan.'
+                    ],
+                    [
+                        'kanji' => '山を守りましょう。',
+                        'furigana' => 'やまをまもりましょう。',
+                        'romaji' => 'Yama o mamorimashou.',
+                        'arti' => 'Mari kita jaga gunung.'
+                    ],
+                    [
+                        'kanji' => '花を守りましょう。',
+                        'furigana' => 'はなをまもりましょう。',
+                        'romaji' => 'Hana o mamorimashou.',
+                        'arti' => 'Mari kita jaga bunga.'
+                    ],
+                ],
+                'jawaban' => 'a',
+            ],
+            // KOSA-011: yama
+            [
+                'soal_arti' => 'Pilih kalimat yang paling tepat untuk menanyakan waktu saat ini.',
+                'opsi' => [
+                    [
+                        'kanji' => '今何時ですか。',
+                        'furigana' => 'いまなんじですか。',
+                        'romaji' => 'Ima nanji desu ka?',
+                        'arti' => 'Sekarang jam berapa?'
+                    ],
+                    [
+                        'kanji' => '今何山ですか。',
+                        'furigana' => 'いまなにやまですか。',
+                        'romaji' => 'Ima nani yama desu ka?',
+                        'arti' => 'Sekarang gunung apa?'
+                    ],
+                    [
+                        'kanji' => '今何魚ですか。',
+                        'furigana' => 'いまなにさかなですか。',
+                        'romaji' => 'Ima nani sakana desu ka?',
+                        'arti' => 'Sekarang ikan apa?'
+                    ],
+                    [
+                        'kanji' => '今何花ですか。',
+                        'furigana' => 'いまなにはなですか。',
+                        'romaji' => 'Ima nani hana desu ka?',
+                        'arti' => 'Sekarang bunga apa?'
+                    ],
+                ],
+                'jawaban' => 'a',
+            ],
+            [
+                'soal_arti' => 'Pilih kalimat yang paling natural untuk mengingatkan pentingnya waktu.',
+                'opsi' => [
+                    [
+                        'kanji' => '時間を守りましょう。',
+                        'furigana' => 'じかんをまもりましょう。',
+                        'romaji' => 'Jikan o mamorimashou.',
+                        'arti' => 'Mari kita jaga waktu.'
+                    ],
+                    [
+                        'kanji' => '魚を守りましょう。',
+                        'furigana' => 'さかなをまもりましょう。',
+                        'romaji' => 'Sakana o mamorimashou.',
+                        'arti' => 'Mari kita jaga ikan.'
+                    ],
+                    [
+                        'kanji' => '山を守りましょう。',
+                        'furigana' => 'やまをまもりましょう。',
+                        'romaji' => 'Yama o mamorimashou.',
+                        'arti' => 'Mari kita jaga gunung.'
+                    ],
+                    [
+                        'kanji' => '花を守りましょう。',
+                        'furigana' => 'はなをまもりましょう。',
+                        'romaji' => 'Hana o mamorimashou.',
+                        'arti' => 'Mari kita jaga bunga.'
+                    ],
+                ],
+                'jawaban' => 'a',
+            ],
+            // KOSA-012: kawa
+            [
+                'soal_arti' => 'Pilih kalimat yang paling tepat untuk menanyakan waktu saat ini.',
+                'opsi' => [
+                    [
+                        'kanji' => '今何時ですか。',
+                        'furigana' => 'いまなんじですか。',
+                        'romaji' => 'Ima nanji desu ka?',
+                        'arti' => 'Sekarang jam berapa?'
+                    ],
+                    [
+                        'kanji' => '今何山ですか。',
+                        'furigana' => 'いまなにやまですか。',
+                        'romaji' => 'Ima nani yama desu ka?',
+                        'arti' => 'Sekarang gunung apa?'
+                    ],
+                    [
+                        'kanji' => '今何魚ですか。',
+                        'furigana' => 'いまなにさかなですか。',
+                        'romaji' => 'Ima nani sakana desu ka?',
+                        'arti' => 'Sekarang ikan apa?'
+                    ],
+                    [
+                        'kanji' => '今何花ですか。',
+                        'furigana' => 'いまなにはなですか。',
+                        'romaji' => 'Ima nani hana desu ka?',
+                        'arti' => 'Sekarang bunga apa?'
+                    ],
+                ],
+                'jawaban' => 'a',
+            ],
+            [
+                'soal_arti' => 'Pilih kalimat yang paling natural untuk mengingatkan pentingnya waktu.',
+                'opsi' => [
+                    [
+                        'kanji' => '時間を守りましょう。',
+                        'furigana' => 'じかんをまもりましょう。',
+                        'romaji' => 'Jikan o mamorimashou.',
+                        'arti' => 'Mari kita jaga waktu.'
+                    ],
+                    [
+                        'kanji' => '魚を守りましょう。',
+                        'furigana' => 'さかなをまもりましょう。',
+                        'romaji' => 'Sakana o mamorimashou.',
+                        'arti' => 'Mari kita jaga ikan.'
+                    ],
+                    [
+                        'kanji' => '山を守りましょう。',
+                        'furigana' => 'やまをまもりましょう。',
+                        'romaji' => 'Yama o mamorimashou.',
+                        'arti' => 'Mari kita jaga gunung.'
+                    ],
+                    [
+                        'kanji' => '花を守りましょう。',
+                        'furigana' => 'はなをまもりましょう。',
+                        'romaji' => 'Hana o mamorimashou.',
+                        'arti' => 'Mari kita jaga bunga.'
+                    ],
+                ],
+                'jawaban' => 'a',
+            ],
+            // KOSA-013: sora
+            [
+                'soal_arti' => 'Pilih kalimat yang paling tepat untuk menanyakan waktu saat ini.',
+                'opsi' => [
+                    [
+                        'kanji' => '今何時ですか。',
+                        'furigana' => 'いまなんじですか。',
+                        'romaji' => 'Ima nanji desu ka?',
+                        'arti' => 'Sekarang jam berapa?'
+                    ],
+                    [
+                        'kanji' => '今何山ですか。',
+                        'furigana' => 'いまなにやまですか。',
+                        'romaji' => 'Ima nani yama desu ka?',
+                        'arti' => 'Sekarang gunung apa?'
+                    ],
+                    [
+                        'kanji' => '今何魚ですか。',
+                        'furigana' => 'いまなにさかなですか。',
+                        'romaji' => 'Ima nani sakana desu ka?',
+                        'arti' => 'Sekarang ikan apa?'
+                    ],
+                    [
+                        'kanji' => '今何花ですか。',
+                        'furigana' => 'いまなにはなですか。',
+                        'romaji' => 'Ima nani hana desu ka?',
+                        'arti' => 'Sekarang bunga apa?'
+                    ],
+                ],
+                'jawaban' => 'a',
+            ],
+            [
+                'soal_arti' => 'Pilih kalimat yang paling natural untuk mengingatkan pentingnya waktu.',
+                'opsi' => [
+                    [
+                        'kanji' => '時間を守りましょう。',
+                        'furigana' => 'じかんをまもりましょう。',
+                        'romaji' => 'Jikan o mamorimashou.',
+                        'arti' => 'Mari kita jaga waktu.'
+                    ],
+                    [
+                        'kanji' => '魚を守りましょう。',
+                        'furigana' => 'さかなをまもりましょう。',
+                        'romaji' => 'Sakana o mamorimashou.',
+                        'arti' => 'Mari kita jaga ikan.'
+                    ],
+                    [
+                        'kanji' => '山を守りましょう。',
+                        'furigana' => 'やまをまもりましょう。',
+                        'romaji' => 'Yama o mamorimashou.',
+                        'arti' => 'Mari kita jaga gunung.'
+                    ],
+                    [
+                        'kanji' => '花を守りましょう。',
+                        'furigana' => 'はなをまもりましょう。',
+                        'romaji' => 'Hana o mamorimashou.',
+                        'arti' => 'Mari kita jaga bunga.'
+                    ],
+                ],
+                'jawaban' => 'a',
+            ],
+            // KOSA-014: hana
+            [
+                'soal_arti' => 'Pilih kalimat yang paling tepat untuk menanyakan waktu saat ini.',
+                'opsi' => [
+                    [
+                        'kanji' => '今何時ですか。',
+                        'furigana' => 'いまなんじですか。',
+                        'romaji' => 'Ima nanji desu ka?',
+                        'arti' => 'Sekarang jam berapa?'
+                    ],
+                    [
+                        'kanji' => '今何山ですか。',
+                        'furigana' => 'いまなにやまですか。',
+                        'romaji' => 'Ima nani yama desu ka?',
+                        'arti' => 'Sekarang gunung apa?'
+                    ],
+                    [
+                        'kanji' => '今何魚ですか。',
+                        'furigana' => 'いまなにさかなですか。',
+                        'romaji' => 'Ima nani sakana desu ka?',
+                        'arti' => 'Sekarang ikan apa?'
+                    ],
+                    [
+                        'kanji' => '今何花ですか。',
+                        'furigana' => 'いまなにはなですか。',
+                        'romaji' => 'Ima nani hana desu ka?',
+                        'arti' => 'Sekarang bunga apa?'
+                    ],
+                ],
+                'jawaban' => 'a',
+            ],
+            [
+                'soal_arti' => 'Pilih kalimat yang paling natural untuk mengingatkan pentingnya waktu.',
+                'opsi' => [
+                    [
+                        'kanji' => '時間を守りましょう。',
+                        'furigana' => 'じかんをまもりましょう。',
+                        'romaji' => 'Jikan o mamorimashou.',
+                        'arti' => 'Mari kita jaga waktu.'
+                    ],
+                    [
+                        'kanji' => '魚を守りましょう。',
+                        'furigana' => 'さかなをまもりましょう。',
+                        'romaji' => 'Sakana o mamorimashou.',
+                        'arti' => 'Mari kita jaga ikan.'
+                    ],
+                    [
+                        'kanji' => '山を守りましょう。',
+                        'furigana' => 'やまをまもりましょう。',
+                        'romaji' => 'Yama o mamorimashou.',
+                        'arti' => 'Mari kita jaga gunung.'
+                    ],
+                    [
+                        'kanji' => '花を守りましょう。',
+                        'furigana' => 'はなをまもりましょう。',
+                        'romaji' => 'Hana o mamorimashou.',
+                        'arti' => 'Mari kita jaga bunga.'
+                    ],
+                ],
+                'jawaban' => 'a',
+            ],
+            // KOSA-015: sakana
+            [
+                'soal_arti' => 'Pilih kalimat yang paling tepat untuk menanyakan waktu saat ini.',
+                'opsi' => [
+                    [
+                        'kanji' => '今何時ですか。',
+                        'furigana' => 'いまなんじですか。',
+                        'romaji' => 'Ima nanji desu ka?',
+                        'arti' => 'Sekarang jam berapa?'
+                    ],
+                    [
+                        'kanji' => '今何山ですか。',
+                        'furigana' => 'いまなにやまですか。',
+                        'romaji' => 'Ima nani yama desu ka?',
+                        'arti' => 'Sekarang gunung apa?'
+                    ],
+                    [
+                        'kanji' => '今何魚ですか。',
+                        'furigana' => 'いまなにさかなですか。',
+                        'romaji' => 'Ima nani sakana desu ka?',
+                        'arti' => 'Sekarang ikan apa?'
+                    ],
+                    [
+                        'kanji' => '今何花ですか。',
+                        'furigana' => 'いまなにはなですか。',
+                        'romaji' => 'Ima nani hana desu ka?',
+                        'arti' => 'Sekarang bunga apa?'
+                    ],
+                ],
+                'jawaban' => 'a',
+            ],
+            [
+                'soal_arti' => 'Pilih kalimat yang paling natural untuk mengingatkan pentingnya waktu.',
+                'opsi' => [
+                    [
+                        'kanji' => '時間を守りましょう。',
+                        'furigana' => 'じかんをまもりましょう。',
+                        'romaji' => 'Jikan o mamorimashou.',
+                        'arti' => 'Mari kita jaga waktu.'
+                    ],
+                    [
+                        'kanji' => '魚を守りましょう。',
+                        'furigana' => 'さかなをまもりましょう。',
+                        'romaji' => 'Sakana o mamorimashou.',
+                        'arti' => 'Mari kita jaga ikan.'
+                    ],
+                    [
+                        'kanji' => '山を守りましょう。',
+                        'furigana' => 'やまをまもりましょう。',
+                        'romaji' => 'Yama o mamorimashou.',
+                        'arti' => 'Mari kita jaga gunung.'
+                    ],
+                    [
+                        'kanji' => '花を守りましょう。',
+                        'furigana' => 'はなをまもりましょう。',
+                        'romaji' => 'Hana o mamorimashou.',
+                        'arti' => 'Mari kita jaga bunga.'
+                    ],
+                ],
+                'jawaban' => 'a',
+            ],
+        ];
+        $kosakataIds = array_column($kosakatas, 'id');
+        for ($i = 0; $i < count($kosakataIds); $i++) {
+            $kosaId = $kosakataIds[$i];
+            for ($j = 0; $j < 2; $j++) {
+                $idx = $i * 2 + $j;
+                $q = $advancedQuestions[$idx];
+                SoalKosakata::create([
+                    'kosakata_id' => $kosaId,
+                    'level' => 'advanced',
+                    'soal_kanji' => '',
+                    'soal_furigana' => '',
+                    'soal_romaji' => '',
+                    'soal_arti' => $q['soal_arti'],
+                    'opsi_a_kanji' => $q['opsi'][0]['kanji'],
+                    'opsi_a_furigana' => $q['opsi'][0]['furigana'],
+                    'opsi_a_romaji' => $q['opsi'][0]['romaji'],
+                    'opsi_a_arti' => $q['opsi'][0]['arti'],
+                    'opsi_b_kanji' => $q['opsi'][1]['kanji'],
+                    'opsi_b_furigana' => $q['opsi'][1]['furigana'],
+                    'opsi_b_romaji' => $q['opsi'][1]['romaji'],
+                    'opsi_b_arti' => $q['opsi'][1]['arti'],
+                    'opsi_c_kanji' => $q['opsi'][2]['kanji'],
+                    'opsi_c_furigana' => $q['opsi'][2]['furigana'],
+                    'opsi_c_romaji' => $q['opsi'][2]['romaji'],
+                    'opsi_c_arti' => $q['opsi'][2]['arti'],
+                    'opsi_d_kanji' => $q['opsi'][3]['kanji'],
+                    'opsi_d_furigana' => $q['opsi'][3]['furigana'],
+                    'opsi_d_romaji' => $q['opsi'][3]['romaji'],
+                    'opsi_d_arti' => $q['opsi'][3]['arti'],
+                    'jawaban_benar' => $q['jawaban'],
+                ]);
+            }
+        }
+// ================= END SOAL ADVANCED =================
     }
 }

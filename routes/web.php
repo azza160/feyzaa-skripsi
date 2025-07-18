@@ -93,6 +93,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/review-quis-kosakata/{sessionId}', [\App\Http\Controllers\QuisKosakataController::class, 'ReviewQuisKosakataShow'])->name('review-quis-kosakata');
     Route::get('/dashboard/quis-kosakata-intermediate/{sessionId}', [QuisKosakataController::class, 'QuisKosakataIntermediateShow'])->name('quis-kosakata-intermediate');
     Route::get('/dashboard/review-quis-kosakata-intermediate/{sessionId}', [QuisKosakataController::class, 'ReviewQuisKosakataIntermediateShow'])->name('review-quis-kosakata-intermediate');
+    Route::post('/dashboard/kuis-kosakata/advanced/start', [QuisKosakataController::class, 'startAdvancedSession'])->name('start-quis-kosakata-advanced');
+    Route::get('/dashboard/quis-kosakata-advanced/{sessionId}', [QuisKosakataController::class, 'QuisKosakataAdvancedShow'])->name('quis-kosakata-advanced');
+    Route::get('/dashboard/review-quis-kosakata-advanced/{sessionId}', [QuisKosakataController::class, 'ReviewQuisKosakataAdvancedShow'])->name('review-quis-kosakata-advanced');
 
     // route progress uses
     Route::post('/user/belajar/update', [UserBelajarController::class, 'updateProgress'])->name('user.belajar.update');
