@@ -12,6 +12,10 @@ import { CheckIcon, ChevronRight, AlertCircle, BookOpen, Zap, Volume2, Info, Shu
 import { cn } from "@/lib/utils"
 import { Link, usePage,router } from "@inertiajs/react"
 import { Loading } from "../../components/Loading"
+// Import SweetAlert2
+const Swal = window.Swal
+// Gunakan fungsi helper showAlert yang sudah ditambahkan di app.js
+const showAlert = window.showAlert
 
 // Dummy data - hanya huruf yang sudah dipelajari
 const hiraganaLetters = [
@@ -566,17 +570,42 @@ export default function QuizLetterSelect() {
       mode: mode || 'manual',
     }
     
+    // Debug: Periksa apakah SweetAlert2 tersedia
+    console.log('SweetAlert2 tersedia:', typeof Swal !== 'undefined');
+    console.log('showAlert helper tersedia:', typeof showAlert !== 'undefined');
+    
     router.post(route("start-quis"), request, {
       preserveScroll: true,
       onSuccess: () => {
         // Redirect will be handled by the backend
+        console.log('Quiz started successfully');
       },
       onError: (errors) => {
+        // Debug: Log error yang diterima
+        console.log('Error saat memulai kuis:', errors);
+        
         // Handle rate limiting error
         if (errors.message && errors.message.includes('batas maksimal')) {
-          alert(errors.message);
+          console.log('Rate limit error terdeteksi');
+          // Gunakan fungsi helper showAlert untuk menampilkan pesan error rate limit
+          showAlert({
+            icon: 'warning',
+            title: 'Batas Kuis Tercapai!',
+            text: errors.message,
+            confirmButtonText: 'Mengerti',
+            confirmButtonColor: '#3085d6',
+            timer: 10000,
+            timerProgressBar: true
+          });
         } else {
-          alert("Gagal memulai kuis: " + (errors.message || "Terjadi kesalahan"))
+          console.log('Error umum terdeteksi');
+          // Gunakan fungsi helper showAlert untuk error lainnya
+          showAlert({
+            icon: 'error',
+            title: 'Gagal Memulai Kuis',
+            text: errors.message || "Terjadi kesalahan",
+            confirmButtonText: 'Tutup'
+          });
         }
       }
     })

@@ -107,6 +107,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/user/belajar/update-user-huruf-paham', [UserBelajarController::class, 'updateUserHurufPaham'])->name('user.belajar.update-user-huruf-paham');
     Route::post('/user/belajar/update-user-kosakata', [UserBelajarController::class, 'updateUserKosakata'])->name('user.belajar.update-user-kosakata');
     Route::post('/user/belajar/update-user-kosakata-favorite', [UserBelajarController::class, 'updateUserKosakataFavorite'])->name('user.belajar.update-user-kosakata-favorite');
+    
+    // Leaderboard route
+    Route::get('/dashboard/leaderboard', [DashboardController::class, 'leaderboard'])->name('leaderboard');
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');

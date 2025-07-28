@@ -299,7 +299,16 @@ export default function Dashboard({ children }) {
 
                 <SidebarLink icon={<ListChecks className="h-5 w-5" />} label="Kuis Kosakata" isOpen={sidebarOpen} isActive={['pilih-level-quis-kosakata','pilih-list-quis-kosakata','quis-kosakata','review-quis-kosakata','review-quis-kosakata-intermediate','review-quis-kosakata-advanced'].some(name => route().current(name))} href={route('pilih-level-quis-kosakata')} locked={currentLevel < 3} disabled={isQuizPage}/>
 
-                <SidebarLink icon={<Trophy className="h-5 w-5" />} label="Leaderboard" isOpen={sidebarOpen} locked={currentLevel < 3} disabled={isQuizPage} />
+                // Update the desktop sidebar Leaderboard link (around line 302)
+                <SidebarLink 
+                  icon={<Trophy className="h-5 w-5" />} 
+                  label="Leaderboard" 
+                  isOpen={sidebarOpen} 
+                  isActive={route().current('leaderboard')} 
+                  href={route('leaderboard')} 
+                  locked={currentLevel < 3} 
+                  disabled={isQuizPage} 
+                />
                 <SidebarLink
                   icon={<Award className="h-5 w-5" />}
                   label="Achievements"
