@@ -501,11 +501,12 @@ export default function VocabularyQuizPage() {
     )
   }
 
+  // Saat showCompletion true, fetch hasil review dari backend
   useEffect(() => {
     if (showCompletion && sessionId) {
       setReviewLoading(true)
       setReviewError(null)
-      fetch(route('review-quis-kosakata', { sessionId }), {
+      fetch(route('review-quis-kosakata-advanced', { sessionId }), {
         headers: { 'Accept': 'application/json' },
         credentials: 'same-origin',
       })
@@ -574,7 +575,7 @@ export default function VocabularyQuizPage() {
                         </li>
                         <li className="flex items-center gap-2">
                           <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                          <span>Waktu pengerjaan adalah <strong>{Math.floor(initialTime / 60)} menit</strong></span>
+                          <span>Waktu total pengerjaan adalah <strong>{Math.floor(initialTime / 60)} menit</strong> untuk {quizData.length} soal</span>
                         </li>
                         <li className="flex items-center gap-2">
                           <div className="w-2 h-2 bg-pink-500 rounded-full"></div>
@@ -586,10 +587,14 @@ export default function VocabularyQuizPage() {
                         </li>
                         <li className="flex items-center gap-2">
                           <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                          <span>Setiap jawaban benar akan mendapatkan poin</span>
+                          <span>EXP hanya diberikan untuk jawaban yang benar</span>
                         </li>
                         <li className="flex items-center gap-2">
                           <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                          <span>Jumlah EXP menurun berdasarkan jumlah percobaan pada soal yang sama</span>
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <div className="w-2 h-2 bg-red-500 rounded-full"></div>
                           <span>Kamu dapat melihat hasil kuis setelah selesai</span>
                         </li>
                       </ul>
@@ -615,7 +620,8 @@ export default function VocabularyQuizPage() {
                       </p>
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    {/* HEADER BUTTONS */}
+                    <div className="flex flex-col sm:flex-row flex-wrap items-center gap-2 w-full md:w-auto justify-center md:justify-end text-center">
                       {/* Hide Furigana Button */}
                       <Button
                         variant="ghost"
@@ -796,16 +802,16 @@ export default function VocabularyQuizPage() {
               </div>
 
               {/* Progress Indicator */}
-              <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-30">
+              <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-30 w-full px-2">
                 <motion.div
                   initial={{ y: 100, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
-                  className="bg-gradient-to-r from-white/90 to-white/80 dark:from-slate-900/90 dark:to-slate-800/80 backdrop-blur-md rounded-2xl shadow-2xl px-6 py-4 border border-white/30 dark:border-slate-700/30 relative overflow-hidden"
+                  className="bg-gradient-to-r from-white/90 to-white/80 dark:from-slate-900/90 dark:to-slate-800/80 backdrop-blur-md rounded-2xl shadow-2xl px-2 py-4 border border-white/30 dark:border-slate-700/30 relative overflow-hidden w-full max-w-xs sm:max-w-md md:max-w-2xl mx-auto"
+                  style={{overflowX: 'auto'}}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/5 to-purple-500/5 dark:from-indigo-500/10 dark:to-purple-500/10"></div>
-                  <div className="relative z-10 flex items-center gap-4">
+                  <div className="relative z-10 flex items-center justify-center gap-4 overflow-x-auto">
                     <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Progress:</span>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center justify-center gap-2 overflow-x-auto">
                       {Array.from({ length: quizData.length }, (_, index) => (
                         <motion.div
                           key={index}
@@ -825,7 +831,7 @@ export default function VocabularyQuizPage() {
                           />
                           {index === currentQuestion && (
                             <motion.div
-                              className="absolute inset-0 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 dark:from-indigo-400 dark:to-purple-400"
+                              className="absolute inset-0 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 dark:from-indigo-500 dark:to-purple-600"
                               animate={{
                                 scale: [1, 1.2, 1],
                                 opacity: [0.5, 0.8, 0.5],

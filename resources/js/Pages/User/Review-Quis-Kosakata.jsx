@@ -602,8 +602,8 @@ function ReviewQuisPage({ quizResults, user, currentLevel, currentExp, maxExp, n
                                       <div
                                         className={`p-4 rounded-xl border-2 ${
                                           answer.isCorrect
-                                            ? "border-green-300 bg-gradient-to-r from-green-50 to-green-100 text-green-800"
-                                            : "border-red-300 bg-gradient-to-r from-red-50 to-red-100 text-red-800"
+                                            ? "border-green-300 bg-green-50 dark:border-green-700 dark:bg-green-900/40"
+                                            : "border-red-300 bg-red-50 dark:border-red-700 dark:bg-red-900/40"
                                         }`}
                                       >
                                         <div className="flex items-center justify-between">
@@ -648,10 +648,10 @@ function ReviewQuisPage({ quizResults, user, currentLevel, currentExp, maxExp, n
                                     <List className="w-4 h-4 text-indigo-600" />
                                     Opsi Jawaban:
                                   </h4>
-                                  <div className="grid grid-cols-2 gap-3">
+                                  <div className="grid grid-cols-1 gap-3">
                                     {Array.isArray(answer.options) ? answer.options.map((option) => {
                                       const isUser = option.id === answer.userAnswer;
-                                      const isCorrect = option.text === answer.correctAnswer;
+                                      const isCorrect = option.id === answer.correctAnswer;
                                       // Opsi yang dipilih user dan benar
                                       const isUserAndCorrect = isUser && isCorrect;
                                       // Opsi yang dipilih user tapi salah
@@ -662,7 +662,7 @@ function ReviewQuisPage({ quizResults, user, currentLevel, currentExp, maxExp, n
                                       if (isUserAndCorrect) className += " border-green-400 bg-green-50 text-green-800 font-bold";
                                       else if (isUserAndWrong) className += " border-red-400 bg-red-50 text-red-800 font-bold";
                                       else if (isCorrectOnly) className += " border-green-300 bg-green-100 text-green-800";
-                                      else className += " border-gray-200 bg-gray-50";
+                                      else className += " border-gray-200 bg-gray-50 dark:bg-slate-800/90 dark:text-slate-100";
                                       return (
                                         <div key={option.id} className={className}>
                                           <span className="inline-block w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 font-bold text-center mr-2">{option.id}</span>

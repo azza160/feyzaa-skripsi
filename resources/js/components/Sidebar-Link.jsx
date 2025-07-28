@@ -67,6 +67,7 @@ export function SidebarLink({
   isOpen = true,
   highlight = false,
   locked = false,
+  disabled = false,
   href = "#",
   children = null,
   isDropdown = false,
@@ -85,6 +86,87 @@ export function SidebarLink({
   }
 
   const LinkComponent = hasDropdown ? 'a' : Link
+
+  // If disabled, render as div instead of link
+  if (disabled) {
+    return (
+      <motion.div
+        whileHover={{ x: isOpen ? 4 : 0, scale: 1 }}
+        transition={{ duration: 0.2 }}
+      >
+        <div
+          className={cn(
+            sidebarLinkVariants({ isActive, isOpen, highlight, isLocked: locked }),
+            isActive && !highlight && "border-l-4 border-primary dark:border-primary",
+            "flex items-center w-full opacity-50 cursor-not-allowed"
+          )}
+        >
+          <div
+            className={cn(
+              iconContainerVariants({
+                isOpen,
+                isActive: isActive && !highlight,
+                highlight: isActive && highlight,
+              }),
+            )}
+          >
+            {icon}
+          </div>
+
+          {isOpen && (
+            <>
+              <div className="flex-1 min-w-0">
+                <span
+                  className={cn(
+                    "font-medium transition-all duration-200 sidebar-link-text",
+                    isActive ? "text-base" : "text-sm",
+                    highlight && "text-white",
+                    locked && "text-slate-500 dark:text-slate-400",
+                  )}
+                >
+                  {label}
+                </span>
+              </div>
+
+              {/* Lock Icon */}
+              {hasLock && (
+                <div className="flex items-center justify-center h-8 w-8 rounded-full bg-slate-200 dark:bg-slate-700 shadow-sm">
+                  <Lock className="h-3.5 w-3.5 text-slate-500 dark:text-slate-400" />
+                </div>
+              )}
+
+              {/* Dropdown Chevron */}
+              {hasDropdown && (
+                <div className="flex items-center justify-center h-8 w-8">
+                  {isDropdownOpen ? (
+                    <ChevronDown className="h-4 w-4 text-slate-500 dark:text-slate-400" />
+                  ) : (
+                    <ChevronRight className="h-4 w-4 text-slate-500 dark:text-slate-400" />
+                  )}
+                </div>
+              )}
+
+              {/* Regular Badge */}
+              {badge && !hasLock && !hasDropdown && (
+                <span
+                  className={cn(
+                    "flex min-w-[1.5rem] items-center justify-center rounded-full px-1.5 py-0.5 text-xs font-medium",
+                    isActive && highlight
+                      ? "bg-white/20 text-white"
+                      : isActive
+                        ? "bg-primary dark:bg-violet-600 text-white"
+                        : "bg-muted dark:bg-slate-700 text-foreground dark:text-white",
+                  )}
+                >
+                  {badge}
+                </span>
+              )}
+            </>
+          )}
+        </div>
+      </motion.div>
+    )
+  }
 
 
   return (

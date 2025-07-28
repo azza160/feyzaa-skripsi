@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use App\Models\Kosakata;
 use App\Models\QuisKosakataSession;
@@ -62,9 +63,9 @@ class QuisKosakataController extends Controller
     private function calculateExpForBeginner($attempt)
     {
         return match($attempt) {
-            1 => 21,
-            2 => 13,
-            3 => 5,
+            1 => 15,
+            2 => 7,
+            3 => 3,
             default => 0,
         };
     }
@@ -73,9 +74,19 @@ class QuisKosakataController extends Controller
     private function calculateExpForIntermediate($attempt)
     {
         return match($attempt) {
-            1 => 30,
-            2 => 15,
+            1 => 25,
+            2 => 12,
             3 => 5,
+            default => 0,
+        };
+    }
+
+    private function calculateExpForAdvanced($attempt)
+    {
+        return match($attempt) {
+            1 => 35,
+            2 => 18,
+            3 => 7,
             default => 0,
         };
     }
@@ -325,6 +336,14 @@ class QuisKosakataController extends Controller
         $selectedSoal = [];
         $soalList = [];
 
+        // Tentukan timer sesuai level
+        $remainingTime = match($level) {
+            'beginner' => 300, // 5 menit
+            'intermediate' => 600, // 10 menit
+            'advanced' => 720, // 12 menit
+            default => 300,
+        };
+
         // FOKUS HANYA PADA LEVEL BEGINNER
         if ($level !== 'beginner') {
             abort(400, 'Level ini belum tersedia. Hanya level beginner yang tersedia saat ini.');
@@ -378,7 +397,7 @@ class QuisKosakataController extends Controller
                 'ended' => false,
                 'total_exp' => 0,
                 'soal' => $soalList,
-                'remaining_time' => 300,
+                'remaining_time' => $remainingTime,
             ]);
             return redirect()->route('quis-kosakata', ['sessionId' => $session->id]);
         }
@@ -437,8 +456,16 @@ class QuisKosakataController extends Controller
             'ended' => false,
             'total_exp' => 0,
             'soal' => $soalList,
-            'remaining_time' => 300,
+            'remaining_time' => $remainingTime,
         ]);
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'redirect' => route('quis-kosakata', ['sessionId' => $session->id])
+            ]);
+        }
+
         return redirect()->route('quis-kosakata', ['sessionId' => $session->id]);
     }
 
@@ -450,6 +477,9 @@ class QuisKosakataController extends Controller
         $selectedKosakata = $request->input('selected_kosakata', []); // array of id (manual)
         $jumlahSoal = 10;
         $soalList = [];
+
+        // Timer untuk intermediate
+        $remainingTime = 600; // 10 menit
 
         if ($level !== 'intermediate') {
             abort(400, 'Level ini hanya untuk intermediate.');
@@ -499,7 +529,7 @@ class QuisKosakataController extends Controller
             'ended' => false,
             'total_exp' => 0,
             'soal' => null, // intermediate: tidak perlu simpan soal
-            'remaining_time' => 600, // 10 menit untuk intermediate
+            'remaining_time' => $remainingTime, // 10 menit untuk intermediate
         ]);
 
         // Redirect ke halaman Quis-Kosakata-Intermediate
@@ -514,6 +544,9 @@ class QuisKosakataController extends Controller
         $selectedKosakata = $request->input('selected_kosakata', []); // array of id (manual)
         $jumlahSoal = 10;
         $soalList = [];
+
+        // Timer untuk advanced
+        $remainingTime = 720; // 12 menit
 
         if ($level !== 'advanced') {
             abort(400, 'Level ini hanya untuk advanced.');
@@ -557,7 +590,7 @@ class QuisKosakataController extends Controller
             'ended' => false,
             'total_exp' => 0,
             'soal' => null,
-            'remaining_time' => 720, // 12 menit untuk advanced
+            'remaining_time' => $remainingTime, // 12 menit untuk advanced
         ]);
 
         return redirect()->route('quis-kosakata-advanced', ['sessionId' => $session->id]);
@@ -724,28 +757,48 @@ class QuisKosakataController extends Controller
                 $soalList = $session->soal;
             }
 
-            if (!$soalList || !is_array($soalList) || count($soalList) === 0) {
-                $errorMsg = 'Data soal pada sesi kuis ini tidak ditemukan. Silakan mulai ulang kuis.';
-                if (request()->wantsJson()) {
-                    return response()->json(['error' => $errorMsg], 200);
-                }
-                abort(500, $errorMsg);
+            // FIX: Perhitungan waktu yang konsisten dan akurat untuk semua level
+            $timeSpent = 0;
+            if ($session->ended_at) {
+                // Jika session sudah selesai, hitung dari remaining_time untuk akurasi
+                $waktuKuis = match($session->level) {
+                    'beginner' => 300, // 5 menit
+                    'intermediate' => 600, // 10 menit
+                    'advanced' => 720, // 12 menit
+                    default => 300,
+                };
+                $timeSpent = $waktuKuis - ($session->remaining_time ?? 0);
+            } else {
+                // Jika session belum selesai, hitung dari remaining time
+                $waktuKuis = match($session->level) {
+                    'beginner' => 300, // 5 menit
+                    'intermediate' => 600, // 10 menit
+                    'advanced' => 720, // 12 menit
+                    default => 300,
+                };
+                $timeSpent = $waktuKuis - ($session->remaining_time ?? 0);
             }
+            
+            // Pastikan waktu tidak negatif
+            if ($timeSpent < 0) $timeSpent = 0;
 
             $answers = [];
             $totalExp = 0;
             $kosakataAttempts = [];
-            $maxExp = $this->calculateNextLevelExp($user->level) ?? $user->exp;
 
             foreach ($soalList as $idx => $soal) {
-                $isCorrect = false;
-                $exp = 0;
-                $currentAttempt = 0;
                 if ($isIntermediate || $isAdvanced) {
-                    $kosakataId = $soal['kosakata_id'] ?? $soal['id'] ?? null;
-                    if (!$kosakataId) continue;
+                    // Mapping untuk intermediate dan advanced
+                    $soalId = $soal['id'];
+                    $kosakataId = $soal['kosakata_id'];
+                    // Selalu ambil data kosakata dari tabel Kosakata
+                    $kosakataModel = \App\Models\Kosakata::find($kosakataId);
+                    $kosakata_kanji = $kosakataModel ? $kosakataModel->kanji : '';
+                    $kosakata_furigana = $kosakataModel ? $kosakataModel->furigana : '';
+                    $kosakata_romaji = $kosakataModel ? $kosakataModel->romaji : '';
+                    // Hitung attempt di seluruh session KECUALI session sekarang (pakai soal_id untuk advanced)
                     if (!isset($kosakataAttempts[$kosakataId])) {
-                        $kosakataAttempts[$kosakataId] = $this->getGlobalAttemptCount($user, $kosakataId, $session->id);
+                        $kosakataAttempts[$kosakataId] = $this->getGlobalAttemptCount($user, $kosakataId, $session->id, false);
                     }
                     $pastAttempt = $kosakataAttempts[$kosakataId];
                     $answered = $userAnswers[$idx] ?? null;
@@ -754,57 +807,64 @@ class QuisKosakataController extends Controller
                     if ($answered) {
                         $currentAttempt++;
                     }
-                    if ($isCorrect && $isIntermediate) {
-                        $exp = $this->calculateExpForIntermediate($currentAttempt);
+                    // Tambahkan logic EXP advanced di sini
+                    $exp = 0;
+                    if ($isCorrect) {
+                         if ($session->level === 'advanced') {
+                            $exp = $this->calculateExpForAdvanced($currentAttempt);
+                        } else {
+                            $exp = $this->calculateExpForIntermediate($currentAttempt);
+                        }
                     }
-                    // Untuk advanced, exp bisa diatur di sini jika sudah ada logic
                     $totalExp += $exp;
+
                     $options = [
-                        [
-                            'kanji' => $soal['opsi_a_kanji'] ?? '',
-                            'furigana' => $soal['opsi_a_furigana'] ?? '',
-                            'romaji' => $soal['opsi_a_romaji'] ?? '',
-                            'arti' => $soal['opsi_a_arti'] ?? '',
-                            'isCorrect' => ($soal['jawaban_benar'] ?? '') === 'a',
-                        ],
-                        [
-                            'kanji' => $soal['opsi_b_kanji'] ?? '',
-                            'furigana' => $soal['opsi_b_furigana'] ?? '',
-                            'romaji' => $soal['opsi_b_romaji'] ?? '',
-                            'arti' => $soal['opsi_b_arti'] ?? '',
-                            'isCorrect' => ($soal['jawaban_benar'] ?? '') === 'b',
-                        ],
-                        [
-                            'kanji' => $soal['opsi_c_kanji'] ?? '',
-                            'furigana' => $soal['opsi_c_furigana'] ?? '',
-                            'romaji' => $soal['opsi_c_romaji'] ?? '',
-                            'arti' => $soal['opsi_c_arti'] ?? '',
-                            'isCorrect' => ($soal['jawaban_benar'] ?? '') === 'c',
-                        ],
-                        [
-                            'kanji' => $soal['opsi_d_kanji'] ?? '',
-                            'furigana' => $soal['opsi_d_furigana'] ?? '',
-                            'romaji' => $soal['opsi_d_romaji'] ?? '',
-                            'arti' => $soal['opsi_d_arti'] ?? '',
-                            'isCorrect' => ($soal['jawaban_benar'] ?? '') === 'd',
-                        ],
+                        ['id' => 'A', 'text' => $soal['option_a']],
+                        ['id' => 'B', 'text' => $soal['option_b']],
+                        ['id' => 'C', 'text' => $soal['option_c']],
+                        ['id' => 'D', 'text' => $soal['option_d']],
                     ];
-                    $correctOption = collect($options)->first(fn($opt) => $opt['isCorrect']);
+
+                    $correctOption = $soal['correct_answer'];
                     $answers[] = [
-                        'id' => $kosakataId,
-                        'soal_kanji' => $soal['soal_kanji'] ?? '',
-                        'soal_furigana' => $soal['soal_furigana'] ?? '',
-                        'soal_romaji' => $soal['soal_romaji'] ?? '',
+                        'id' => $soal['id'],
+                        'kosakata_label_kanji' => $kosakata_kanji,
+                        'kosakata_label_furigana' => $kosakata_furigana,
+                        'kosakata_label_romaji' => $kosakata_romaji,
                         'soal_arti' => $soal['soal_arti'] ?? '',
                         'options' => $options,
                         'correctAnswer' => $correctOption,
                         'userAnswer' => $answered['selectedAnswer'] ?? null,
                         'isCorrect' => $isCorrect,
                         'expGained' => $exp,
-                        'attempt' => $currentAttempt,
                     ];
                 } else {
-                    // Mapping untuk beginner (lama)
+                    // Mapping untuk beginner (lama) - FIX: Tambahkan kalkulasi attempt dan EXP
+                    $kosakataId = $soal['kosakata_id'] ?? null;
+                    if (!$kosakataId) continue;
+
+                    if (!isset($kosakataAttempts[$kosakataId])) {
+                        $kosakataAttempts[$kosakataId] = $this->getGlobalAttemptCount($user, $kosakataId, $session->id, false);
+                    }
+                    $pastAttempt = $kosakataAttempts[$kosakataId];
+
+                    $answered = $userAnswers[$idx] ?? null;
+                    $userAnswer = $answered['selectedAnswer'] ?? null;
+                    $correctAnswer = $soal['answer'] ?? null;
+                    $correctOptionId = $this->getCorrectOptionId($soal, $correctAnswer);
+                    $isCorrect = $userAnswer !== null && $userAnswer === $correctOptionId;
+                    
+                    $currentAttempt = $pastAttempt;
+                    if ($answered) {
+                        $currentAttempt++;
+                    }
+
+                    $exp = 0;
+                    if ($isCorrect) {
+                        $exp = $this->calculateExpForBeginner($currentAttempt);
+                    }
+                    $totalExp += $exp;
+
                     $direction = $soal['direction'] ?? 'jp_to_id';
                     $options = $soal['options'];
                     $answers[] = [
@@ -815,11 +875,11 @@ class QuisKosakataController extends Controller
                         'options' => array_map(function($opt, $i) use ($direction) {
                             return [
                                 'id' => chr(65 + $i),
-                                'text' => is_array($opt) ? ($direction === 'id_to_jp' ? $opt['kanji'] : $opt) : $opt
+                                'text' => is_array($opt) ? ($direction === 'id_to_jp' ? ($opt['kanji'] ?? '') : $opt) : $opt
                             ];
                         }, $options, array_keys($options)),
-                        'correctAnswer' => $soal['answer'] ?? null,
-                        'userAnswer' => $answered['selectedAnswer'] ?? null,
+                        'correctAnswer' => $correctOptionId,
+                        'userAnswer' => $userAnswer,
                         'isCorrect' => $isCorrect,
                         'expGained' => $exp,
                         'attempt' => $currentAttempt,
@@ -832,47 +892,80 @@ class QuisKosakataController extends Controller
             $percentage = $totalQuestions > 0 ? round(($correctAnswers / $totalQuestions) * 100) : 0;
             $sessionAlreadyCompleted = $session->ended_at !== null;
 
+            // Check if session is already completed and EXP already added
+            if (!$sessionAlreadyCompleted) {
+                // Only add EXP and update user if session is not completed yet
+                $oldLevel = $user->level;
+                $oldExp = $user->exp;
+                $newExp = $oldExp + $totalExp;
+                $nextLevelExp = $this->calculateNextLevelExp($oldLevel);
+                $leveledUp = false;
+                $newLevel = $oldLevel;
+                $unlockedFeatures = [];
+
+                if ($nextLevelExp !== null && $newExp >= $nextLevelExp) {
+                    $leveledUp = true;
+                    $newLevel = $oldLevel + 1;
+                    $unlockedFeatures = $this->getUnlockedFeatures($newLevel);
+                    $user->level = $newLevel;
+                }
+                $user->exp = $newExp;
+                $user->save();
+
+                // FIX: Hanya update ended_at jika belum ada untuk mencegah perubahan waktu
+                $updateData = [
+                    'total_exp' => $totalExp,
+                    'ended' => true
+                ];
+                
+                // Hanya update ended_at jika belum ada
+                if (!$session->ended_at) {
+                    $updateData['ended_at'] = now()->setTimezone($session->started_at->timezone);
+                }
+                
+                $session->update($updateData);
+            } else {
+                // Session already completed, just get the data for display
+                $leveledUp = false;
+                $newLevel = $user->level;
+                $unlockedFeatures = [];
+                $nextLevelExp = $this->calculateNextLevelExp($user->level);
+            }
+
+            // Prepare quiz results data
             $quizResults = [
                 'totalQuestions' => $totalQuestions,
                 'correctAnswers' => $correctAnswers,
+                'timeSpent' => $timeSpent,
                 'percentage' => $percentage,
-                'totalScore' => $totalExp,
+                'totalScore' => $sessionAlreadyCompleted ? $session->total_exp : $totalExp,
                 'answers' => $answers,
-                'expGained' => $totalExp,
+                'expGained' => $sessionAlreadyCompleted ? $session->total_exp : $totalExp,
                 'currentExp' => $user->exp,
-                'nextLevelExp' => $this->calculateNextLevelExp($user->level),
-                'leveledUp' => false,
-                'newLevel' => $user->level,
-                'unlockedFeatures' => [],
-                'timeSpent' => $timeSpent ?? 0,
+                'nextLevelExp' => $nextLevelExp,
+                'leveledUp' => $leveledUp,
+                'newLevel' => $newLevel,
+                'unlockedFeatures' => $unlockedFeatures
             ];
-
-            // PATCH: Handle request JSON (card completion) - PASTIKAN DITEMPATKAN DI SINI!
+            
+            // Handle JSON request for card completion
             if (request()->wantsJson()) {
-                if (!$session->ended) {
-                    $session->update(['ended' => true]);
-                }
                 return response()->json([
                     'quizResults' => $quizResults,
                     'user' => $user,
                     'currentLevel' => $user->level,
                     'currentExp' => $user->exp,
-                    'maxExp' => $maxExp,
-                    'nextLevelExp' => $this->calculateNextLevelExp($user->level),
-                ], 200);
+                    'maxExp' => $this->calculateNextLevelExp($user->level),
+                    'nextLevelExp' => $nextLevelExp,
+                ]);
             }
-
-            // PATCH: Untuk advanced, set ended=true juga pada render Inertia jika belum
-            if ($session->level === 'advanced' && !$session->ended) {
-                $session->update(['ended' => true]);
-            }
-
-            return Inertia::render('User/Review-Quis-Kosakata', [
+            
+            return Inertia::render('User/Review-Quis-Kosakata',[
                 'user' => $user,
                 'currentLevel' => $user->level,
                 'currentExp' => $user->exp,
-                'maxExp' => $maxExp,
-                'nextLevelExp' => $this->calculateNextLevelExp($user->level),
+                'maxExp' => $this->calculateNextLevelExp($user->level),
+                'nextLevelExp' => $nextLevelExp,
                 'quizResults' => $quizResults,
             ]);
         } catch (\Throwable $e) {
@@ -1004,9 +1097,30 @@ class QuisKosakataController extends Controller
         $totalQuestions = count($answers);
         $correctAnswers = count(array_filter($answers, fn($a) => $a['isCorrect']));
         $percentage = $totalQuestions > 0 ? round(($correctAnswers / $totalQuestions) * 100) : 0;
-        // Hitung waktu
-        $waktuKuis = 600;
-        $timeSpent = $waktuKuis - ($session->remaining_time ?? 0);
+        
+        // FIX: Perhitungan waktu yang konsisten dan akurat untuk intermediate
+        $timeSpent = 0;
+        if ($session->ended_at) {
+            // Jika session sudah selesai, hitung dari remaining_time untuk akurasi
+            $waktuKuis = match($session->level) {
+                'beginner' => 300, // 5 menit
+                'intermediate' => 600, // 10 menit
+                'advanced' => 720, // 12 menit
+                default => 300,
+            };
+            $timeSpent = $waktuKuis - ($session->remaining_time ?? 0);
+        } else {
+            // Jika session belum selesai, hitung dari remaining time
+            $waktuKuis = match($session->level) {
+                'beginner' => 300, // 5 minutes
+                'intermediate' => 600, // 10 minutes
+                'advanced' => 720, // 12 minutes
+                default => 300,
+            };
+            $timeSpent = $waktuKuis - ($session->remaining_time ?? 0);
+        }
+        
+        // Pastikan waktu tidak negatif
         if ($timeSpent < 0) $timeSpent = 0;
 
         $quizResults = [
@@ -1052,9 +1166,8 @@ class QuisKosakataController extends Controller
             ]);
         }
 
-        // PATCH: Awarding EXP hanya pada kunjungan pertama (bukan JSON)
+        // PATCH: Awarding EXP hanya pada kunjungan pertama (bukan JSON) dan mencegah update ended_at berulang
         if ($session->review_visit_count < 1) {
-            // Pastikan $user adalah instance Eloquent User
             if (!($user instanceof \App\Models\User)) {
                 $user = \App\Models\User::find($user['id']);
             }
@@ -1074,12 +1187,20 @@ class QuisKosakataController extends Controller
             $user->exp = $expAfter;
             $user->save();
             $user->refresh();
-            $session->update([
+            
+            // FIX: Hanya update ended_at jika belum ada untuk mencegah perubahan waktu
+            $updateData = [
                 'total_exp' => $totalExp,
                 'ended' => true,
-                'ended_at' => now(),
                 'review_visit_count' => $session->review_visit_count + 1,
-            ]);
+            ];
+            
+            // Hanya update ended_at jika belum ada
+            if (!$session->ended_at) {
+                $updateData['ended_at'] = now()->setTimezone($session->started_at->timezone);
+            }
+            
+            $session->update($updateData);
         } else {
             $leveledUp = false;
             $newLevel = $user->level;
@@ -1146,7 +1267,11 @@ class QuisKosakataController extends Controller
             // Tambahkan logic EXP advanced di sini
             $exp = 0;
             if ($isCorrect) {
-                $exp = $this->calculateExpForIntermediate($currentAttempt); // EXP advanced = intermediate
+                 if ($session->level === 'advanced') {
+                    $exp = $this->calculateExpForAdvanced($currentAttempt);
+                } else {
+                    $exp = $this->calculateExpForIntermediate($currentAttempt);
+                }
             }
             $totalExp += $exp;
             $options = [
@@ -1200,9 +1325,73 @@ class QuisKosakataController extends Controller
         $totalQuestions = count($answers);
         $correctAnswers = count(array_filter($answers, fn($a) => $a['isCorrect']));
         $percentage = $totalQuestions > 0 ? round(($correctAnswers / $totalQuestions) * 100) : 0;
-        $waktuKuis = 720;
-        $timeSpent = $waktuKuis - ($session->remaining_time ?? 0);
+        
+        // FIX: Perhitungan waktu yang konsisten dan akurat untuk advanced
+        $timeSpent = 0;
+        if ($session->ended_at) {
+            // Jika session sudah selesai, hitung dari remaining_time untuk akurasi
+            $waktuKuis = match($session->level) {
+                'beginner' => 300, // 5 menit
+                'intermediate' => 600, // 10 menit
+                'advanced' => 720, // 12 menit
+                default => 300,
+            };
+            $timeSpent = $waktuKuis - ($session->remaining_time ?? 0);
+        } else {
+            // Jika session belum selesai, hitung dari remaining time
+            $waktuKuis = match($session->level) {
+                'beginner' => 300, // 5 menit
+                'intermediate' => 600, // 10 menit
+                'advanced' => 720, // 12 menit
+                default => 300,
+            };
+            $timeSpent = $waktuKuis - ($session->remaining_time ?? 0);
+        }
+        
+        // Pastikan waktu tidak negatif
         if ($timeSpent < 0) $timeSpent = 0;
+
+        $sessionAlreadyCompleted = $session->ended_at !== null;
+
+        // PATCH: Handle request JSON (card completion) untuk advanced
+        if (request()->wantsJson()) {
+            if (!$session->ended) {
+                $session->update(['ended' => true]);
+            }
+            // Hitung progress dan level up info
+            $maxExp = $this->calculateNextLevelExp($user->level) ?? $user->exp;
+            $leveledUp = false;
+            $newLevel = $user->level;
+            $unlockedFeatures = [];
+            $nextLevelExp = $this->calculateNextLevelExp($user->level);
+            // Simulasikan level up jika expGained + currentExp >= maxExp
+            $expAfter = $user->exp + $totalExp;
+            if ($nextLevelExp && $expAfter >= $nextLevelExp) {
+                $leveledUp = true;
+                $newLevel = $user->level + 1;
+                $unlockedFeatures = $this->getUnlockedFeatures($newLevel);
+            }
+            return response()->json([
+                'quizResults' => [
+                    'totalQuestions' => $totalQuestions,
+                    'correctAnswers' => $correctAnswers,
+                    'percentage' => $percentage,
+                    'answers' => $answers,
+                    'expGained' => $totalExp,
+                    'timeSpent' => $timeSpent,
+                    'leveledUp' => $leveledUp,
+                    'newLevel' => $newLevel,
+                    'unlockedFeatures' => $unlockedFeatures,
+                    'currentExp' => $expAfter,
+                    'nextLevelExp' => $nextLevelExp,
+                ],
+                'user' => $user,
+                'currentLevel' => $user->level,
+                'currentExp' => $expAfter,
+                'maxExp' => $maxExp,
+                'nextLevelExp' => $nextLevelExp,
+            ]);
+        }
 
         // Awarding EXP hanya pada kunjungan pertama (bukan JSON)
         if ($session->review_visit_count < 1) {
@@ -1228,9 +1417,14 @@ class QuisKosakataController extends Controller
             $session->update([
                 'total_exp' => $totalExp,
                 'ended' => true,
-                'ended_at' => now(),
+                'ended_at' => now()->setTimezone($session->started_at->timezone),
                 'review_visit_count' => $session->review_visit_count + 1,
             ]);
+        } else {
+            $leveledUp = false;
+            $newLevel = $user->level;
+            $unlockedFeatures = [];
+            $nextLevelExp = $this->calculateNextLevelExp($user->level);
         }
         $maxExp = $this->calculateNextLevelExp($user->level) ?? $user->exp;
         return Inertia::render('User/Review-Quis-Kosakata-Advanced', [
@@ -1293,5 +1487,19 @@ class QuisKosakataController extends Controller
         }
         shuffle($opsi);
         return $opsi;
+    }
+
+    // Tambahkan helper untuk menentukan optionId benar pada beginner
+    private function getCorrectOptionId($soal, $correctAnswer) {
+        if (($soal['type'] ?? null) === 'jp_to_id') {
+            foreach ($soal['options'] as $i => $opt) {
+                if ($opt === $correctAnswer) return chr(65 + $i);
+            }
+        } else if (($soal['type'] ?? null) === 'id_to_jp') {
+            foreach ($soal['options'] as $i => $opt) {
+                if (is_array($opt) && ($opt['kanji'] ?? null) === $correctAnswer) return chr(65 + $i);
+            }
+        }
+        return null;
     }
 }

@@ -125,7 +125,7 @@ const QuizCompletion = ({ isTimeUp, answers, totalQuestions, onViewReview, onExi
 }
 
 export default function QuizHurufPage() {
-  const { quizData, remainingTime: initialTime, sessionId, jenis, level, currentQuestionIndex } = usePage().props
+  const { quizData, remainingTime: initialTime, sessionId, jenis, level, currentQuestionIndex, initialAnswers } = usePage().props
   const [currentQuestion, setCurrentQuestion] = useState(currentQuestionIndex)
   const [selectedAnswer, setSelectedAnswer] = useState(null)
   const [answers, setAnswers] = useState([])
@@ -140,6 +140,27 @@ export default function QuizHurufPage() {
 
   const controls = useAnimation()
   const characterRef = useRef(null)
+
+  // -- FIX: Initialize answers state from backend data --
+  useEffect(() => {
+    if (initialAnswers) {
+      const formattedAnswers = Object.entries(initialAnswers).map(([soalId, answerData]) => {
+        const soal = quizData.find(q => q.id.toString() === soalId.toString());
+        if (!soal) return null;
+        
+        return {
+          questionId: soal.id,
+          selectedOption: answerData.answer.toUpperCase(),
+          isCorrect: answerData.is_correct,
+          question: soal.question,
+          character: soal.character,
+          correctAnswer: soal.options.find(opt => opt.isCorrect).text,
+          selectedText: soal.options.find(opt => opt.id === answerData.answer.toUpperCase())?.text,
+        };
+      }).filter(Boolean); // Remove nulls if soal not found
+      setAnswers(formattedAnswers);
+    }
+  }, []); // Run only once on initial render
 
   // Timer countdown
   useEffect(() => {
@@ -253,7 +274,7 @@ export default function QuizHurufPage() {
   }
 
   // Show completion screen
-  if (showCompletion) {
+  if (showCompletion || currentQuestion >= quizData.length) {
     return (
       <DashboardLayout>
         <QuizCompletion
@@ -286,8 +307,9 @@ export default function QuizHurufPage() {
                     </p>
                     <ul className="list-disc pl-5 space-y-2">
                       <li>Kuis terdiri dari {quizData.length} soal pilihan ganda</li>
-                      <li>Waktu pengerjaan adalah {Math.floor(initialTime / 60)} menit</li>
-                      <li>Setiap jawaban benar akan mendapatkan poin</li>
+                      <li>Waktu total pengerjaan adalah {Math.floor(initialTime / 60)} menit untuk {quizData.length} soal</li>
+                      <li>EXP hanya diberikan untuk jawaban yang benar</li>
+                      <li>Jumlah EXP menurun berdasarkan jumlah percobaan pada soal yang sama</li>
                       <li>Jawaban salah tidak akan mengurangi poin</li>
                       <li>Kamu dapat melihat hasil kuis setelah selesai</li>
                     </ul>
@@ -503,44 +525,46 @@ export default function QuizHurufPage() {
                               }`}
                             />
 
-                            {/* Content */}
-                            <div className="relative z-10 p-6 flex items-center justify-between">
-                              <div className="flex items-center gap-4">
-                                <motion.div
-                                  className={`w-14 h-14 rounded-xl flex items-center justify-center font-bold text-xl shadow-lg transition-all duration-300 ${
-                                    showResult
-                                      ? isCorrect
-                                        ? "bg-white dark:bg-slate-800 text-green-600 dark:text-green-400"
-                                        : "bg-white dark:bg-slate-800 text-red-600 dark:text-red-400"
-                                      : isSelected
-                                        ? "bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400"
-                                        : "bg-gradient-to-br from-indigo-500 to-purple-600 dark:from-indigo-600 dark:to-purple-700 text-white group-hover:from-indigo-600 group-hover:to-purple-700 dark:group-hover:from-indigo-700 dark:group-hover:to-purple-800"
-                                  }`}
-                                  whileHover={!isAnswered ? { scale: 1.1, rotate: 5 } : {}}
-                                  whileTap={!isAnswered ? { scale: 0.9 } : {}}
-                                >
-                                  {option.id}
-                                </motion.div>
-                                <span
-                                  className={`text-2xl font-bold transition-all duration-300 ${
-                                    showResult || isSelected ? "text-white" : "text-gray-800 dark:text-gray-200 group-hover:text-indigo-700 dark:group-hover:text-indigo-300"
-                                  }`}
-                                >
-                                  {option.text}
-                                </span>
-                              </div>
-
+                            {/* Content - FLEX COL */}
+                            <div className="relative z-10 flex flex-col items-center justify-center gap-2 p-4 md:p-6 min-h-[90px] md:min-h-[110px]">
+                              {/* Karakter Opsi */}
+                              <motion.div
+                                className={`w-10 h-10 md:w-14 md:h-14 rounded-xl flex items-center justify-center font-bold text-base md:text-xl shadow-lg transition-all duration-300 mb-1 md:mb-2 ${
+                                  showResult
+                                    ? isCorrect
+                                      ? "bg-white dark:bg-slate-800 text-green-600 dark:text-green-400"
+                                      : "bg-white dark:bg-slate-800 text-red-600 dark:text-red-400"
+                                    : isSelected
+                                      ? "bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400"
+                                      : "bg-gradient-to-br from-indigo-500 to-purple-600 dark:from-indigo-600 dark:to-purple-700 text-white group-hover:from-indigo-600 group-hover:to-purple-700 dark:group-hover:from-indigo-700 dark:group-hover:to-purple-800"
+                                }`}
+                                whileHover={!isAnswered ? { scale: 1.1, rotate: 5 } : {}}
+                                whileTap={!isAnswered ? { scale: 0.9 } : {}}
+                              >
+                                {option.id}
+                              </motion.div>
+                              {/* Teks Jawaban */}
+                              <span
+                                className={`block text-base md:text-2xl font-bold transition-all duration-300 break-words whitespace-normal text-center w-full ${
+                                  showResult || isSelected ? "text-white" : "text-gray-800 dark:text-gray-200 group-hover:text-indigo-700 dark:group-hover:text-indigo-300"
+                                }`}
+                                title={option.text}
+                              >
+                                {option.text}
+                              </span>
+                              {/* Icon benar/salah di bawah karakter, animasi bounce */}
                               {showResult && (
                                 <motion.div
-                                  initial={{ scale: 0, rotate: -90 }}
-                                  animate={{ scale: 1, rotate: 0 }}
-                                  transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-                                  className="bg-white dark:bg-slate-800 rounded-full p-2"
+                                  initial={{ opacity: 0, scale: 0.7, y: 10 }}
+                                  animate={{ opacity: 1, scale: 1.1, y: 0 }}
+                                  transition={{ delay: 0.15, type: "spring", stiffness: 400, damping: 15 }}
+                                  className="mt-2 flex items-center justify-center"
+                                  style={{ minHeight: 36 }}
                                 >
                                   {isCorrect ? (
-                                    <CheckCircle className="w-6 h-6 text-green-500 dark:text-green-400" />
+                                    <CheckCircle className="w-7 h-7 md:w-8 md:h-8 text-green-500 dark:text-green-400 drop-shadow-lg" />
                                   ) : (
-                                    <XCircle className="w-6 h-6 text-red-500 dark:text-red-400" />
+                                    <XCircle className="w-7 h-7 md:w-8 md:h-8 text-red-500 dark:text-red-400 drop-shadow-lg" />
                                   )}
                                 </motion.div>
                               )}

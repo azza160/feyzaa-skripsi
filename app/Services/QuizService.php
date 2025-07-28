@@ -238,13 +238,14 @@ class QuizService
     /**
      * Get time limit for level
      */
-    private function getTimeLimit(string $level): int
+    public function getTimeLimit(string $level): int
     {
+        // ATURAN_EXP_DAN_TIMER.txt: Beginner=5m(300s), Intermediate=7m(420s), Advanced=10m(600s)
         return match($level) {
-            'beginner' => 240,
-            'intermediate' => 180,
-            'advanced' => 120,
-            default => 240,
+            'beginner' => 300,
+            'intermediate' => 420,
+            'advanced' => 600,
+            default => 300,
         };
     }
 
@@ -253,23 +254,25 @@ class QuizService
      */
     public function calculateExp(string $level, int $attempt): int
     {
+        // ATURAN_EXP_DAN_TIMER.txt:
+        // Beginner: 10/5/2/0, Intermediate: 15/8/3/0, Advanced: 20/10/5/0
         return match($level) {
             'beginner' => match($attempt) {
-                1 => 9,
-                2 => 6,
-                3 => 3,
+                1 => 10,
+                2 => 5,
+                3 => 2,
                 default => 0,
             },
             'intermediate' => match($attempt) {
                 1 => 15,
-                2 => 10,
-                3 => 5,
+                2 => 8,
+                3 => 3,
                 default => 0,
             },
             'advanced' => match($attempt) {
-                1 => 21,
-                2 => 14,
-                3 => 7,
+                1 => 20,
+                2 => 10,
+                3 => 5,
                 default => 0,
             },
             default => 0,

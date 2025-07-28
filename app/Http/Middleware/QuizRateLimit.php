@@ -4,62 +4,58 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 class QuizRateLimit
 {
+    /**
+     * Handle an incoming request.
+     *
+     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     */
     public function handle(Request $request, Closure $next): Response
     {
-        $user = Auth::user();
-        
-        if (!$user) {
+        if (!Auth::check()) {
             return $next($request);
         }
 
-        // Rate limit quiz starts (max 15 per hour)
-        if ($request->routeIs('start-quis')) {
-            $key = 'quiz_start_' . $user->id;
+        $userId = Auth::id();
+        $cacheKey = "quiz_rate_limit_{$userId}";
+        
+        // Get current quiz attempts in the last hour
+        $attempts = Cache::get($cacheKey, []);
+        $now = now();
+        
+        // Remove attempts older than 1 hour
+        $attempts = array_filter($attempts, function($timestamp) use ($now) {
+            return $now->diffInMinutes($timestamp) < 60;
+        });
+        
+        // Check if user has exceeded limit (10 attempts per hour)
+        if (count($attempts) >= 10) {
+            $oldestAttempt = min($attempts);
+            $nextAllowedTime = $oldestAttempt->addHour();
+            $minutesUntilReset = $now->diffInMinutes($nextAllowedTime, false);
             
-            if (RateLimiter::tooManyAttempts($key, 15)) {
-                $seconds = RateLimiter::availableIn($key);
+            if ($request->wantsJson()) {
                 return response()->json([
-                    'error' => "Terlalu banyak quiz dimulai. Coba lagi dalam {$seconds} detik."
+                    'error' => 'Rate limit exceeded',
+                    'message' => "Anda telah mencapai batas maksimal 10 kuis per jam. Silakan coba lagi dalam {$minutesUntilReset} menit.",
+                    'minutes_until_reset' => $minutesUntilReset,
+                    'rate_limited' => true
                 ], 429);
             }
             
-            RateLimiter::hit($key, 3600); // 1 hour
+            // For non-JSON requests, redirect back with error message
+            return redirect()->back()->with('error', "Anda telah mencapai batas maksimal 10 kuis per jam. Silakan coba lagi dalam {$minutesUntilReset} menit.");
         }
-
-        // Rate limit answer submissions (max 150 per hour)
-        if ($request->routeIs('save-quiz-answer')) {
-            $key = 'quiz_answer_' . $user->id;
-            
-            if (RateLimiter::tooManyAttempts($key, 150)) {
-                $seconds = RateLimiter::availableIn($key);
-                return response()->json([
-                    'error' => "Terlalu banyak jawaban dikirim. Coba lagi dalam {$seconds} detik."
-                ], 429);
-            }
-            
-            RateLimiter::hit($key, 3600); // 1 hour
-        }
-
-        // Rate limit session access (max 50 per hour)
-        if ($request->routeIs('quis.show') || $request->routeIs('review-quis')) {
-            $key = 'quiz_session_' . $user->id;
-            
-            if (RateLimiter::tooManyAttempts($key, 50)) {
-                $seconds = RateLimiter::availableIn($key);
-                return response()->json([
-                    'error' => "Terlalu banyak akses session. Coba lagi dalam {$seconds} detik."
-                ], 429);
-            }
-            
-            RateLimiter::hit($key, 3600); // 1 hour
-        }
-
+        
+        // Add current attempt to cache
+        $attempts[] = $now;
+        Cache::put($cacheKey, $attempts, 3600); // Cache for 1 hour
+        
         return $next($request);
     }
 } 

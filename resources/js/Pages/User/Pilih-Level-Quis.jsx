@@ -64,12 +64,13 @@ const levels = [
     color: "from-emerald-400 to-green-500",
     bgColor: "bg-green-50 dark:bg-green-900/20",
     textColor: "text-green-700 dark:text-green-300",
-    minLettersRequired: 10,
-    timeLimit: "60 detik",
+    minLettersRequired: 0,
+    timeLimit: "5 menit",
     questions: "10 soal",
+    expInfo: "10 EXP (percobaan 1), 5 EXP (percobaan 2), 2 EXP (percobaan 3), 0 EXP (percobaan 4+)",
     features: [
-      "Waktu menjawab lebih lama",
-      "Fokus pada huruf dasar saja",
+      "Waktu total: 5 menit untuk 10 soal",
+      "EXP menurun berdasarkan percobaan",
       "Cocok untuk pemula yang baru mulai belajar",
     ],
     
@@ -85,13 +86,14 @@ const levels = [
     color: "from-orange-400 to-amber-500",
     bgColor: "bg-orange-50 dark:bg-orange-900/20",
     textColor: "text-orange-700 dark:text-orange-300",
-    minLettersRequired: 46,
-    timeLimit: "45 detik",
-    questions: "15 soal",
+    minLettersRequired: 0,
+    timeLimit: "7 menit",
+    questions: "10 soal",
+    expInfo: "15 EXP (percobaan 1), 8 EXP (percobaan 2), 3 EXP (percobaan 3), 0 EXP (percobaan 4+)",
     features: [
-      "Waktu menjawab standar",
+      "Waktu total: 7 menit untuk 10 soal",
+      "EXP menurun berdasarkan percobaan",
       "Mencakup kombinasi huruf",
-      "Kata-kata sederhana",
     ],
   },
   {
@@ -105,12 +107,13 @@ const levels = [
     color: "from-violet-500 to-purple-600",
     bgColor: "bg-purple-50 dark:bg-purple-900/20",
     textColor: "text-purple-700 dark:text-purple-300",
-    minLettersRequired: 71,
-    timeLimit: "30 detik",
-    questions: "20 soal",
+    minLettersRequired: 0,
+    timeLimit: "10 menit",
+    questions: "10 soal",
+    expInfo: "20 EXP (percobaan 1), 10 EXP (percobaan 2), 5 EXP (percobaan 3), 0 EXP (percobaan 4+)",
     features: [
-      "Waktu menjawab singkat",
-      "Kata-kata kompleks",
+      "Waktu total: 10 menit untuk 10 soal",
+      "EXP menurun berdasarkan percobaan",
       "Menguji kecepatan berpikir dan daya ingat",
     ],
     
@@ -273,37 +276,17 @@ export default function QuizLevelSelect() {
               ))}
             </div>
 
-            {/* Comparison Table */}
+            {/* Mode Information */}
             <div className="mt-6 bg-card/50 rounded-xl p-4 border">
-              <h4 className="font-semibold text-center mb-4 text-sm sm:text-base">Perbandingan Mode</h4>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs sm:text-sm">
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">EXP per Soal:</span>
-                    <span className="font-medium">Standar</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Waktu:</span>
-                    <span className="font-medium">{getSelectedLevelData()?.timeLimit}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Kontrol:</span>
-                    <span className="font-medium">Penuh</span>
-                  </div>
+              <h4 className="font-semibold text-center mb-4 text-sm sm:text-base">Informasi Mode</h4>
+              <div className="space-y-3 text-xs sm:text-sm">
+                <div className="bg-blue-50 dark:bg-blue-950/30 p-3 rounded-lg border border-blue-200 dark:border-blue-800">
+                  <h5 className="font-medium text-blue-800 dark:text-blue-300 mb-2">Mode Manual</h5>
+                  <p className="text-blue-700 dark:text-blue-400">Pilih sendiri huruf yang ingin diujikan. Kontrol penuh atas materi yang dipelajari dengan EXP dan waktu standar sesuai level.</p>
                 </div>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">EXP per Soal:</span>
-                    <span className="font-medium">Standar</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Waktu:</span>
-                    <span className="font-medium">{getSelectedLevelData()?.timeLimit}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Kontrol:</span>
-                    <span className="font-medium">Sistem</span>
-                  </div>
+                <div className="bg-purple-50 dark:bg-purple-950/30 p-3 rounded-lg border border-purple-200 dark:border-purple-800">
+                  <h5 className="font-medium text-purple-800 dark:text-purple-300 mb-2">Mode Random</h5>
+                  <p className="text-purple-700 dark:text-purple-400">Tantangan dengan huruf acak! Soal dipilih secara otomatis oleh sistem dengan EXP dan waktu standar sesuai level.</p>
                 </div>
               </div>
             </div>

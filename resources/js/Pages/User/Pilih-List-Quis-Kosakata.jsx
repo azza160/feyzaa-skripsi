@@ -440,6 +440,58 @@ export default function VocabularySelector() {
   const LevelIcon = levelInfo[level]?.icon || GraduationCap
   const ModeIcon = modeInfo[mode]?.icon || Shuffle
 
+  const handleStartQuiz = () => {
+    if (!canStartQuiz) return
+    if (level === 'intermediate') {
+      // Mode manual intermediate
+      router.post(route('start-quis-kosakata-intermediate'), {
+        mode: 'manual',
+        level: level,
+        selected_kosakata: selectedVocabulary
+      }, {
+        onError: (errors) => {
+          if (errors.message && errors.message.includes('batas maksimal')) {
+            alert(errors.message);
+          } else {
+            alert("Gagal memulai kuis: " + (errors.message || "Terjadi kesalahan"))
+          }
+        }
+      })
+      return
+    }
+    if (level === 'advanced') {
+      // Mode manual advanced
+      router.post(route('start-quis-kosakata-advanced'), {
+        mode: 'manual',
+        level: level,
+        selected_kosakata: selectedVocabulary
+      }, {
+        onError: (errors) => {
+          if (errors.message && errors.message.includes('batas maksimal')) {
+            alert(errors.message);
+          } else {
+            alert("Gagal memulai kuis: " + (errors.message || "Terjadi kesalahan"))
+          }
+        }
+      })
+      return
+    }
+    // POST ke backend untuk mode manual (beginner)
+    router.post(route('start-quis-kosakata'), {
+      mode: 'manual',
+      level: level,
+      selected_kosakata: selectedVocabulary
+    }, {
+      onError: (errors) => {
+        if (errors.message && errors.message.includes('batas maksimal')) {
+          alert(errors.message);
+        } else {
+          alert("Gagal memulai kuis: " + (errors.message || "Terjadi kesalahan"))
+        }
+      }
+    })
+  }
+
   return (
     <DashboardLayout>
       <div className="max-w-7xl mx-auto p-6 space-y-8">
@@ -755,33 +807,7 @@ export default function VocabularySelector() {
                     size="lg" 
                     disabled={!canStartQuiz} 
                     className="px-8 py-3 text-lg font-semibold w-full sm:w-auto"
-                    onClick={async () => {
-                      if (!canStartQuiz) return
-                      if (level === 'intermediate') {
-                        // Mode manual intermediate
-                        router.post(route('start-quis-kosakata-intermediate'), {
-                          mode: 'manual',
-                          level: level,
-                          selected_kosakata: selectedVocabulary
-                        })
-                        return
-                      }
-                      if (level === 'advanced') {
-                        // Mode manual advanced
-                        router.post(route('start-quis-kosakata-advanced'), {
-                          mode: 'manual',
-                          level: level,
-                          selected_kosakata: selectedVocabulary
-                        })
-                        return
-                      }
-                      // POST ke backend untuk mode manual (beginner)
-                      router.post(route('start-quis-kosakata'), {
-                        mode: 'manual',
-                        level: level,
-                        selected_kosakata: selectedVocabulary
-                      })
-                    }}
+                    onClick={handleStartQuiz}
                   >
                     <Play className="w-5 h-5 mr-2" />
                     Mulai Kuis

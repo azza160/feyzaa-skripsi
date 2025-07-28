@@ -541,8 +541,8 @@ export default function ReviewQuisPage() {
                                   {index + 1}
                                 </div>
                                 <div className="text-left">
-                                  <div className="font-bold text-gray-800 text-lg mb-1">
-                                    Karakter: <span className="text-3xl text-indigo-600 ml-2">{answer.character}</span>
+                                  <div className="font-bold text-gray-800 text-lg md:text-3xl mb-1">
+                                    Karakter: <span className="text-lg md:text-4xl text-indigo-600 ml-2 break-words">{answer.character}</span>
                                   </div>
                                   <div className="text-sm text-gray-600 mb-2">{answer.question}</div>
                                   <div className="flex items-center gap-2">
@@ -607,15 +607,15 @@ export default function ReviewQuisPage() {
                                   )}
 
                                   <div>
-                                  <h4 className="font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                                  <h4 className="font-semibold text-gray-700 mb-3 flex items-center gap-2 text-base md:text-lg">
                                     <List className="w-4 h-4 text-indigo-600" />
                                     Opsi Jawaban:
                                   </h4>
-                                  <div className="grid grid-cols-2 gap-3">
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                     {answer.options.map((option, idx) => (
                                       <div
                                         key={option.id}
-                                        className={`p-3 rounded-lg border flex items-center gap-2 ${
+                                        className={`p-3 rounded-lg border flex items-center gap-2 min-w-0 break-words ${
                                           option.id === answer.correctAnswer
                                             ? "border-green-300 bg-green-50 dark:bg-green-900/60"
                                             : option.id === answer.userAnswer
@@ -626,12 +626,12 @@ export default function ReviewQuisPage() {
                                         <span className="font-bold text-base md:text-lg text-gray-700 dark:text-white mr-2">
                                           {String.fromCharCode(65 + idx)}.
                                         </span>
-                                        <span className="font-medium text-gray-900 dark:text-white text-sm md:text-base">{option.text}</span>
+                                        <span className="font-medium text-gray-900 dark:text-white text-sm md:text-base truncate min-w-0" style={{maxWidth: '100%'}}>{option.text}</span>
                                         {option.id === answer.correctAnswer && (
-                                          <CheckCircle className="w-5 h-5 text-green-500 ml-auto" />
+                                          <CheckCircle className="w-5 h-5 md:w-6 md:h-6 text-green-500 ml-auto flex-shrink-0" />
                                         )}
                                         {option.id === answer.userAnswer && !answer.isCorrect && (
-                                          <XCircle className="w-5 h-5 text-red-500 ml-auto" />
+                                          <XCircle className="w-5 h-5 md:w-6 md:h-6 text-red-500 ml-auto flex-shrink-0" />
                                         )}
                                       </div>
                                     ))}

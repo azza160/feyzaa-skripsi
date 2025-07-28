@@ -268,9 +268,9 @@ E) ATTEMPT TRACKING & EXP
 
 | Level        | Attempt 1 | Attempt 2 | Attempt 3 | Attempt 4+ |
 |--------------|-----------|-----------|-----------|------------|
-| Beginner     |   21      |    13     |     5     |     0      |
-| Intermediate |   31      |    18     |     8     |     0      |
-| Advanced     |   47      |    26     |    10     |     0      |
+| Beginner     |   15      |    7      |     3     |     0      |
+| Intermediate |   25      |   12      |     5     |     0      |
+| Advanced     |   35      |   18      |     7     |     0      |
 
 - EXP hanya diberikan jika jawaban benar.
 - Attempt dihitung secara global per soal (bukan per session/user saja).
@@ -310,24 +310,18 @@ C) Best Practice Performance & Security:
 ================================================================================
 
 BEGINNER LEVEL:
-- EXP per soal: 13-21 (sesuai attempt)
-- Perfect score bonus: +50% EXP
-- Speed bonus: Jawab cepat +25% EXP
+- EXP per soal: 3-15 (sesuai attempt, lihat tabel di atas)
 
 INTERMEDIATE LEVEL:
-- EXP per soal: 18-31 (sesuai attempt)
-- Perfect score bonus: +50% EXP
-- Speed bonus: Jawab cepat +25% EXP
+- EXP per soal: 5-25 (sesuai attempt, lihat tabel di atas)
 
 ADVANCED LEVEL:
-- EXP per soal: 26-47 (sesuai attempt)
-- Perfect score bonus: +50% EXP
-- Speed bonus: Jawab cepat +25% EXP
+- EXP per soal: 7-35 (sesuai attempt, lihat tabel di atas)
 
 PERHITUNGAN ATTEMPT:
-- Attempt 1: EXP penuh
-- Attempt 2: EXP 70%
-- Attempt 3: EXP 40%
+- Attempt 1: EXP penuh (lihat kolom Attempt 1)
+- Attempt 2: EXP menurun (lihat kolom Attempt 2)
+- Attempt 3: EXP menurun lagi (lihat kolom Attempt 3)
 - Attempt 4+: 0 EXP
 
 

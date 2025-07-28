@@ -549,7 +549,7 @@ export default function VocabularyQuizPage() {
     if (showCompletion && sessionId) {
       setReviewLoading(true)
       setReviewError(null)
-      fetch(route('review-quis-kosakata', { sessionId }), {
+      fetch(route('review-quis-kosakata-intermediate', { sessionId }), {
         headers: { 'Accept': 'application/json' },
         credentials: 'same-origin',
       })
@@ -619,7 +619,7 @@ export default function VocabularyQuizPage() {
                         </li>
                         <li className="flex items-center gap-2">
                           <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                          <span>Waktu pengerjaan adalah <strong>{Math.floor(initialTime / 60)} menit</strong></span>
+                          <span>Waktu total pengerjaan adalah <strong>{Math.floor(initialTime / 60)} menit</strong> untuk {quizData.length} soal</span>
                         </li>
                         <li className="flex items-center gap-2">
                           <div className="w-2 h-2 bg-pink-500 rounded-full"></div>
@@ -631,11 +631,11 @@ export default function VocabularyQuizPage() {
                         </li>
                         <li className="flex items-center gap-2">
                           <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                          <span>Setiap jawaban benar akan mendapatkan poin</span>
+                          <span>EXP hanya diberikan untuk jawaban yang benar</span>
                         </li>
                         <li className="flex items-center gap-2">
                           <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                          <span>Jawaban salah tidak akan mengurangi poin</span>
+                          <span>Jumlah EXP menurun berdasarkan jumlah percobaan pada soal yang sama</span>
                         </li>
                         <li className="flex items-center gap-2">
                           <div className="w-2 h-2 bg-red-500 rounded-full"></div>
@@ -664,7 +664,8 @@ export default function VocabularyQuizPage() {
                       </p>
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    {/* HEADER BUTTONS */}
+                    <div className="flex flex-col sm:flex-row flex-wrap items-center gap-2 w-full md:w-auto justify-center md:justify-end text-center">
                       {/* Hide Furigana Button */}
                       <Button
                         variant="ghost"
@@ -810,21 +811,21 @@ export default function VocabularyQuizPage() {
                                 initial={{ scale: 0.8, opacity: 0 }}
                                 whileInView={{ scale: 1, opacity: 1 }}
                                 transition={{ delay: 0.4, type: "spring", stiffness: 200 }}
-                                className="inline-flex flex-col items-center justify-center bg-gradient-to-br from-indigo-600 to-purple-700 dark:from-indigo-700 dark:to-purple-800 rounded-3xl shadow-2xl text-white p-10 md:p-14 relative min-w-[340px] max-w-2xl mx-auto border-4 border-indigo-200 dark:border-indigo-700 animate-pulse-slow"
+                                className="inline-flex flex-col items-center justify-center bg-gradient-to-br from-indigo-600 to-purple-700 dark:from-indigo-700 dark:to-purple-800 rounded-3xl shadow-2xl text-white p-4 sm:p-6 md:p-8 lg:p-10 relative min-w-0 w-full max-w-xs sm:max-w-md md:max-w-lg lg:max-w-xl mx-auto border-4 border-indigo-200 dark:border-indigo-700 animate-pulse-slow break-words whitespace-normal"
                               >
-                                <div className="text-3xl md:text-4xl font-extrabold mb-3 tracking-wide select-none">
+                                <div className="text-2xl sm:text-3xl md:text-4xl font-extrabold mb-3 tracking-wide select-none break-words whitespace-normal text-center w-full">
                                   {/* Replace blank in soal_kanji with the random blank style */}
                                   <span>{quizData[currentQuestion].soal_kanji.replace(/_{2,}|\.\.\.|\?{2,}/g, blankStyles[currentQuestion] || "____")}</span>
                                 </div>
                                 {/* Only show furigana if not hidden */}
                                 {!hideFurigana && (
-                                  <div className="text-xl md:text-2xl text-indigo-100 dark:text-indigo-200 mb-2 select-none">
+                                  <div className="text-lg sm:text-xl md:text-2xl text-indigo-100 dark:text-indigo-200 mb-2 select-none break-words whitespace-normal text-center w-full">
                                     {quizData[currentQuestion].soal_furigana}
                                   </div>
                                 )}
                                 {/* Only show romaji if not hidden */}
                                 {!hideRomaji && (
-                                  <div className="text-lg md:text-xl text-indigo-200 dark:text-indigo-300 font-medium select-none">
+                                  <div className="text-sm sm:text-lg md:text-xl text-indigo-200 dark:text-indigo-300 font-medium select-none break-words whitespace-normal text-center w-full">
                                     {quizData[currentQuestion].soal_romaji}
                                   </div>
                                 )}
@@ -894,18 +895,16 @@ export default function VocabularyQuizPage() {
               </div>
 
               {/* Progress Indicator */}
-              <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-30">
+              <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-30 w-full px-2">
                 <motion.div
                   initial={{ y: 100, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
-                  className="bg-gradient-to-r from-white/90 to-white/80 dark:from-slate-900/90 dark:to-slate-800/80 backdrop-blur-md rounded-2xl shadow-2xl px-6 py-4 border border-white/30 dark:border-slate-700/30 relative overflow-hidden"
+                  className="bg-gradient-to-r from-white/90 to-white/80 dark:from-slate-900/90 dark:to-slate-800/80 backdrop-blur-md rounded-2xl shadow-2xl px-2 py-4 border border-white/30 dark:border-slate-700/30 relative overflow-hidden w-full max-w-xs sm:max-w-md md:max-w-2xl mx-auto"
+                  style={{overflowX: 'auto'}}
                 >
-                  {/* Background decoration */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/5 to-purple-500/5 dark:from-indigo-500/10 dark:to-purple-500/10"></div>
-
-                  <div className="relative z-10 flex items-center gap-4">
+                  <div className="relative z-10 flex items-center justify-center gap-4 overflow-x-auto">
                     <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Progress:</span>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center justify-center gap-2 overflow-x-auto">
                       {Array.from({ length: quizData.length }, (_, index) => (
                         <motion.div
                           key={index}

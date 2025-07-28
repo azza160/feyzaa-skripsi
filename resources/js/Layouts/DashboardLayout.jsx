@@ -46,6 +46,8 @@ import { useIsMobile } from "@/hooks/use-mobile"
 import { SidebarLink } from "@/components/sidebar-link"
 import LevelBar from "../components/LevelBar"
 import { usePage,router} from "@inertiajs/react"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { AlertTriangle } from "lucide-react"
 
 
 // Add this after the imports section
@@ -145,20 +147,25 @@ export default function Dashboard({ children }) {
   const isMobile = useIsMobile()
   const sidebarRef = useRef(null)
   const [showMobileMenu, setShowMobileMenu] = useState(false)
-  const isQuizPage = route().current('quis')
+  const isQuizPage = route().current('quis') || route().current('quis-kosakata') || route().current('quis-kosakata-intermediate') || route().current('quis-kosakata-advanced')
 
   // This is to prevent hydration mismatch
   useEffect(() => {
     setMounted(true)
   }, [])
 
-  // Close sidebar on mobile by default
+  // Close sidebar on mobile by default and on quiz pages
   useEffect(() => {
     if (isMobile) {
       setSidebarOpen(false)
       setShowMobileMenu(false)
     }
-  }, [isMobile])
+    // Auto close sidebar on quiz pages
+    if (isQuizPage) {
+      setSidebarOpen(false)
+      setShowMobileMenu(false)
+    }
+  }, [isMobile, isQuizPage])
 
   const toggleSidebar = () => {
     if (isMobile) {
@@ -272,11 +279,11 @@ export default function Dashboard({ children }) {
                 </h3>
               )}
               <nav className="space-y-1">
-                <SidebarLink icon={<LayoutDashboard className="h-5 w-5" />} label="Dashboard" isActive={route().current('dashboard')} isOpen={sidebarOpen} href={route('dashboard')}/>
+                <SidebarLink icon={<LayoutDashboard className="h-5 w-5" />} label="Dashboard" isActive={route().current('dashboard')} isOpen={sidebarOpen} href={route('dashboard')} disabled={isQuizPage}/>
                 <SidebarLink icon={<Type className="h-5 w-5" />} label="Huruf Jepang" isActive={['huruf', 'kategori-huruf-hiragana', 'huruf-hiragana','huruf-hiragana-detail'].some(name => route().current(name))}
-                isOpen={sidebarOpen} href={route('huruf')} />
-                <SidebarLink icon={<BookOpenText className="h-5 w-5" />} label="Kosakata" isActive={['list-kosakata', 'detail-kosakata', 'kosakata-flashcard'].some(name => route().current(name))} isOpen={sidebarOpen} href={route('list-kosakata')} locked={currentLevel < 3} />
-                <SidebarLink icon={<FlipVertical className="h-5 w-5" />} label="Flashcard" isActive={['flashcard'].some(name => route().current(name))} isOpen={sidebarOpen} href={route('flashcard')} locked={currentLevel < 3} />
+                isOpen={sidebarOpen} href={route('huruf')} disabled={isQuizPage} />
+                <SidebarLink icon={<BookOpenText className="h-5 w-5" />} label="Kosakata" isActive={['list-kosakata', 'detail-kosakata', 'kosakata-flashcard'].some(name => route().current(name))} isOpen={sidebarOpen} href={route('list-kosakata')} locked={currentLevel < 3} disabled={isQuizPage} />
+                <SidebarLink icon={<FlipVertical className="h-5 w-5" />} label="Flashcard" isActive={['flashcard'].some(name => route().current(name))} isOpen={sidebarOpen} href={route('flashcard')} locked={currentLevel < 3} disabled={isQuizPage} />
               
               
               </nav>
@@ -288,16 +295,17 @@ export default function Dashboard({ children }) {
               )}
               {!sidebarOpen && <div className="my-6 border-t border-border dark:border-slate-800"></div>}
               <nav className="space-y-1">
-                <SidebarLink icon={<PencilLine className="h-5 w-5" />} label="Kuis Huruf" isOpen={sidebarOpen} isActive={['pilih-huruf-quis','pilih-list-huruf-quis','pilih-level-quis'].some(name => route().current(name))} href={route('pilih-huruf-quis')} />
+                <SidebarLink icon={<PencilLine className="h-5 w-5" />} label="Kuis Huruf" isOpen={sidebarOpen} isActive={['pilih-huruf-quis','pilih-list-huruf-quis','pilih-level-quis','quis','review-quis'].some(name => route().current(name))} href={route('pilih-huruf-quis')} disabled={isQuizPage} />
 
-                <SidebarLink icon={<ListChecks className="h-5 w-5" />} label="Kuis Kosakata" isOpen={sidebarOpen} isActive={['pilih-level-quis-kosakata','pilih-list-quis-kosakata','quis-kosakata'].some(name => route().current(name))} href={route('pilih-level-quis-kosakata')} locked={currentLevel < 3}/>
+                <SidebarLink icon={<ListChecks className="h-5 w-5" />} label="Kuis Kosakata" isOpen={sidebarOpen} isActive={['pilih-level-quis-kosakata','pilih-list-quis-kosakata','quis-kosakata','review-quis-kosakata','review-quis-kosakata-intermediate','review-quis-kosakata-advanced'].some(name => route().current(name))} href={route('pilih-level-quis-kosakata')} locked={currentLevel < 3} disabled={isQuizPage}/>
 
-                <SidebarLink icon={<Trophy className="h-5 w-5" />} label="Leaderboard" isOpen={sidebarOpen} locked={currentLevel < 3} />
+                <SidebarLink icon={<Trophy className="h-5 w-5" />} label="Leaderboard" isOpen={sidebarOpen} locked={currentLevel < 3} disabled={isQuizPage} />
                 <SidebarLink
                   icon={<Award className="h-5 w-5" />}
                   label="Achievements"
                   locked={true}
                   isOpen={sidebarOpen}
+                  disabled={isQuizPage}
                 />
 
                 
@@ -404,7 +412,7 @@ export default function Dashboard({ children }) {
                   </h3>
                   <nav className="space-y-1">
                   <SidebarLink icon={<PencilLine className="h-5 w-5" />} label="Kuis Huruf" isOpen={true} isActive={['pilih-huruf-quis','pilih-list-huruf-quis','pilih-level-quis','quis','review-quis'].some(name => route().current(name))} href={route('pilih-huruf-quis')} />
-                <SidebarLink icon={<ListChecks className="h-5 w-5" />} label="Kuis Kosakata" isOpen={true} isActive={['pilih-level-quis-kosakata','pilih-list-quis-kosakata','quis-kosakata'].some(name => route().current(name))} href={route('pilih-level-quis-kosakata')}/>
+                <SidebarLink icon={<ListChecks className="h-5 w-5" />} label="Kuis Kosakata" isOpen={true} isActive={['pilih-level-quis-kosakata','pilih-list-quis-kosakata','quis-kosakata','review-quis-kosakata','review-quis-kosakata-intermediate','review-quis-kosakata-advanced'].some(name => route().current(name))} href={route('pilih-level-quis-kosakata')}/>
                 <SidebarLink icon={<Trophy className="h-5 w-5" />} label="Leaderboard" isOpen={true} />
                 <SidebarLink
                   icon={<Award className="h-5 w-5" />}
@@ -538,7 +546,7 @@ export default function Dashboard({ children }) {
                       </Avatar>
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56 p-0 overflow-hidden z-[110]" forceMount>
+                  <DropdownMenuContent align="end" className="w-56 p-0 overflow-hidden z-[110]" forceMount disabled={isQuizPage}>
                     <motion.div
                       initial={{ opacity: 0, y: -20 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -587,7 +595,41 @@ export default function Dashboard({ children }) {
       
         
           <main className="flex-1 overflow-auto  px-1 xsm:px-4 md:p-6 pt-[40px] lg:pt-[45px]">
-                {/* Floating Japanese characters - only show on larger screens */}
+            {/* Warning Alert for Cleanup Sessions */}
+            {usePage().props.flash?.warning && (
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="mb-4"
+              >
+                <Alert className="border-yellow-200 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-900/20">
+                  <AlertTriangle className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
+                  <AlertDescription className="text-yellow-800 dark:text-yellow-200">
+                    {usePage().props.flash.warning}
+                  </AlertDescription>
+                </Alert>
+              </motion.div>
+            )}
+
+            {/* Error Alert for Rate Limit */}
+            {usePage().props.flash?.error && (
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="mb-4"
+              >
+                <Alert className="border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-900/20">
+                  <AlertTriangle className="h-4 w-4 text-red-600 dark:text-red-400" />
+                  <AlertDescription className="text-red-800 dark:text-red-200">
+                    {usePage().props.flash.error}
+                  </AlertDescription>
+                </Alert>
+              </motion.div>
+            )}
+            
+            {/* Floating Japanese characters - only show on larger screens */}
         {!isMobile &&
   japaneseChars.slice(0, 8).map((char, index) => (
     <motion.div

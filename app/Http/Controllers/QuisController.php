@@ -55,31 +55,6 @@ class QuisController extends Controller
         return $features;
     }
 
-    private function calculateExp($level, $attempt)
-    {
-        return match($level) {
-            'beginner' => match($attempt) {
-                1 => 9,
-                2 => 6,
-                3 => 3,
-                default => 0,
-            },
-            'intermediate' => match($attempt) {
-                1 => 15,
-                2 => 10,
-                3 => 5,
-                default => 0,
-            },
-            'advanced' => match($attempt) {
-                1 => 21,
-                2 => 14,
-                3 => 7,
-                default => 0,
-            },
-            default => 0,
-        };
-    }
-
     public function pilihHurufQuisShow(){
         $this->cleanupActiveQuisSession();
         $user = Auth::user();
@@ -137,10 +112,10 @@ class QuisController extends Controller
         
         // Validate access based on level and mode
         $minLettersRequired = match($level) {
-            'beginner' => 10,
-            'intermediate' => 46,
-            'advanced' => 71,
-            default => 10,
+            'beginner' => 0,
+            'intermediate' => 0,
+            'advanced' => 0,
+            default => 0,
         };
         
         // Hanya level intermediate & advanced (mode apapun) yang divalidasi
@@ -249,40 +224,37 @@ class QuisController extends Controller
     public function startQuis(Request $request){
         $user = Auth::user();
         $this->cleanupActiveQuisSession();
-        
-        //validasi request
         $request->validate([
             'letters' => $request->mode === 'random' ? 'nullable|array' : 'required|array',
             'jenis' => 'required|string|in:hiragana,katakana',
             'level' => 'required|string|in:beginner,intermediate,advanced',
             'mode' => 'nullable|string|in:manual,random',
         ]);
-        
-        //simpan request
         $letters = $request->letters ?? [];
         $jenis = $request->jenis;
         $level = $request->level;
         $mode = $request->mode ?? 'manual';
-
-        // Gunakan QuizService untuk optimasi
+        // Gunakan QuizService untuk aturan timer
         $quizService = new \App\Services\QuizService();
-        
+        $waktuMax = $quizService->getTimeLimit($level);
         // Buat session dengan ULID
         $session = $quizService->createSession($user, [
             'level' => $level,
             'jenis' => $jenis,
             'mode' => $mode,
+            'waktu_max' => $waktuMax,
         ]);
-
-        // Ambil soal dengan optimasi
         $transformedSoal = $quizService->getQuestions($jenis, $level, $mode, $letters);
-        
-        // Ambil ID soal untuk disimpan
         $soalIds = collect($transformedSoal)->pluck('id')->toArray();
-        
-        // Buat session soals dengan batch insert
         $quizService->createSessionSoals($user, $session, $soalIds);
-
+        
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'redirect' => route('quis', ['sessionId' => $session->id])
+            ]);
+        }
+        
         return redirect()->route('quis', ['sessionId' => $session->id]);
     }
 
@@ -294,9 +266,15 @@ class QuisController extends Controller
         ->where('id_user', $user->id)
         ->firstOrFail();
 
+        //check apakah session sudah selesai
+        if($session->ended_at !== null){
+            // Redirect to review page if session is already completed
+            return redirect()->route('review-quis', ['sessionId' => $sessionId]);
+        }
+
         //check apakah session masih aktif
         if($session->ended_at !== null && now()->isAfter($session->ended_at)){
-            return redirect()->route('review-quis');
+            return redirect()->route('review-quis', ['sessionId' => $sessionId]);
         }
 
         // OPTIMIZATION: Get questions from JSON field instead of individual records
@@ -355,7 +333,7 @@ class QuisController extends Controller
                 $attempts = $session->attempts ?? [];
                 $totalAttempt = $attempts[$soal->id] ?? 0;
                 $attempt = $totalAttempt + 1;
-                $exp = $this->calculateExp($session->level, $attempt);
+                $exp = (new \App\Services\QuizService())->calculateExp($session->level, $attempt);
                 $isCorrect = false;
                 $userAnswer = null;
             }
@@ -394,6 +372,7 @@ class QuisController extends Controller
             'maxExp' => $this->calculateNextLevelExp($user->level),
             'user' => $user,
             'currentQuestionIndex' => $currentQuestionIndex,
+            'initialAnswers' => $userAnswers ?? []
         ]);
     }
 
@@ -493,7 +472,7 @@ class QuisController extends Controller
             $newLevel = $oldLevel;
             $unlockedFeatures = [];
 
-            if ($newExp >= $nextLevelExp) {
+            if ($nextLevelExp !== null && $newExp >= $nextLevelExp) {
                 $leveledUp = true;
                 $newLevel = $oldLevel + 1;
                 $unlockedFeatures = $this->getUnlockedFeatures($newLevel);

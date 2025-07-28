@@ -177,26 +177,26 @@ const ContentLoading = () => {
 };
 
 // Quiz System Explanation Modal Component
-const QuizSystemModal = ({ isOpen, onClose, onStartQuiz, level, jenis, isRandomMode = false }) => {
+const QuizSystemModal = ({ isOpen, onClose, onStartQuiz, level, jenis, isRandomMode = false, canStartQuiz = true }) => {
   const [currentStep, setCurrentStep] = useState(0)
   
   const expSystem = {
     beginner: {
-      firstAttempt: 9,
-      secondAttempt: 6,
-      thirdAttempt: 3,
+      firstAttempt: 10,
+      secondAttempt: 5,
+      thirdAttempt: 2,
       maxAttempt: 3
     },
     intermediate: {
       firstAttempt: 15,
-      secondAttempt: 10,
-      thirdAttempt: 5,
+      secondAttempt: 8,
+      thirdAttempt: 3,
       maxAttempt: 3
     },
     advanced: {
-      firstAttempt: 21,
-      secondAttempt: 14,
-      thirdAttempt: 7,
+      firstAttempt: 20,
+      secondAttempt: 10,
+      thirdAttempt: 5,
       maxAttempt: 3
     }
   }
@@ -205,9 +205,9 @@ const QuizSystemModal = ({ isOpen, onClose, onStartQuiz, level, jenis, isRandomM
   const currentExpSystem = expSystem
 
   const timeLimit = {
-    beginner: "4 menit",
-    intermediate: "3 menit", 
-    advanced: "2 menit"
+    beginner: "5 menit",
+    intermediate: "7 menit", 
+    advanced: "10 menit"
   }
 
   const steps = [
@@ -443,7 +443,11 @@ const QuizSystemModal = ({ isOpen, onClose, onStartQuiz, level, jenis, isRandomM
             <Button variant="outline" onClick={onClose} className="w-full sm:w-auto">
               Batal
             </Button>
-            <Button onClick={handleNext} className="w-full sm:w-auto">
+            <Button 
+              onClick={handleNext} 
+              className="w-full sm:w-auto"
+              disabled={currentStep === steps.length - 1 && !canStartQuiz}
+            >
               {currentStep === steps.length - 1 ? (
                 <>
                   <span className="hidden sm:inline">Mulai Quiz</span>
@@ -460,6 +464,16 @@ const QuizSystemModal = ({ isOpen, onClose, onStartQuiz, level, jenis, isRandomM
             </Button>
           </div>
         </div>
+        
+        {/* Show warning when button is disabled */}
+        {currentStep === steps.length - 1 && !canStartQuiz && !isRandomMode && (
+          <div className="mt-3 text-center">
+            <p className="text-sm text-orange-600 dark:text-orange-400 flex items-center justify-center gap-2">
+              <AlertCircle className="w-4 h-4" />
+              Pilih tepat 10 huruf untuk memulai kuis
+            </p>
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   )
@@ -558,7 +572,12 @@ export default function QuizLetterSelect() {
         // Redirect will be handled by the backend
       },
       onError: (errors) => {
-        alert("Gagal memulai kuis: " + (errors.message || "Terjadi kesalahan"))
+        // Handle rate limiting error
+        if (errors.message && errors.message.includes('batas maksimal')) {
+          alert(errors.message);
+        } else {
+          alert("Gagal memulai kuis: " + (errors.message || "Terjadi kesalahan"))
+        }
       }
     })
   }
@@ -971,6 +990,7 @@ export default function QuizLetterSelect() {
             level={level}
             jenis={jenis}
             isRandomMode={isRandomMode}
+            canStartQuiz={isRandomMode || selectedLetters.length === requiredLetters}
           />
         </div>
       </AnimatePresence>
