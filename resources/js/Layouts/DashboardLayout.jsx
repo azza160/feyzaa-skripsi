@@ -25,7 +25,7 @@ import {
   ListChecks,
   Trophy,
 } from "lucide-react"
-
+import { Link } from "@inertiajs/react"
 // Add this import at the top with the other imports
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
@@ -299,7 +299,6 @@ export default function Dashboard({ children }) {
 
                 <SidebarLink icon={<ListChecks className="h-5 w-5" />} label="Kuis Kosakata" isOpen={sidebarOpen} isActive={['pilih-level-quis-kosakata','pilih-list-quis-kosakata','quis-kosakata','review-quis-kosakata','review-quis-kosakata-intermediate','review-quis-kosakata-advanced'].some(name => route().current(name))} href={route('pilih-level-quis-kosakata')} locked={currentLevel < 3} disabled={isQuizPage}/>
 
-                // Update the desktop sidebar Leaderboard link (around line 302)
                 <SidebarLink 
                   icon={<Trophy className="h-5 w-5" />} 
                   label="Leaderboard" 
@@ -422,7 +421,7 @@ export default function Dashboard({ children }) {
                   <nav className="space-y-1">
                   <SidebarLink icon={<PencilLine className="h-5 w-5" />} label="Kuis Huruf" isOpen={true} isActive={['pilih-huruf-quis','pilih-list-huruf-quis','pilih-level-quis','quis','review-quis'].some(name => route().current(name))} href={route('pilih-huruf-quis')} />
                 <SidebarLink icon={<ListChecks className="h-5 w-5" />} label="Kuis Kosakata" isOpen={true} isActive={['pilih-level-quis-kosakata','pilih-list-quis-kosakata','quis-kosakata','review-quis-kosakata','review-quis-kosakata-intermediate','review-quis-kosakata-advanced'].some(name => route().current(name))} href={route('pilih-level-quis-kosakata')}/>
-                <SidebarLink icon={<Trophy className="h-5 w-5" />} label="Leaderboard" isOpen={true} />
+                <SidebarLink icon={<Trophy className="h-5 w-5" />} label="Leaderboard" isOpen={true} isActive={route().current('leaderboard')} href={route('leaderboard')} />
                 <SidebarLink
                   icon={<Award className="h-5 w-5" />}
                   label="Achievements"
@@ -578,11 +577,11 @@ export default function Dashboard({ children }) {
                       <div className="p-1">
                         <DropdownMenuItem className="flex items-center gap-2 rounded-md p-2 cursor-pointer hover:bg-primary/10 dark:hover:bg-violet-500/10">
                           <User className="h-4 w-4 text-primary dark:text-violet-400" />
-                          <span>Profile</span>
+                          <Link href={route('profile')}><span>Profile</span></Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem className="flex items-center gap-2 rounded-md p-2 cursor-pointer hover:bg-primary/10 dark:hover:bg-violet-500/10">
                           <Settings className="h-4 w-4 text-primary dark:text-violet-400" />
-                          <span>Settings</span>
+                          <Link href={route('profile.edit')}><span>Settings</span></Link>
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <button onClick={handleLogout} className="w-full hover:bg-red-100 dark:hover:bg-red-900/20">

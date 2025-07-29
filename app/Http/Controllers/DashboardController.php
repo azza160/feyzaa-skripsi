@@ -113,9 +113,10 @@ class DashboardController extends Controller
         $this->cleanupActiveQuisSession();
         $user = auth()->user();
         
-        // Ambil top 10 users berdasarkan exp
+        // Ambil top 10 users berdasarkan exp, jika exp sama maka berdasarkan created_at (yang lebih dulu lebih tinggi rank)
         $topUsers = User::where('peran', '!=', 'admin')
             ->orderBy('exp', 'desc')
+            ->orderBy('created_at', 'asc') // Yang lebih dulu buat akun lebih tinggi rank
             ->take(10)
             ->get()
             ->map(function ($topUser, $index) {
@@ -133,9 +134,9 @@ class DashboardController extends Controller
                 
                 return [
                     'id' => $topUser->id,
-                    'name' => $topUser->nama_pengguna,
-                    'shortName' => explode(' ', $topUser->nama_pengguna)[0] ?? $topUser->nama_pengguna,
-                    'avatar' => $topUser->foto ?? "/placeholder.svg?height=60&width=60",
+                    'nama_pengguna' => $topUser->nama_pengguna,
+                    'nama_lengkap' => $topUser->nama_lengkap,
+                    'foto' => $topUser->foto,
                     'exp' => $topUser->exp,
                     'rank' => $index + 1,
                     'level' => $topUser->level,
@@ -149,12 +150,23 @@ class DashboardController extends Controller
         // Cek apakah user saat ini ada di top 10
         $currentUserInTopTen = $topUsers->where('id', $user->id)->first();
         
-        // Jika user saat ini tidak ada di top 10, ambil data user saat ini
+        // Selalu siapkan data currentUser
         $currentUser = null;
-        if (!$currentUserInTopTen) {
-            // Hitung rank user saat ini
+        
+        if ($currentUserInTopTen) {
+            // Jika user ada di top 10, gunakan data dari topUsers
+            $currentUser = $currentUserInTopTen;
+        } else {
+            // Jika user tidak ada di top 10, hitung rank dan siapkan data
+            // Hitung rank user saat ini berdasarkan exp dan created_at
             $userRank = User::where('peran', '!=', 'admin')
-                ->where('exp', '>', $user->exp)
+                ->where(function($query) use ($user) {
+                    $query->where('exp', '>', $user->exp)
+                          ->orWhere(function($q) use ($user) {
+                              $q->where('exp', '=', $user->exp)
+                                ->where('created_at', '<', $user->created_at);
+                          });
+                })
                 ->count() + 1;
             
             // Hitung badges berdasarkan rank
@@ -171,9 +183,9 @@ class DashboardController extends Controller
             
             $currentUser = [
                 'id' => $user->id,
-                'name' => $user->nama_pengguna,
-                'shortName' => explode(' ', $user->nama_pengguna)[0] ?? $user->nama_pengguna,
-                'avatar' => $user->foto ?? "/placeholder.svg?height=60&width=60",
+                'nama_pengguna' => $user->nama_pengguna,
+                'nama_lengkap' => $user->nama_lengkap,
+                'foto' => $user->foto,
                 'exp' => $user->exp,
                 'rank' => $userRank,
                 'level' => $user->level,
