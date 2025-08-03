@@ -26,7 +26,7 @@ use Illuminate\Support\Facades\URL;
 */
 
 Route::get('/', function () {
-   return Inertia::render('Welcome');
+   return Inertia::render('User/Beranda');
 });
 
 // Auth routes
