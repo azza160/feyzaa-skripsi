@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BerandaController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HurufController;
 use App\Http\Controllers\KosakataController;
@@ -25,9 +26,7 @@ use Illuminate\Support\Facades\URL;
 |
 */
 
-Route::get('/', function () {
-   return Inertia::render('User/Beranda');
-});
+Route::get('/', [BerandaController::class, 'Beranda'])->name('beranda');
 
 // Auth routes
 Route::middleware(['guest'])->group(function () {
