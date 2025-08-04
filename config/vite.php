@@ -1,12 +1,15 @@
 <?php
 
 return [
+
     /*
     |--------------------------------------------------------------------------
     | Vite Manifest Path
     |--------------------------------------------------------------------------
     */
-    'manifest' => base_path(app()->environment('production') ? 'build/manifest.json' : 'public/build/manifest.json'),
+    'manifest' => env('APP_ENV') === 'production'
+        ? base_path('build/manifest.json')
+        : public_path('build/manifest.json'),
 
     /*
     |--------------------------------------------------------------------------
@@ -16,4 +19,5 @@ return [
     'dev_server' => [
         'url' => env('VITE_DEV_SERVER_URL', 'http://localhost:5173'),
     ],
+
 ];
