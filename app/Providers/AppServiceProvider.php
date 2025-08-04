@@ -20,9 +20,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Pakai manifest di root kalau production
+        // Pakai manifest custom untuk production
         if (app()->environment('production')) {
-            Vite::useManifest(base_path('build/manifest.json'));
+            Vite::macro('manifestPath', function () {
+                return base_path('build/manifest.json');
+            });
         }
     }
 }
