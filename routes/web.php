@@ -33,7 +33,7 @@ Route::middleware(['guest'])->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('loginprocess');
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
-    Route::post('/register', [AuthController::class, 'register'])->name('register');
+    Route::post('/register', [AuthController::class, 'register'])->name('registerprocess');
     Route::get('/auth/google', [AuthController::class, 'redirectToGoogle'])->name('google.login');
     Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('google.callback');
 
