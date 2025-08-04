@@ -115,20 +115,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/profile/edit', [ProfileController::class, 'showEditProfile'])->name('profile.edit');
     Route::post('/dashboard/profile/update', [ProfileController::class, 'updateProfile'])->name('profile.update');
     
-    // Test route for file upload
-    Route::post('/test-upload', function(Request $request) {
-        \Log::info('Test upload request:', [
-            'has_file' => $request->hasFile('avatar'),
-            'all_data' => $request->all(),
-            'files' => $request->allFiles(),
-        ]);
-        return response()->json(['success' => true]);
-    });
+ 
     
-    // Test page route
-    Route::get('/test-upload-page', function() {
-        return Inertia::render('TestUpload');
-    });
+
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
