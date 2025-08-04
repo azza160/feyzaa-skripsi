@@ -43,6 +43,22 @@ $app->singleton(
 
 /*
 |--------------------------------------------------------------------------
+| Set Vite Manifest Path in Production
+|--------------------------------------------------------------------------
+|
+| When running in production, we want Laravel to use the manifest.json
+| located in the root build directory (not in public/build).
+|
+*/
+
+if (env('APP_ENV') === 'production') {
+    Illuminate\Support\Facades\Vite::useManifest(
+        base_path('build/manifest.json')
+    );
+}
+
+/*
+|--------------------------------------------------------------------------
 | Return The Application
 |--------------------------------------------------------------------------
 |
