@@ -30,6 +30,7 @@ export default defineConfig({
         include: ['@hello-pangea/dnd', 'lucide-react'],
     },
     build: {
+        outDir: 'build', // <-- tanpa ../
         rollupOptions: {
             output: {
                 manualChunks: {
@@ -38,4 +39,6 @@ export default defineConfig({
             },
         },
     },
+    
+    
 });
