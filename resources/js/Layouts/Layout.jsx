@@ -102,7 +102,7 @@ export default function Layout({ children }) {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-20">
               {/* Logo & Title */}
-              <Link href="/" className="flex items-center space-x-3 group">
+              <Link href={route('beranda')} className="flex items-center space-x-3 group">
                 <div className="w-10 h-10 bg-primary rounded-md flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow duration-300">
                   <span className="text-primary-foreground font-bold text-lg">K</span>
                 </div>
@@ -132,7 +132,7 @@ export default function Layout({ children }) {
                 </button>
 
                 <Link
-                  href="/login"
+                  href={route('login')}
                   className="px-6 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-md transition-colors duration-200 font-medium"
                 >
                   Masuk
@@ -194,14 +194,14 @@ export default function Layout({ children }) {
                   {/* Mobile Buttons */}
                   <div className="pt-4 border-t border-border space-y-3">
                     <Link
-                      href="/register"
+                      href={route('register')}
                       className="block w-full px-6 py-3 bg-primary hover:bg-primary/90 text-primary-foreground text-center rounded-md transition-colors duration-200 font-medium"
                       onClick={toggleMenu}
                     >
                       Daftar Gratis
                     </Link>
                     <Link
-                      href="/login"
+                      href={route('login')}
                       className="block w-full px-6 py-3 border border-border text-muted-foreground hover:bg-muted text-center rounded-md transition-colors duration-200 font-medium"
                       onClick={toggleMenu}
                     >

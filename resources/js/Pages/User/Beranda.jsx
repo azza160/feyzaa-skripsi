@@ -285,7 +285,7 @@ export default function Home() {
 
                             <div className="flex flex-col sm:flex-row gap-4 justify-center">
                                 <Link
-                                    href="/login"
+                                    href={route('login')}
                                     className="inline-flex items-center justify-center px-8 py-4 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-md transition-colors duration-200 shadow-lg"
                                 >
                                     <Play className="w-5 h-5 mr-2" />
@@ -1012,7 +1012,7 @@ export default function Home() {
                                 raih pengakuan global!
                             </p>
                             <Link
-                                href="/register"
+                                href={route('register')}
                                 className="inline-flex items-center justify-center px-6 md:px-8 py-3 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-md transition-colors duration-200"
                             >
                                 <Trophy className="w-5 h-5 mr-2" />
@@ -1148,7 +1148,7 @@ export default function Home() {
 
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
                             <Link
-                                href="/register"
+                                href={route('register')}
                                 className="inline-flex items-center justify-center px-8 py-4 bg-background text-primary font-semibold rounded-md transition-colors duration-200 shadow-lg hover:bg-background/90"
                             >
                                 <Rocket className="w-5 h-5 mr-2" />
