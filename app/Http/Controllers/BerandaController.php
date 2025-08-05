@@ -16,7 +16,16 @@ class BerandaController extends Controller
             ->get(['id', 'nama_pengguna', 'exp', 'level', 'created_at']);
 
         return Inertia::render('User/Beranda', [
-            'topUsers' => $topUsers
+            'topUsers' => $topUsers,
+            'url' => '/'
         ]);
     }
+
+    public function PengenalanHuruf(){
+
+        return Inertia::render('User/PengenalanHuruf',[
+            'url' => '/pengenalan-huruf'
+        ]);
+    }
+
 }

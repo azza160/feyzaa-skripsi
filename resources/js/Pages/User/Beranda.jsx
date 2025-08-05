@@ -26,7 +26,13 @@ import {
     Globe,
     Gift,
     Lightbulb,
+    Library,
+    Languages 
+
 } from "lucide-react";
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+
 
 export default function Home() {
     const { topUsers = [] } = usePage().props;
@@ -184,52 +190,96 @@ export default function Home() {
         setOpenFaq(openFaq === index ? null : index);
     };
 
+    const colorData = [
+        {
+          color: "bg-gradient-to-br from-green-500 to-emerald-600",
+          bgColor: "bg-white dark:bg-gray-900",
+          borderColor: "border-green-200 dark:border-green-800",
+          accentColor: "text-green-600 dark:text-green-400",
+        },
+        {
+          color: "bg-gradient-to-br from-blue-500 to-cyan-600",
+          bgColor: "bg-white dark:bg-gray-900",
+          borderColor: "border-blue-200 dark:border-blue-800",
+          accentColor: "text-blue-600 dark:text-blue-400",
+        },
+        {
+          color: "bg-gradient-to-br from-purple-500 to-violet-600",
+          bgColor: "bg-white dark:bg-gray-900",
+          borderColor: "border-purple-200 dark:border-purple-800",
+          accentColor: "text-purple-600 dark:text-purple-400",
+        },
+        {
+          color: "bg-gradient-to-br from-pink-500 to-rose-600",
+          bgColor: "bg-white dark:bg-gray-900",
+          borderColor: "border-pink-200 dark:border-pink-800",
+          accentColor: "text-pink-600 dark:text-pink-400",
+        },
+      ]
+      
+      const learningSteps = [
+        {
+          title: "Belajar Huruf Jepang",
+          subtitle: "Huruf Dasar",
+          icon: BookOpen,
+          difficulty: "Level 1 - 2",
+          description: "Mulai perjalanan bahasa Jepang dengan mempelajari sistem penulisan dasar",
+          features: [
+            "Pelajari Hiragana & Katakana dari dasar dengan metode interaktif",
+            "Pahami cara penulisan, pengucapan, dan contoh penggunaannya",
+            "Cocok untuk pemula yang benar-benar mulai dari 0",
+            "Dilengkapi dengan panduan stroke order yang tepat",
+          ],
+          buttonText: "Mulai Belajar Huruf",
+        },
+        {
+          title: "Kuis Huruf Jepang",
+          subtitle: "Kuis Huruf",
+          icon: Brain,
+          difficulty: "Level 1 - 2",
+          description: "Uji dan tingkatkan kemampuan mengenali huruf Jepang dengan sistem kuis adaptif",
+          features: [
+            "Latih ingatan huruf dengan 3 level kuis: Beginner, Intermediate, Advanced",
+            "2 mode pembelajaran: Manual dan Random",
+            "Sistem reward dan level progression",
+            "Review kesalahan untuk memperbaiki pemahaman",
+          ],
+          buttonText: "Mulai Kuis Huruf",
+        },
+        {
+          title: "Belajar Kosakata",
+          subtitle: "Kosakata",
+          icon: Library,
+          difficulty: "Level 3 - 5",
+          description: "Bangun fondasi kosakata yang kuat dengan metode pembelajaran yang terbukti efektif",
+          features: [
+            "Pelajari kosakata dari furigana hingga kanji dengan sistem bertahap",
+            "Dilengkapi contoh kalimat dan bentuk kata kerja",
+            "Bangun pemahaman kosakata sehari-hari dengan konteks relevan",
+            "Kategorisasi berdasarkan tema dan tingkat kesulitan",
+          ],
+          buttonText: "Pelajari Kosakata",
+        },
+        {
+          title: "Kuis Kosakata",
+          subtitle: "Kuis Kosakata",
+          icon: Target,
+          difficulty: "Level 3 - 5",
+          description: "Kuasai kosakata Jepang dengan sistem kuis yang menantang dan adaptif",
+          features: [
+            "Uji pemahaman kosakata dengan 3 level kuis berbeda",
+            "Mode Manual dan Random dengan algoritma spaced repetition",
+            "Review hasil kuis dengan feedback detail",
+            "Tracking progress dan statistik pembelajaran",
+          ],
+          buttonText: "Mulai Kuis Kosakata",
+        },
+      ]
+
     return (
         <Layout>
             <Head>
-                <title>Beranda - KotoBee | Platform Pembelajaran Bahasa Jepang</title>
-                <meta name="description" content="Platform pembelajaran bahasa Jepang interaktif dengan sistem gamifikasi. Belajar Hiragana, Katakana, dan kosakata dengan mudah dan menyenangkan." />
-                <meta name="keywords" content="bahasa jepang, hiragana, katakana, kosakata, pembelajaran, gamifikasi, level, exp" />
-                <meta name="robots" content="index, follow" />
-                <meta name="author" content="KotoBee" />
-                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-                <meta name="language" content="id" />
-                <meta name="mobile-web-app-capable" content="yes" />
-                <meta name="apple-mobile-web-app-capable" content="yes" />
-                <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-                <meta name="apple-mobile-web-app-title" content="KotoBee" />
-                <meta name="referrer" content="strict-origin-when-cross-origin" />
-                <meta name="format-detection" content="telephone=no" />
-                <meta name="http-equiv" content="X-UA-Compatible" />
-                <meta name="http-equiv" content="IE=edge" />
-                <link rel="canonical" href="/" />
-                <meta property="og:title" content="Beranda - KotoBee | Platform Pembelajaran Bahasa Jepang" />
-                <meta property="og:description" content="Platform pembelajaran bahasa Jepang interaktif dengan sistem gamifikasi. Belajar Hiragana, Katakana, dan kosakata dengan mudah dan menyenangkan." />
-                <meta property="og:type" content="website" />
-                <meta property="og:url" content="/" />
-                <meta property="og:site_name" content="KotoBee" />
-                <meta property="og:locale" content="id_ID" />
-                <meta name="twitter:card" content="summary_large_image" />
-                <meta name="twitter:title" content="Beranda - KotoBee | Platform Pembelajaran Bahasa Jepang" />
-                <meta name="twitter:description" content="Platform pembelajaran bahasa Jepang interaktif dengan sistem gamifikasi." />
-                <meta name="twitter:site" content="@kotobee" />
-                <meta name="twitter:creator" content="@kotobee" />
-                <meta name="theme-color" content="#6366f1" />
-                <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-                <script type="application/ld+json">
-                    {JSON.stringify({
-                        "@context": "https://schema.org",
-                        "@type": "WebSite",
-                        "name": "KotoBee",
-                        "description": "Platform pembelajaran bahasa Jepang interaktif dengan sistem gamifikasi",
-                        "url": "/",
-                        "potentialAction": {
-                            "@type": "SearchAction",
-                            "target": "/search?q={search_term_string}",
-                            "query-input": "required name=search_term_string"
-                        }
-                    })}
-                </script>
+                <title>Beranda</title>
             </Head>
             <div className="w-full overflow-x-hidden">
             {/* Hero Section */}
@@ -258,7 +308,7 @@ export default function Home() {
                             <div className="inline-flex items-center space-x-2 bg-primary/10 dark:bg-primary/20 px-4 py-2 rounded-md">
                                 <Star className="w-4 h-4 text-primary" />
                                 <span className="text-primary font-medium text-sm">
-                                    Platform Pembelajaran #1 di Indonesia
+                                    Kotobee - Belajar Bahasa Jepang Pemula
                                 </span>
                             </div>
 
@@ -753,6 +803,143 @@ export default function Home() {
                             </div>
                         </motion.div>
                     </div>
+                </div>
+            </section>
+
+            {/* timeline */}
+            <section className="py-20 bg-background">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                       {/* Enhanced Header */}
+                       <motion.div
+                        initial={{ y: 50, opacity: 0 }}
+                        whileInView={{ y: 0, opacity: 1 }}
+                        transition={{ duration: 0.8 }}
+                        viewport={{ once: true }}
+                        className="text-center mb-16"
+                    >
+                        <div className="flex justify-center mb-8">
+                            <div className="bg-primary/10 dark:bg-primary/20 p-6 rounded-md border border-primary/20">
+                                <div className="flex items-center justify-center space-x-4">
+                                    <div className="w-12 h-12 bg-primary/20 rounded-md flex items-center justify-center">
+                                        <Languages className="w-6 h-6 text-primary" />
+                                    </div>
+                                    <div className="text-left">
+                                        <h3 className="text-lg font-semibold text-primary">
+                                            Timeline
+                                        </h3>
+                                        <p className="text-sm text-primary/80">
+                                            Timeline pembelajaran
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">
+                            Timeline pembelajaran
+                        </h2>
+                        <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+                            Timeline pembelajaran yang membantu Anda mengikuti perkembangan pembelajaran.
+                        </p>
+                    </motion.div>
+
+                     {/* Cards */}
+          <div className="space-y-6">
+            {learningSteps.map((step, index) => {
+              const colors = colorData[index]
+              const IconComponent = step.icon
+
+              return (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{
+                    duration: 0.6,
+                    delay: index * 0.1,
+                  }}
+                  className={`
+                    ${colors.bgColor} ${colors.borderColor}
+                    border rounded-md shadow-sm hover:shadow-md
+                    transition-all duration-300 hover:-translate-y-1
+                  `}
+                >
+                  <div className="p-6 sm:p-8">
+                    {/* Header */}
+                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-6">
+                      <div className="flex items-start space-x-4 mb-4 sm:mb-0">
+                        <div
+                          className={`
+                            ${colors.color} 
+                            w-12 h-12 rounded-md flex items-center justify-center
+                            flex-shrink-0
+                          `}
+                        >
+                          <IconComponent className="w-6 h-6 text-white" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-3 mb-2">
+                            <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white">
+                              {step.title}
+                            </h2>
+                            <Badge
+                              variant="secondary"
+                              className={`${colors.accentColor} bg-gray-100 dark:bg-gray-800 w-fit mt-1 sm:mt-0`}
+                            >
+                              {step.subtitle}
+                            </Badge>
+                          </div>
+                          <p className="text-gray-600 dark:text-gray-400 leading-relaxed">{step.description}</p>
+                        </div>
+                      </div>
+                      <div>
+                      <Badge variant="outline" className="w-[120px] d-flex justify-center py-2">
+                        {step.difficulty}
+                      </Badge>
+
+                      </div>
+                    </div>
+
+                    {/* Divider */}
+                    <div className="border-t border-gray-200 dark:border-gray-700 my-6"></div>
+
+                    {/* Features */}
+                    <div className="mb-6">
+                      <div className="grid gap-3">
+                        {step.features.map((feature, featureIndex) => (
+                          <div key={featureIndex} className="flex items-start space-x-3">
+                            <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                            <span className="text-gray-600 dark:text-gray-300 text-sm sm:text-base leading-relaxed">
+                              {feature}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Divider */}
+                    <div className="border-t border-gray-200 dark:border-gray-700 my-6"></div>
+
+                    {/* Action */}
+                    <div className="flex justify-start">
+                      <Button
+                        className={`
+                          ${colors.color} hover:opacity-90
+                          text-white font-medium px-8 py-[25px]
+                          w-full
+                          rounded-sm transition-all duration-200
+                          flex items-center space-x-2
+                        `}
+                      >
+                        <span>{step.buttonText}</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </motion.div>
+              )
+            })}
+          </div>
                 </div>
             </section>
 

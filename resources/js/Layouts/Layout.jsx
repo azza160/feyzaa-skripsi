@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Link } from "@inertiajs/react"
+import { Link,usePage } from "@inertiajs/react"
 import {
   Home,
   BookOpen,
@@ -30,6 +30,8 @@ export default function Layout({ children }) {
   const [isDarkMode, setIsDarkMode] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [showScrollTop, setShowScrollTop] = useState(false)
+  const { url } = usePage();
+
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme")
@@ -63,7 +65,7 @@ export default function Layout({ children }) {
 
   const navLinks = [
     { name: "Beranda", href: "/", icon: Home },
-    { name: "Huruf", href: "/huruf", icon: BookOpen },
+    { name: "Huruf", href: "/pengenalan-huruf", icon: BookOpen },
     { name: "Kuis Huruf", href: "/kuis-huruf", icon: Brain },
     { name: "Kosakata", href: "/kosakata", icon: MessageSquare },
     { name: "Kuis Kosakata", href: "/kuis-kosakata", icon: Brain },
@@ -111,15 +113,22 @@ export default function Layout({ children }) {
 
               {/* Desktop Navigation */}
               <nav className="hidden lg:flex items-center space-x-1">
-                {navLinks.map((link) => (
-                  <Link
-                    key={link.name}
-                    href={link.href}
-                    className="px-4 py-2 text-muted-foreground hover:text-primary hover:bg-muted transition-all duration-200 font-medium rounded-md"
-                  >
-                    {link.name}
-                  </Link>
-                ))}
+              {navLinks.map((link) => {
+    const isActive = url === link.href;
+    return (
+        <Link
+            key={link.name}
+            href={link.href}
+            className={`px-4 py-2 rounded-md font-medium transition-all duration-200 ${
+                isActive
+                    ? "bg-primary text-white" // <-- Aktif
+                    : "text-muted-foreground hover:text-primary hover:bg-muted" // <-- Default
+            }`}
+        >
+            {link.name}
+        </Link>
+    );
+})}
               </nav>
 
               {/* Desktop Actions */}
@@ -177,17 +186,22 @@ export default function Layout({ children }) {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-2">
                   {/* Navigation Links */}
                   {navLinks.map((link) => {
+                    const isActive = url === link.href;
                     const IconComponent = link.icon
                     return (
                       <Link
-                        key={link.name}
-                        href={link.href}
-                        className="flex items-center space-x-3 p-3 rounded-md text-muted-foreground hover:bg-muted hover:text-primary transition-colors duration-200"
-                        onClick={toggleMenu}
-                      >
-                        <IconComponent className="w-5 h-5" />
-                        <span className="font-medium">{link.name}</span>
-                      </Link>
+                      key={link.name}
+                      href={link.href}
+                      className={`flex items-center space-x-3 p-3 rounded-md transition-colors duration-200 ${
+                          isActive
+                              ? "bg-primary text-white"
+                              : "text-muted-foreground hover:bg-muted hover:text-primary"
+                      }`}
+                      onClick={toggleMenu}
+                  >
+                      <IconComponent className="w-5 h-5" />
+                      <span className="font-medium">{link.name}</span>
+                  </Link>
                     )
                   })}
 
@@ -283,13 +297,20 @@ export default function Layout({ children }) {
               <div>
                 <h3 className="text-lg font-semibold text-card-foreground mb-4">Navigasi Cepat</h3>
                 <ul className="space-y-3">
-                  {navLinks.slice(0, 4).map((link) => (
+                  {navLinks.slice(0, 4).map((link) => {
+                    const isActive = url === link.href;
+                    return (
                     <li key={link.name}>
-                      <Link href={link.href} className="text-muted-foreground hover:text-card-foreground transition-colors duration-200">
-                        {link.name}
-                      </Link>
+                      <Link
+    href={link.href}
+    className={`transition-colors duration-200 ${
+        isActive ? "text-primary font-semibold" : "text-muted-foreground hover:text-card-foreground"
+    }`}
+>
+    {link.name}
+</Link>
                     </li>
-                  ))}
+                  )})}
                 </ul>
               </div>
 

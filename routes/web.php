@@ -27,6 +27,8 @@ use Illuminate\Support\Facades\URL;
 */
 
 Route::get('/', [BerandaController::class, 'Beranda'])->name('beranda');
+Route::get('/pengenalan-huruf', [BerandaController::class, 'PengenalanHuruf'])->name('PengenalanHuruf');
+
 
 // Auth routes
 Route::middleware(['guest'])->group(function () {
