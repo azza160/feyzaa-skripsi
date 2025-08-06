@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Link, router, usePage } from "@inertiajs/react"
+import { Head, Link, router, usePage } from "@inertiajs/react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { AlertDialog } from "@/components/AlertDialog"
@@ -112,6 +112,9 @@ export default function RegisterPage() {
 
   return (
     <Layout>
+      <Head>
+        <title>Register</title>
+      </Head>
       <div className="min-h-screen w-full flex items-center justify-center bg-background p-4 py-[80px]">
         {isLoading && <Loading />}
         
