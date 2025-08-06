@@ -253,7 +253,7 @@ export default function Layout({ children }) {
           whileInView={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="bg-card text-card-foreground"
+          className="bg-card text-card-foreground border-t"
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -297,7 +297,7 @@ export default function Layout({ children }) {
               <div>
                 <h3 className="text-lg font-semibold text-card-foreground mb-4">Navigasi Cepat</h3>
                 <ul className="space-y-3">
-                  {navLinks.slice(0, 4).map((link) => {
+                  {navLinks.slice(0, 5).map((link) => {
                     const isActive = url === link.href;
                     return (
                     <li key={link.name}>
