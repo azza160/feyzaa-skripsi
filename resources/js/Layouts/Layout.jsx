@@ -66,10 +66,10 @@ export default function Layout({ children }) {
   const navLinks = [
     { name: "Beranda", href: "/", icon: Home },
     { name: "Huruf", href: "/pengenalan-huruf", icon: BookOpen },
-    { name: "Kuis Huruf", href: "/kuis-huruf", icon: Brain },
-    { name: "Kosakata", href: "/kosakata", icon: MessageSquare },
-    { name: "Kuis Kosakata", href: "/kuis-kosakata", icon: Brain },
-    { name: "Leaderboard", href: "/leaderboard", icon: Trophy },
+    { name: "Kuis Huruf", href: "/pengenalan-quis-huruf", icon: Brain },
+    { name: "Kosakata", href: "/pengenalan-kosakata", icon: MessageSquare },
+    { name: "Kuis Kosakata", href: "/pengenalan-quis-kosakata", icon: Brain },
+    
   ]
 
   const toggleMenu = () => {
@@ -97,8 +97,8 @@ export default function Layout({ children }) {
           transition={{ duration: 0.6 }}
           className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
             !isMenuOpen && scrolled
-              ? "bg-background/95 backdrop-blur-md shadow-lg"
-              : "bg-muted/80 backdrop-blur-sm"
+              ? "bg-background/65 backdrop-blur-md shadow-xl border-b border-border"
+              : "bg-background backdrop-blur-sm"
           } ${isMenuOpen ? "border-b border-border" : ""}`}
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -173,7 +173,7 @@ export default function Layout({ children }) {
           {isMenuOpen && (
             <>
               {/* Overlay */}
-              <div className="fixed inset-0 bg-black/50 z-30 lg:hidden" style={{ top: "145px" }} onClick={toggleMenu} />
+              <div className="fixed inset-0 bg-black/90 z-30 lg:hidden" style={{ top: "145px" }} onClick={toggleMenu} />
 
               {/* Mobile Menu */}
               <motion.div

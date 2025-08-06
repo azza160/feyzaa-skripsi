@@ -43,10 +43,8 @@ export default function Home() {
     const [isDarkMode, setIsDarkMode] = useState(false);
 
     const texts = [
-        "Hiragana & Katakana",
-        "Kosakata Jepang",
-        "Sistem Level & EXP",
-        "Kuis Interaktif",
+        "Huruf Hiragana Dan Katakana",
+        "Kosakata Dasar Jepang",
     ];
 
     // Check dark mode on mount and listen for changes
@@ -231,6 +229,7 @@ export default function Home() {
             "Dilengkapi dengan panduan stroke order yang tepat",
           ],
           buttonText: "Mulai Belajar Huruf",
+          url:'/pengenalan-huruf'
         },
         {
           title: "Kuis Huruf Jepang",
@@ -244,7 +243,8 @@ export default function Home() {
             "Sistem reward dan level progression",
             "Review kesalahan untuk memperbaiki pemahaman",
           ],
-          buttonText: "Mulai Kuis Huruf",
+          buttonText: "Pelajari Sistem Kuis Huruf",
+          url:'/pengenalan-quis-huruf'
         },
         {
           title: "Belajar Kosakata",
@@ -259,6 +259,7 @@ export default function Home() {
             "Kategorisasi berdasarkan tema dan tingkat kesulitan",
           ],
           buttonText: "Pelajari Kosakata",
+          url:'/pengenalan-kosakata'
         },
         {
           title: "Kuis Kosakata",
@@ -272,7 +273,8 @@ export default function Home() {
             "Review hasil kuis dengan feedback detail",
             "Tracking progress dan statistik pembelajaran",
           ],
-          buttonText: "Mulai Kuis Kosakata",
+          buttonText: "Pelajari Sistem Kuis Kosakata",
+          url:'/pengenalan-quis-kosakata'
         },
       ]
 
@@ -314,7 +316,7 @@ export default function Home() {
 
                             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
                                 <span className="text-foreground">
-                                    Kuasai{" "}
+                                    Belajar{" "}
                                 </span>
                                 <span className="text-primary">
                                     {typingText}
@@ -322,15 +324,12 @@ export default function Home() {
                                 </span>
                                 <br />
                                 <span className="text-foreground">
-                                    dengan Mudah
+                                    Dengan Menyenangkan
                                 </span>
                             </h1>
 
                             <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-                                Bergabunglah dengan ribuan pelajar yang telah
-                                menguasai bahasa Jepang melalui metode
-                                pembelajaran interaktif dan sistem gamifikasi
-                                yang revolusioner.
+                            Platform belajar bahasa Jepang khusus untuk pemula. Mulai dari huruf dasar, kosakata penting, hingga latihan interaktif — semua dirancang supaya kamu bisa belajar langkah demi langkah dengan nyaman.
                             </p>
 
                             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -373,9 +372,7 @@ export default function Home() {
                                         className="
       w-full 
       h-full 
-      rounded-md 
-                                  shadow-xl
-      border-8 border-border
+      border-[5px] border-primary/20 shadow-lg hover:shadow-xl
       object-cover object-center
     "
                                     />
@@ -386,7 +383,7 @@ export default function Home() {
                                     initial={{ y: 50, opacity: 0 }}
                                     animate={{ y: 0, opacity: 1 }}
                                     transition={{ delay: 1, duration: 0.6 }}
-                                    className="absolute -top-4 -left-4 bg-card p-3 md:p-4 rounded-md shadow-xl border border-border max-w-[200px] md:max-w-xs"
+                                    className="absolute -top-4 -left-4 bg-card p-3 md:p-4 rounded-md border-2 border-primary/20 shadow-lg hover:shadow-xl max-w-[200px] md:max-w-xs"
                                 >
                                     <div className="flex items-center space-x-2 md:space-x-3 mb-1 md:mb-2">
                                         <div className="w-6 h-6 md:w-8 md:h-8 bg-purple-100 dark:bg-purple-900 rounded-md flex items-center justify-center">
@@ -417,7 +414,7 @@ export default function Home() {
                                     initial={{ y: -50, opacity: 0 }}
                                     animate={{ y: 0, opacity: 1 }}
                                     transition={{ delay: 1.2, duration: 0.6 }}
-                                    className="absolute -top-4 -right-4 bg-card p-3 md:p-4 rounded-md shadow-xl border border-border max-w-[200px] md:max-w-xs"
+                                    className="absolute -top-4 -right-4 bg-card p-3 md:p-4 rounded-md border-2 border-primary/20 shadow-lg hover:shadow-xl max-w-[200px] md:max-w-xs"
                                 >
                                     <div className="flex items-center space-x-2 md:space-x-3 mb-1 md:mb-2">
                                         <div className="w-6 h-6 md:w-8 md:h-8 bg-red-100 dark:bg-red-900 rounded-md flex items-center justify-center">
@@ -448,7 +445,7 @@ export default function Home() {
                                     initial={{ y: 50, opacity: 0 }}
                                     animate={{ y: 0, opacity: 1 }}
                                     transition={{ delay: 1.4, duration: 0.6 }}
-                                    className="absolute -bottom-4 -right-4 bg-card p-3 md:p-4 rounded-md shadow-xl border border-border max-w-[200px] md:max-w-xs"
+                                    className="absolute -bottom-4 -right-4 bg-card p-3 md:p-4 rounded-md border-2 border-primary/20 shadow-lg hover:shadow-xl max-w-[200px] md:max-w-xs"
                                 >
                                     <div className="flex items-center space-x-2 md:space-x-3 mb-1 md:mb-2">
                                         <div className="w-6 h-6 md:w-8 md:h-8 bg-green-100 dark:bg-green-900 rounded-md flex items-center justify-center">
@@ -478,7 +475,7 @@ export default function Home() {
                                     initial={{ y: -50, opacity: 0 }}
                                     animate={{ y: 0, opacity: 1 }}
                                     transition={{ delay: 1.6, duration: 0.6 }}
-                                    className="absolute -bottom-4 -left-4 bg-card p-3 md:p-4 rounded-md shadow-xl border border-border max-w-[200px] md:max-w-xs"
+                                    className="absolute -bottom-4 -left-4 bg-card p-3 md:p-4 rounded-md border-2 border-primary/20 shadow-lg hover:shadow-xl max-w-[200px] md:max-w-xs"
                                 >
                                     <div className="flex items-center space-x-2 md:space-x-3 mb-1 md:mb-2">
                                         <div className="w-6 h-6 md:w-8 md:h-8 bg-yellow-100 dark:bg-yellow-900 rounded-md flex items-center justify-center">
@@ -529,10 +526,13 @@ export default function Home() {
                                     </div>
                                     <div className="text-left">
                                         <h3 className="text-lg font-semibold text-primary">
-                                            Teknologi Masa Depan
+                                        Belajar dari Nol
+
                                         </h3>
                                         <p className="text-sm text-primary/80">
-                                            Pembelajaran yang Revolusioner
+                                        Belajar bahasa jepang untuk pemula
+
+
                                         </p>
                                     </div>
                                 </div>
@@ -543,13 +543,11 @@ export default function Home() {
                             Mengapa Memilih KotoBee?
                         </h2>
                         <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-                            Platform pembelajaran yang dirancang khusus untuk
-                            generasi digital dengan metode yang terbukti efektif
-                            dan teknologi terdepan.
+                            Tempat belajar bahasa Jepang dari nol, dibuat khusus agar pemula bisa belajar langkah demi langkah dengan nyaman.
                         </p>
                     </motion.div>
 
-                    <div className="grid md:grid-cols-3 gap-8">
+                    <div className="grid md:grid-cols-1 lg:grid-cols-3 gap-8">
                         {[
                             {
                                 icon: Brain,
@@ -577,13 +575,13 @@ export default function Home() {
                             },
                             {
                                 icon: Target,
-                                title: "Kurikulum Terstruktur",
+                                title: "Belajar dari Nol",
                                 description:
-                                    "Kurikulum yang disusun oleh ahli bahasa Jepang dengan metode pembelajaran bertahap dari dasar hingga mahir.",
+                                "Mulai dari huruf dasar hingga kosakata sederhana, dirancang untuk membantu pemula mengenal bahasa Jepang dengan mudah.",
                                 features: [
-                                    "Pembelajaran Bertahap",
-                                    "Materi Lengkap",
-                                    "Metode Terbukti",
+                                    "Langkah Demi Langkah",
+                                    "Materi Pemula",
+                                    "Latihan Interaktif",
                                 ],
                                 accent: "green",
                             },
@@ -599,7 +597,7 @@ export default function Home() {
                                 viewport={{ once: true }}
                                 className="group"
                             >
-                                                                    <div className="bg-card p-8 rounded-md border border-border hover:shadow-xl transition-all duration-300 h-full relative overflow-hidden">
+                                                                    <div className="bg-card p-8 rounded-md border-2 border-primary/20 shadow-lg hover:shadow-xl transition-all duration-300 h-full relative overflow-hidden">
                                     {/* Tech-style accent line */}
                                     <div
                                         className={`absolute top-0 left-0 w-full h-1 bg-${feature.accent}-500 opacity-60 group-hover:opacity-100 transition-opacity duration-300`}
@@ -785,18 +783,16 @@ export default function Home() {
                                 </div>
                                 <p className="text-primary/80 text-lg">
                                         EXP unlimited - Level tidak bertambah,
-                                        tapi pembelajaran terus berlanjut dengan
-                                        konten eksklusif dan tantangan baru yang
-                                        lebih menantang!
+                                        tapi pengguna masih dapat mengumpulkan exp sebanyak mungkin,agar bisa bersaing di leaderboard
                                     </p>
                                     <div className="mt-4 flex items-center justify-center space-x-4 text-sm text-primary/80">
                                         <div className="flex items-center space-x-1">
                                             <Shield className="w-4 h-4" />
-                                            <span>Konten Eksklusif</span>
+                                            <span>Terus Belajar</span>
                                         </div>
                                         <div className="flex items-center space-x-1">
                                             <Users className="w-4 h-4" />
-                                            <span>Komunitas Elite</span>
+                                            <span>Bersaing Di Leaderboard</span>
                                         </div>
                                     </div>
                                 </div>
@@ -807,7 +803,7 @@ export default function Home() {
             </section>
 
             {/* timeline */}
-            <section className="py-20 bg-background">
+            <section className="py-20 bg-background" id="timeline">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                        {/* Enhanced Header */}
                        <motion.div
@@ -922,18 +918,20 @@ export default function Home() {
 
                     {/* Action */}
                     <div className="flex justify-start">
-                      <Button
-                        className={`
-                          ${colors.color} hover:opacity-90
-                          text-white font-medium px-8 py-[25px]
-                          w-full
-                          rounded-sm transition-all duration-200
-                          flex items-center space-x-2
-                        `}
-                      >
-                        <span>{step.buttonText}</span>
-                        <ArrowRight className="w-4 h-4" />
-                      </Button>
+                        <Link href={step.url} className="w-full">
+                            <Button
+                                className={`
+                                ${colors.color} hover:opacity-90
+                                text-white font-medium px-8 py-[25px]
+                                w-full
+                                rounded-sm transition-all duration-200
+                                flex items-center space-x-2
+                                `}
+                            >
+                                <span>{step.buttonText}</span>
+                                <ArrowRight className="w-4 h-4" />
+                            </Button>
+                        </Link>
                     </div>
                   </div>
                 </motion.div>
@@ -962,10 +960,10 @@ export default function Home() {
                                     </div>
                                     <div className="text-left">
                                         <h3 className="text-lg font-semibold text-primary">
-                                            Kompetisi Global
+                                            Leaderboard Pengguna
                                         </h3>
-                                        <p className="text-sm text-primary/80">
-                                            Pelajar Terbaik Dunia
+                                        <p className="text-sm capitalize text-primary/80">
+                                            Pengguna dengan exp terbanyak
                                         </p>
                                     </div>
                                 </div>
@@ -973,12 +971,10 @@ export default function Home() {
                         </div>
 
                         <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">
-                            Leaderboard Global
+                            Leaderboard Pengguna
                         </h2>
                         <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-                            Lihat pelajar terbaik dari seluruh dunia dan jadilah
-                            bagian dari mereka. Raih peringkat tertinggi dan
-                            dapatkan pengakuan global!
+                        Lihat 5 pengguna dengan EXP terbanyak di platform ini dan jadilah salah satu di antaranya. Tingkatkan EXP-mu dan capai peringkat teratas!
                         </p>
                     </motion.div>
 
@@ -1195,8 +1191,7 @@ export default function Home() {
                             </h3>
                             <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
                                 Mulai belajar sekarang dan kumpulkan EXP
-                                sebanyak-banyaknya. Jadilah yang terdepan dan
-                                raih pengakuan global!
+                                sebanyak-banyaknya. Jadilah yang terdepan dan masuk ke jajaran top 5 leaderboard!
                             </p>
                             <Link
                                 href={route('register')}
@@ -1328,9 +1323,7 @@ export default function Home() {
                         </h2>
 
                         <p className="text-xl text-primary-foreground/80 max-w-3xl mx-auto">
-                            Bergabunglah dengan ribuan pelajar yang telah
-                            merasakan pengalaman belajar yang revolusioner.
-                            Mulai hari ini dan rasakan perbedaannya!
+                        Bergabunglah dengan pengguna lain yang sedang belajar bahasa Jepang dari nol. Mulai sekarang dan tingkatkan kemampuanmu sedikit demi sedikit!
                         </p>
 
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -1341,13 +1334,19 @@ export default function Home() {
                                 <Rocket className="w-5 h-5 mr-2" />
                                 Daftar Sekarang - GRATIS!
                             </Link>
-                            <Link
-                                href="/huruf"
-                                className="inline-flex items-center justify-center px-8 py-4 border-2 border-primary-foreground text-primary-foreground hover:bg-background hover:text-primary font-semibold rounded-md transition-all duration-200"
-                            >
-                                <ArrowRight className="w-5 h-5 mr-2" />
-                                Lihat Panduan Belajar
-                            </Link>
+                            <button
+     onClick={() =>
+        document
+            .getElementById("timeline")
+            .scrollIntoView({
+                behavior: "smooth",
+            })
+    }
+    className="inline-flex items-center justify-center px-8 py-4 border-2 border-primary-foreground text-primary-foreground hover:bg-background hover:text-primary font-semibold rounded-md transition-all duration-200"
+>
+    <ArrowRight className="w-5 h-5 mr-2" />
+    Lihat Panduan Belajar
+</button>
                         </div>
 
                         {/* Trust Indicators */}
@@ -1362,7 +1361,7 @@ export default function Home() {
                             </div>
                             <div className="flex items-center space-x-2 text-primary-foreground/80">
                                 <CheckCircle className="w-5 h-5" />
-                                <span>Akses Selamanya</span>
+                                <span>Belajar dari 0</span>
                             </div>
                         </div>
                     </motion.div>

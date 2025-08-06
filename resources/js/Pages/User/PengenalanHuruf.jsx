@@ -1,16 +1,25 @@
-import Layout from "../../Layouts/Layout";
+"use client";
+
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Link, usePage, Head } from "@inertiajs/react";
+import { motion } from "framer-motion";
+import { Link, Head } from "@inertiajs/react";
+
 import {
-    Play,
-    BookOpen,
-    Brain,
-    Trophy,
-    Star,
     ChevronDown,
-    ArrowRight,
+    BookOpen,
     Target,
+    Trophy,
+    ArrowRight,
+    Volume2,
+    Eye,
+    Gamepad2,
+    ChevronLeft,
+    ChevronRight,
+    Check,
+    RotateCcw,
+    Play,
+    Brain,
+    Star,
     CheckCircle,
     Rocket,
     Award,
@@ -20,42 +29,29 @@ import {
     Shield,
     Sparkles,
     HelpCircle,
-    Gamepad2,
     Globe,
     Gift,
     Lightbulb,
     Library,
     Languages,
-    Volume2,
-    ChevronLeft,
-    ChevronRight,
-    Check,
-    Eye,
-    RotateCcw,
 } from "lucide-react";
 
-export default function PengenalanHuruf() {
+import Layout from "../../Layouts/Layout";
+
+const PengenalanHuruf = () => {
+    const [currentStroke, setCurrentStroke] = useState(0);
+    const [isLearned, setIsLearned] = useState(false);
+    const [isDarkMode, setIsDarkMode] = useState(false);
     const [typingText, setTypingText] = useState("");
     const [currentTextIndex, setCurrentTextIndex] = useState(0);
     const [isDeleting, setIsDeleting] = useState(false);
-    const [isDarkMode, setIsDarkMode] = useState(false);
-    const [currentStroke, setCurrentStroke] = useState(0);
-    const [isLearned, setIsLearned] = useState(false);
-    const texts = [
-        "Huruf Jepang dari Nol",
-        "Hiragana & Katakana",
-        "Cara Baca & Tulis Huruf",
-        "Belajar Interaktif + Suara",
-    ];
 
-    const strokeImages = [
-        "/placeholder.svg?height=200&width=200&text=Stroke+1",
-        "/placeholder.svg?height=200&width=200&text=Stroke+2",
-        "/placeholder.svg?height=200&width=200&text=Stroke+3",
-    ];
+    const texts = ["Hiragana", "Katakana"];
 
-    const handleLearnedToggle = () => {
-        setIsLearned(!isLearned);
+    const scrollToSection = (sectionId) => {
+        document
+            .getElementById(sectionId)
+            ?.scrollIntoView({ behavior: "smooth" });
     };
 
     const containerVariants = {
@@ -70,6 +66,28 @@ export default function PengenalanHuruf() {
     const itemVariants = {
         hidden: { opacity: 0, y: 20 },
         visible: { opacity: 1, y: 0 },
+    };
+
+    const strokeImages = [
+        "https://res.cloudinary.com/dzozxilf6/image/upload/v1748771455/a_1_crwtoc.png",
+        "https://res.cloudinary.com/dzozxilf6/image/upload/v1748771485/a_2_o06tmh.png",
+        "https://res.cloudinary.com/dzozxilf6/image/upload/v1748771494/a_3_w6nr0h.png",
+    ];
+
+    const playAudio = (url) => {
+        if (!url) return;
+        const audio = new Audio(url);
+        audio.play().catch((e) => console.error("Gagal memutar audio:", e));
+    };
+
+    const handleClick = (audio) => {
+        if (audio) {
+            playAudio(audio);
+        } 
+    }
+
+    const handleLearnedToggle = () => {
+        setIsLearned(!isLearned);
     };
 
     // Check dark mode on mount and listen for changes
@@ -142,9 +160,21 @@ export default function PengenalanHuruf() {
             <Head>
                 <title>Pengenalan Huruf</title>
             </Head>
-            <div className="w-full overflow-x-hidden">
+            <div className="min-h-screen bg-white dark:bg-gray-900 font-inter">
                 {/* Hero Section */}
                 <section className="min-h-screen flex items-center justify-center bg-background relative overflow-hidden">
+                    {/* Mesh Gradient Background */}
+                    <div
+                        className="absolute inset-0 opacity-30"
+                        style={{
+                            backgroundImage: `
+              radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+              radial-gradient(circle at 80% 20%, rgba(236, 72, 153, 0.1) 0%, transparent 50%),
+              radial-gradient(circle at 40% 80%, rgba(99, 102, 241, 0.1) 0%, transparent 50%)
+            `,
+                        }}
+                    ></div>
+
                     <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
                         <div className="text-center space-y-12">
                             {/* Content */}
@@ -163,7 +193,7 @@ export default function PengenalanHuruf() {
 
                                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
                                     <span className="text-foreground">
-                                        Kenali{" "}
+                                        Belajar Huruf{" "}
                                     </span>
                                     <span className="text-primary">
                                         {typingText}
@@ -171,16 +201,16 @@ export default function PengenalanHuruf() {
                                     </span>
                                     <br />
                                     <span className="text-foreground">
-                                        untuk Kuasai Bahasa Jepang
+                                        Dengan Menyenangkan
                                     </span>
                                 </h1>
 
-                                <p className="mt-6 text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-                                    Mulai dari <strong>huruf dasar</strong>{" "}
-                                    seperti Hiragana & Katakana, pahami cara
-                                    baca, tulis, dan pelafalan, sebelum
-                                    melangkah ke kosakata dan Kanji. Semua
-                                    dirancang khusus untuk pemula.
+                                <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+                                    Mulai belajar huruf Jepang dari nol dengan
+                                    cara yang mudah dan menyenangkan, khusus
+                                    untuk pemula. Kuasai dasar-dasar ini sebagai
+                                    langkah pertama menuju belajar bahasa
+                                    Jepang.
                                 </p>
 
                                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -189,12 +219,12 @@ export default function PengenalanHuruf() {
                                         className="inline-flex items-center justify-center px-8 py-4 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-md transition-colors duration-200 shadow-lg"
                                     >
                                         <Play className="w-5 h-5 mr-2" />
-                                        Mulai Belajar Huruf
+                                        Mulai Belajar Gratis
                                     </Link>
                                     <button
                                         onClick={() =>
                                             document
-                                                .getElementById("about")
+                                                .getElementById("mengapa")
                                                 .scrollIntoView({
                                                     behavior: "smooth",
                                                 })
@@ -202,7 +232,7 @@ export default function PengenalanHuruf() {
                                         className="inline-flex items-center justify-center px-8 py-4 border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground font-semibold rounded-md transition-all duration-200"
                                     >
                                         <BookOpen className="w-5 h-5 mr-2" />
-                                        Mengapa Harus Belajar Huruf?
+                                        Pelajari Huruf Jepang
                                     </button>
                                 </div>
                             </motion.div>
@@ -210,20 +240,21 @@ export default function PengenalanHuruf() {
                     </div>
                 </section>
 
-                {/* mengapa harus belajar huruf */}
+                {/* Mengapa Harus Belajar Huruf */}
                 <motion.section
-                    className="py-20 px-4 bg-gray-50 dark:bg-background relative overflow-hidden"
+                    className="py-20 bg-gray-50 dark:bg-[#0A0D16] relative overflow-hidden"
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true }}
                     variants={containerVariants}
+                    id="mengapa"
                 >
                     {/* Decorative Elements */}
                     <div className="absolute top-10 left-10 w-20 h-20 bg-blue-100 dark:bg-blue-900/30 rounded-full opacity-50"></div>
                     <div className="absolute bottom-10 right-10 w-32 h-32 bg-pink-100 dark:bg-pink-900/30 rounded-full opacity-50"></div>
                     <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-yellow-100 dark:bg-yellow-900/30 rounded-full opacity-30"></div>
 
-                    <div className="max-w-7xl mx-auto sm:px-6 lg:px-8  relative z-10">
+                    <div className="max-w-7xl mx-auto relative z-10 px-4 sm:px-6 lg:px-8">
                         {/* Enhanced Header */}
                         <motion.div
                             initial={{ y: 50, opacity: 0 }}
@@ -236,14 +267,14 @@ export default function PengenalanHuruf() {
                                 <div className="bg-primary/10 dark:bg-primary/20 p-6 rounded-md border border-primary/20">
                                     <div className="flex items-center justify-center space-x-4">
                                         <div className="w-12 h-12 bg-primary/20 rounded-md flex items-center justify-center">
-                                            <Sparkles className="w-6 h-6 text-primary" />
+                                            <Languages className="w-6 h-6 text-primary" />
                                         </div>
                                         <div className="text-left">
                                             <h3 className="text-lg font-semibold text-primary">
-                                                Belajar huruf jepang
+                                                Kenapa Belajar Huruf
                                             </h3>
                                             <p className="text-sm text-primary/80">
-                                                Belajar huruf jepang
+                                                Fondasi awal bahasa Jepang.
                                             </p>
                                         </div>
                                     </div>
@@ -251,12 +282,13 @@ export default function PengenalanHuruf() {
                             </div>
 
                             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">
-                                Mengapa Harus Belajar Huruf Terlebih dahulu?
+                                Mengapa Mulai dari Huruf Jepang?
                             </h2>
                             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-                                Platform pembelajaran yang dirancang khusus
-                                untuk generasi digital dengan metode yang
-                                terbukti efektif dan teknologi terdepan.
+                                Huruf adalah dasar bahasa Jepang. Memahami
+                                hiragana dan katakana sejak awal membuat belajar
+                                kosakata dan membaca jadi lebih mudah.Manfaat
+                                lainnya antara lain
                             </p>
                         </motion.div>
 
@@ -267,7 +299,7 @@ export default function PengenalanHuruf() {
                                 variants={itemVariants}
                             >
                                 <div className="lg:w-1/2">
-                                    <div className="bg-white dark:bg-gray-700 p-8 rounded-md shadow-xl relative">
+                                    <div className="bg-white dark:bg-background p-8 rounded-md shadow-xl relative">
                                         <div className="absolute -top-4 -left-4 w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-xl">
                                             1
                                         </div>
@@ -303,7 +335,7 @@ export default function PengenalanHuruf() {
                                 variants={itemVariants}
                             >
                                 <div className="lg:w-1/2">
-                                    <div className="bg-white dark:bg-gray-700 p-8 rounded-md shadow-xl relative">
+                                    <div className="bg-white dark:bg-background p-8 rounded-md shadow-xl relative">
                                         <div className="absolute -top-4 -right-4 w-12 h-12 bg-pink-600 rounded-full flex items-center justify-center text-white font-bold text-xl">
                                             2
                                         </div>
@@ -343,7 +375,7 @@ export default function PengenalanHuruf() {
                                 variants={itemVariants}
                             >
                                 <div className="lg:w-1/2">
-                                    <div className="bg-white dark:bg-gray-700 p-8 rounded-md shadow-xl relative">
+                                    <div className="bg-white dark:bg-background p-8 rounded-md shadow-xl relative">
                                         <div className="absolute -top-4 -left-4 w-12 h-12 bg-green-600 rounded-full flex items-center justify-center text-white font-bold text-xl">
                                             3
                                         </div>
@@ -380,13 +412,13 @@ export default function PengenalanHuruf() {
 
                 {/* Perbedaan Huruf */}
                 <motion.section
-                    className="py-20 px-4"
+                    className="py-20 dark:bg-background"
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true }}
                     variants={containerVariants}
                 >
-                    <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         {/* Enhanced Header */}
                         <motion.div
                             initial={{ y: 50, opacity: 0 }}
@@ -399,28 +431,28 @@ export default function PengenalanHuruf() {
                                 <div className="bg-primary/10 dark:bg-primary/20 p-6 rounded-md border border-primary/20">
                                     <div className="flex items-center justify-center space-x-4">
                                         <div className="w-12 h-12 bg-primary/20 rounded-md flex items-center justify-center">
-                                            <Sparkles className="w-6 h-6 text-primary" />
+                                            <Languages className="w-6 h-6 text-primary" />
                                         </div>
                                         <div className="text-left">
                                             <h3 className="text-lg font-semibold text-primary">
-                                                Belajar huruf jepang
+                                                Perbedaan Huruf
                                             </h3>
                                             <p className="text-sm text-primary/80">
-                                                Belajar huruf jepang
+                                                Jepang dan Indonesia berbeda
+                                                huruf.
                                             </p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">
-                                Mengapa Harus Belajar Huruf Terlebih dahulu?
-                            </h2>
-                            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-                                Platform pembelajaran yang dirancang khusus
-                                untuk generasi digital dengan metode yang
-                                terbukti efektif dan teknologi terdepan.
-                            </p>
+         <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">
+    Perbedaan Huruf Jepang dan Indonesia
+</h2>
+<p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+    Bahasa Jepang memakai tiga jenis huruf, sedangkan Indonesia hanya menggunakan alfabet Latin.
+</p>
+
                         </motion.div>
 
                         <motion.div
@@ -528,21 +560,21 @@ export default function PengenalanHuruf() {
                                         {[
                                             {
                                                 indo: "L",
-                                                jp: "R (ラ行)",
+                                                jp: "R (ラ)",
                                                 example: "Laptop",
                                                 result: "ラップトップ",
                                                 color: "bg-red-50 dark:bg-red-900/10",
                                             },
                                             {
                                                 indo: "V",
-                                                jp: "B (バ行)",
+                                                jp: "B (バ)",
                                                 example: "Video",
                                                 result: "ビデオ",
                                                 color: "bg-blue-50 dark:bg-blue-900/10",
                                             },
                                             {
                                                 indo: "F",
-                                                jp: "H/F (ハ行)",
+                                                jp: "FU(フ)",
                                                 example: "File",
                                                 result: "ファイル",
                                                 color: "bg-green-50 dark:bg-green-900/10",
@@ -588,13 +620,13 @@ export default function PengenalanHuruf() {
 
                 {/* 3 Jenis Huruf */}
                 <motion.section
-                    className="py-20 px-4 bg-gray-50 dark:bg-gray-800"
+                    className="py-20 bg-gray-50 dark:dark:bg-[#0A0D16]"
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true }}
                     variants={containerVariants}
                 >
-                    <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         {/* Enhanced Header */}
                         <motion.div
                             initial={{ y: 50, opacity: 0 }}
@@ -607,14 +639,14 @@ export default function PengenalanHuruf() {
                                 <div className="bg-primary/10 dark:bg-primary/20 p-6 rounded-md border border-primary/20">
                                     <div className="flex items-center justify-center space-x-4">
                                         <div className="w-12 h-12 bg-primary/20 rounded-md flex items-center justify-center">
-                                            <Sparkles className="w-6 h-6 text-primary" />
+                                            <Languages className="w-6 h-6 text-primary" />
                                         </div>
                                         <div className="text-left">
                                             <h3 className="text-lg font-semibold text-primary">
-                                                Belajar huruf jepang
+                                                Jenis Huruf Jepang
                                             </h3>
                                             <p className="text-sm text-primary/80">
-                                                Belajar huruf jepang
+                                                Ada 3 Jenis Huruf Jepang
                                             </p>
                                         </div>
                                     </div>
@@ -622,12 +654,12 @@ export default function PengenalanHuruf() {
                             </div>
 
                             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">
-                                Mengapa Harus Belajar Huruf Terlebih dahulu?
+                                3 Jenis Huruf Jepang
                             </h2>
                             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-                                Platform pembelajaran yang dirancang khusus
-                                untuk generasi digital dengan metode yang
-                                terbukti efektif dan teknologi terdepan.
+                            Bahasa Jepang menggunakan tiga jenis huruf: Hiragana, Katakana, dan Kanji. 
+Masing-masing punya fungsi berbeda dan dipakai bersama dalam penulisan.
+
                             </p>
                         </motion.div>
 
@@ -910,13 +942,13 @@ export default function PengenalanHuruf() {
 
                 {/* Kategori Huruf */}
                 <motion.section
-                    className="py-20 px-4"
+                    className="py-20 dark:bg-background"
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true }}
                     variants={containerVariants}
                 >
-                    <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         {/* Enhanced Header */}
                         <motion.div
                             initial={{ y: 50, opacity: 0 }}
@@ -929,14 +961,14 @@ export default function PengenalanHuruf() {
                                 <div className="bg-primary/10 dark:bg-primary/20 p-6 rounded-md border border-primary/20">
                                     <div className="flex items-center justify-center space-x-4">
                                         <div className="w-12 h-12 bg-primary/20 rounded-md flex items-center justify-center">
-                                            <Sparkles className="w-6 h-6 text-primary" />
+                                            <Languages className="w-6 h-6 text-primary" />
                                         </div>
                                         <div className="text-left">
                                             <h3 className="text-lg font-semibold text-primary">
-                                                Belajar huruf jepang
+                                                Kategori Huruf Jepang
                                             </h3>
                                             <p className="text-sm text-primary/80">
-                                                Belajar huruf jepang
+                                                Kategori Pada huruf hiragana & katakana
                                             </p>
                                         </div>
                                     </div>
@@ -944,12 +976,12 @@ export default function PengenalanHuruf() {
                             </div>
 
                             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">
-                                Mengapa Harus Belajar Huruf Terlebih dahulu?
+                            Kategori Huruf Jepang
                             </h2>
                             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-                                Platform pembelajaran yang dirancang khusus
-                                untuk generasi digital dengan metode yang
-                                terbukti efektif dan teknologi terdepan.
+                            Hiragana dan Katakana memiliki kategori Gojūon, Dakuon, Handakuon, Yōon, dan lainnya.
+
+
                             </p>
                         </motion.div>
 
@@ -1119,7 +1151,7 @@ export default function PengenalanHuruf() {
 
                 {/* Fokus Hiragana */}
                 <motion.section
-                    className="py-20 px-4 bg-gray-50 dark:bg-gray-800 relative overflow-hidden"
+                    className="py-20 bg-gray-50 dark:bg-[#0A0D16] relative overflow-hidden"
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true }}
@@ -1130,7 +1162,7 @@ export default function PengenalanHuruf() {
                     <div className="absolute bottom-20 right-10 w-24 h-24 bg-blue-200 dark:bg-blue-900/30 rounded-full opacity-40"></div>
                     <div className="absolute top-1/2 right-1/4 w-16 h-16 bg-green-200 dark:bg-green-900/30 rounded-full opacity-50"></div>
 
-                    <div className="max-w-7xl mx-auto relative z-10 sm:px-6 lg:px-8">
+                    <div className="max-w-7xl mx-auto relative z-10 px-4 sm:px-6 lg:px-8">
                         {/* Enhanced Header */}
                         <motion.div
                             initial={{ y: 50, opacity: 0 }}
@@ -1143,14 +1175,14 @@ export default function PengenalanHuruf() {
                                 <div className="bg-primary/10 dark:bg-primary/20 p-6 rounded-md border border-primary/20">
                                     <div className="flex items-center justify-center space-x-4">
                                         <div className="w-12 h-12 bg-primary/20 rounded-md flex items-center justify-center">
-                                            <Sparkles className="w-6 h-6 text-primary" />
+                                            <Languages className="w-6 h-6 text-primary" />
                                         </div>
                                         <div className="text-left">
                                             <h3 className="text-lg font-semibold text-primary">
-                                                Belajar huruf jepang
+                                                Fokus Bertahap
                                             </h3>
                                             <p className="text-sm text-primary/80">
-                                                Belajar huruf jepang
+                                                Jangan Terburu buru
                                             </p>
                                         </div>
                                     </div>
@@ -1158,13 +1190,13 @@ export default function PengenalanHuruf() {
                             </div>
 
                             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">
-                                Mengapa Harus Belajar Huruf Terlebih dahulu?
-                            </h2>
-                            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-                                Platform pembelajaran yang dirancang khusus
-                                untuk generasi digital dengan metode yang
-                                terbukti efektif dan teknologi terdepan.
-                            </p>
+    Fokus Awal Hiragana Dulu
+</h2>
+<p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+    Mulailah dari huruf dasar Hiragana sebelum beralih ke Katakana dan Kanji. 
+    Belajar perlahan akan membuat dasar bahasa Jepangmu lebih kuat.
+</p>
+
                         </motion.div>
 
                         <div className="text-center mb-12">
@@ -1317,13 +1349,13 @@ export default function PengenalanHuruf() {
                 {/* Sistem Belajar */}
                 <motion.section
                     id="sistem-belajar"
-                    className="py-20 px-4"
+                    className="py-20 dark:bg-background"
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true }}
                     variants={containerVariants}
                 >
-                    <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         {/* Enhanced Header */}
                         <motion.div
                             initial={{ y: 50, opacity: 0 }}
@@ -1336,14 +1368,14 @@ export default function PengenalanHuruf() {
                                 <div className="bg-primary/10 dark:bg-primary/20 p-6 rounded-md border border-primary/20">
                                     <div className="flex items-center justify-center space-x-4">
                                         <div className="w-12 h-12 bg-primary/20 rounded-md flex items-center justify-center">
-                                            <Sparkles className="w-6 h-6 text-primary" />
+                                            <Languages className="w-6 h-6 text-primary" />
                                         </div>
                                         <div className="text-left">
                                             <h3 className="text-lg font-semibold text-primary">
-                                                Belajar huruf jepang
+                                                Belajar Huruf Di Platform
                                             </h3>
                                             <p className="text-sm text-primary/80">
-                                                Belajar huruf jepang
+                                                Belajar huruf secara bertahap di platform kami
                                             </p>
                                         </div>
                                     </div>
@@ -1351,13 +1383,13 @@ export default function PengenalanHuruf() {
                             </div>
 
                             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">
-                                Mengapa Harus Belajar Huruf Terlebih dahulu?
-                            </h2>
-                            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-                                Platform pembelajaran yang dirancang khusus
-                                untuk generasi digital dengan metode yang
-                                terbukti efektif dan teknologi terdepan.
-                            </p>
+    Belajar Huruf Jepang dengan Mudah Diplatform Kami
+</h2>
+<p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+    Pelajari Hiragana dan Katakana langkah demi langkah dengan latihan interaktif yang dirancang untuk pemula.
+</p>
+
+
                         </motion.div>
 
                         {/* Card Huruf */}
@@ -1383,7 +1415,8 @@ export default function PengenalanHuruf() {
                                 <div className="text-3xl text-gray-600 dark:text-gray-300 font-medium mb-6">
                                     a
                                 </div>
-                                <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md flex items-center gap-2 mx-auto transition-colors">
+                                <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md flex items-center gap-2 mx-auto transition-colors"
+                                onClick={() => handleClick('https://res.cloudinary.com/dzozxilf6/video/upload/v1748774537/52_tjmkqe.wav')}>
                                     <Volume2 className="w-5 h-5" />
                                     Dengar Pelafalan
                                 </button>
@@ -1406,21 +1439,17 @@ export default function PengenalanHuruf() {
                                         />
                                     </div>
                                     <div className="flex items-center justify-between">
-                                        <button
-                                            onClick={() =>
-                                                setCurrentStroke(
-                                                    Math.max(
-                                                        0,
-                                                        currentStroke - 1
-                                                    )
-                                                )
-                                            }
-                                            disabled={currentStroke === 0}
-                                            className="flex items-center gap-2 px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
-                                        >
-                                            <ChevronLeft className="w-4 h-4" />
-                                            Sebelumnya
-                                        </button>
+                                    <button
+    onClick={() =>
+        setCurrentStroke(Math.max(0, currentStroke - 1))
+    }
+    disabled={currentStroke === 0}
+    className="flex items-center gap-2 px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+>
+    <ChevronLeft className="w-4 h-4" />
+    <span className="hidden sm:inline">Sebelumnya</span>
+</button>
+
 
                                         <div className="flex gap-2">
                                             {strokeImages.map((_, idx) => (
@@ -1436,23 +1465,18 @@ export default function PengenalanHuruf() {
                                         </div>
 
                                         <button
-                                            onClick={() =>
-                                                setCurrentStroke(
-                                                    Math.min(
-                                                        strokeImages.length - 1,
-                                                        currentStroke + 1
-                                                    )
-                                                )
-                                            }
-                                            disabled={
-                                                currentStroke ===
-                                                strokeImages.length - 1
-                                            }
-                                            className="flex items-center gap-2 px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
-                                        >
-                                            Selanjutnya
-                                            <ChevronRight className="w-4 h-4" />
-                                        </button>
+    onClick={() =>
+        setCurrentStroke(
+            Math.min(strokeImages.length - 1, currentStroke + 1)
+        )
+    }
+    disabled={currentStroke === strokeImages.length - 1}
+    className="flex items-center gap-2 px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+>
+    <span className="hidden sm:inline">Selanjutnya</span>
+    <ChevronRight className="w-4 h-4" />
+</button>
+
                                     </div>
                                     <div className="text-center mt-2 text-sm text-gray-600 dark:text-gray-400">
                                         Langkah {currentStroke + 1} dari{" "}
@@ -1469,22 +1493,25 @@ export default function PengenalanHuruf() {
                                 <div className="grid md:grid-cols-3 gap-4">
                                     {[
                                         {
-                                            furigana: "あなた",
-                                            romaji: "anata",
-                                            meaning: "kamu",
+                                            furigana: "ありがとう",
+                                            romaji: "arigatou",
+                                            meaning: "terimma kasih",
                                             highlight: 0,
+                                            audio:'https://res.cloudinary.com/dzozxilf6/video/upload/v1748784323/a-1_ha8yha.wav'
                                         },
                                         {
-                                            furigana: "あさ",
-                                            romaji: "asa",
-                                            meaning: "pagi",
+                                            furigana: "あいさつ",
+                                            romaji: "aisatsu",
+                                            meaning: "salam",
                                             highlight: 0,
+                                            audio:'https://res.cloudinary.com/dzozxilf6/video/upload/v1748784338/a-2_qah8pc.wav'
                                         },
                                         {
-                                            furigana: "あか",
-                                            romaji: "aka",
-                                            meaning: "merah",
+                                            furigana: "あお",
+                                            romaji: "ao",
+                                            meaning: "biru",
                                             highlight: 0,
+                                            audio:'https://res.cloudinary.com/dzozxilf6/video/upload/v1748784349/a-3_c91tqf.wav'
                                         },
                                     ].map((word, idx) => (
                                         <div
@@ -1520,7 +1547,8 @@ export default function PengenalanHuruf() {
                                                     {word.meaning}
                                                 </div>
                                             </div>
-                                            <button className="w-full bg-blue-100 dark:bg-blue-800 hover:bg-blue-200 dark:hover:bg-blue-700 text-blue-700 dark:text-blue-300 py-2 rounded-md flex items-center justify-center gap-2 transition-colors">
+                                            <button className="w-full bg-blue-100 dark:bg-blue-800 hover:bg-blue-200 dark:hover:bg-blue-700 text-blue-700 dark:text-blue-300 py-2 rounded-md flex items-center justify-center gap-2 transition-colors"
+                                            onClick={() => handleClick(word.audio)}>
                                                 <Volume2 className="w-4 h-4" />
                                                 Dengar
                                             </button>
@@ -1630,15 +1658,15 @@ export default function PengenalanHuruf() {
 
                 {/* Kuis */}
                 <motion.section
-                    className="py-20 px-4 bg-gray-50 dark:bg-gray-800"
+                    className="py-20 bg-gray-50 dark:bg-[#0A0D16]"
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true }}
                     variants={containerVariants}
                 >
-                    <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                          {/* Enhanced Header */}
-                          <motion.div
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        {/* Enhanced Header */}
+                        <motion.div
                             initial={{ y: 50, opacity: 0 }}
                             whileInView={{ y: 0, opacity: 1 }}
                             transition={{ duration: 0.8 }}
@@ -1649,14 +1677,14 @@ export default function PengenalanHuruf() {
                                 <div className="bg-primary/10 dark:bg-primary/20 p-6 rounded-md border border-primary/20">
                                     <div className="flex items-center justify-center space-x-4">
                                         <div className="w-12 h-12 bg-primary/20 rounded-md flex items-center justify-center">
-                                            <Sparkles className="w-6 h-6 text-primary" />
+                                            <Languages className="w-6 h-6 text-primary" />
                                         </div>
                                         <div className="text-left">
                                             <h3 className="text-lg font-semibold text-primary">
-                                                Belajar huruf jepang
+                                                Uji Kemampuan
                                             </h3>
                                             <p className="text-sm text-primary/80">
-                                                Belajar huruf jepang
+                                                Latih hafalan dan pemahaman
                                             </p>
                                         </div>
                                     </div>
@@ -1664,52 +1692,51 @@ export default function PengenalanHuruf() {
                             </div>
 
                             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">
-                                Mengapa Harus Belajar Huruf Terlebih dahulu?
+                                Uji Hafalam Kamu Dengan Kuis
                             </h2>
                             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-                                Platform pembelajaran yang dirancang khusus
-                                untuk generasi digital dengan metode yang
-                                terbukti efektif dan teknologi terdepan.
+                            Uji hafalanmu dengan kuis interaktif di platform ini. 
+Dapatkan pengalaman belajar yang seru sambil mengukur sejauh mana kemampuanmu.
+
                             </p>
                         </motion.div>
 
-                        
                         <motion.div
-                            className="grid lg:grid-cols-3 gap-8 mb-12 z-[99999999]"
+                            className="grid lg:grid-cols-3 gap-8 mb-12"
                             variants={itemVariants}
                         >
                             {[
                                 {
                                     level: "Mudah",
-                                    desc: "10 huruf dasar Hiragana",
+                                    desc: "1 huruf",
                                     color: "from-green-400 to-green-600",
                                     icon: "🌱",
                                     features: [
-                                        "Huruf dasar a-o",
+                                        "Huruf dasar",
                                         "Pilihan ganda",
-                                        "Tanpa batasan waktu",
+                                        "Batasan waktu 5 menit",
                                     ],
                                 },
                                 {
                                     level: "Sedang",
-                                    desc: "25 huruf + dakuten",
+                                    desc: "Kombinasi 3 - 4 huruf",
                                     color: "from-yellow-400 to-yellow-600",
                                     icon: "🔥",
                                     features: [
-                                        "Termasuk が、ざ、だ",
-                                        "Mode tulis langsung",
-                                        "Batasan waktu 30 detik",
+                                        "Contoh たまご",
+                                        "Pilihan ganda",
+                                        "Batasan waktu 7 menit",
                                     ],
                                 },
                                 {
                                     level: "Sulit",
-                                    desc: "Semua huruf + yōon",
+                                    desc: "Kombinasi 5 - 6 huruf",
                                     color: "from-red-400 to-red-600",
                                     icon: "⚡",
                                     features: [
-                                        "Kombinasi きゃ、しゅ、ちょ",
-                                        "Mode campuran",
-                                        "Batasan waktu 15 detik",
+                                        "Contoh はたらきます",
+                                        "Pilihan Ganda",
+                                        "Batasan waktu 10 menit",
                                     ],
                                 },
                             ].map((item, index) => (
@@ -1754,7 +1781,7 @@ export default function PengenalanHuruf() {
                         </motion.div>
 
                         <motion.div
-                            className="grid md:grid-cols-2 gap-8 mb-12"
+                            className="grid md:grid-cols-1 gap-8 mb-12"
                             variants={itemVariants}
                         >
                             <div className="bg-white dark:bg-gray-700 rounded-md shadow-lg p-8">
@@ -1771,12 +1798,12 @@ export default function PengenalanHuruf() {
                                     tersedia. Cocok untuk pemula yang baru mulai
                                     mengenal huruf.
                                 </p>
-                                <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-md">
-                                    <div className="text-center mb-3">
-                                        <div className="text-4xl font-bold text-blue-600 dark:text-blue-400 mb-2">
+                                <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-md py-[50px]">
+                                    <div className="text-center mb-5">
+                                        <div className="text-5xl font-bold text-blue-600 dark:text-blue-400 mb-2">
                                             あ
                                         </div>
-                                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                                        <p className="text-md text-gray-600 dark:text-gray-400">
                                             Huruf ini dibaca...
                                         </p>
                                     </div>
@@ -1785,7 +1812,7 @@ export default function PengenalanHuruf() {
                                             (option, idx) => (
                                                 <button
                                                     key={idx}
-                                                    className={`p-2 rounded text-sm ${
+                                                    className={`p-2 py-3 rounded text-sm ${
                                                         idx === 0
                                                             ? "bg-green-500 text-white"
                                                             : "bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300"
@@ -1798,79 +1825,59 @@ export default function PengenalanHuruf() {
                                     </div>
                                 </div>
                             </div>
-
-                            <div className="bg-white dark:bg-gray-700 rounded-md shadow-lg p-8">
-                                <div className="flex items-center mb-6">
-                                    <div className="w-12 h-12 bg-purple-500 rounded-md flex items-center justify-center mr-4">
-                                        <BookOpen className="w-6 h-6 text-white" />
-                                    </div>
-                                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-                                        Mode Tulis Langsung
-                                    </h3>
-                                </div>
-                                <p className="text-gray-600 dark:text-gray-300 mb-4">
-                                    Ketik romaji dari huruf yang ditampilkan.
-                                    Mode ini menguji hafalan yang lebih
-                                    mendalam.
-                                </p>
-                                <div className="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-md">
-                                    <div className="text-center mb-3">
-                                        <div className="text-4xl font-bold text-purple-600 dark:text-purple-400 mb-2">
-                                            か
-                                        </div>
-                                        <p className="text-sm text-gray-600 dark:text-gray-400">
-                                            Ketik romaji huruf ini:
-                                        </p>
-                                    </div>
-                                    <input
-                                        type="text"
-                                        placeholder="Ketik di sini..."
-                                        className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-center"
-                                        value="ka"
-                                        readOnly
-                                    />
-                                </div>
-                            </div>
                         </motion.div>
 
                         <motion.div
                             className="text-center"
                             variants={itemVariants}
                         >
+                            <Link href="/pengenalan-quis-huruf">
                             <button className="bg-purple-600 hover:bg-purple-700 text-white px-12 py-6 rounded-md font-bold text-xl transition-all duration-300 transform hover:scale-105 shadow-2xl flex items-center gap-3 mx-auto">
                                 <Gamepad2 className="w-6 h-6" />
                                 Lihat Sistem Kuis Huruf
                             </button>
+                            </Link>
                         </motion.div>
                     </div>
                 </motion.section>
 
-                  {/* CTA */}
-      <motion.section
-        className="py-20 px-4 bg-blue-600"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-        variants={containerVariants}
-      >
-        <div className="max-w-7xl mx-auto text-center sm:px-6 lg:px-8">
-          <motion.h2 className="text-3xl md:text-4xl font-bold text-white mb-8" variants={itemVariants}>
-            Siap mulai perjalanan belajar huruf Jepang?
-          </motion.h2>
+                {/* CTA */}
+                <motion.section
+                    className="py-20 px-4 bg-blue-600"
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true }}
+                    variants={containerVariants}
+                >
+                    <div className="max-w-4xl mx-auto text-center">
+                        <motion.h2
+                            className="text-3xl md:text-4xl font-bold text-white mb-8"
+                            variants={itemVariants}
+                        >
+                            Siap mulai perjalanan belajar huruf Jepang?
+                        </motion.h2>
 
-          <motion.p className="text-xl text-blue-100 mb-12" variants={itemVariants}>
-            Yuk mulai dari Hiragana dan bangun pondasi yang kuat untuk belajar bahasa Jepang!
-          </motion.p>
+                        <motion.p
+                            className="text-xl text-blue-100 mb-12"
+                            variants={itemVariants}
+                        >
+                            Yuk mulai dari Hiragana dan bangun pondasi yang kuat
+                            untuk belajar bahasa Jepang!
+                        </motion.p>
 
-          <motion.button
-            className="bg-white text-blue-600 hover:bg-gray-100 px-12 py-6 rounded-md font-bold text-xl transition-all duration-300 transform hover:scale-105 shadow-2xl"
-            variants={itemVariants}
-          >
-            Mulai Belajar Hiragana
-          </motion.button>
-        </div>
-      </motion.section>
+                        <motion.button
+                            className="bg-white text-blue-600 hover:bg-gray-100 px-12 py-6 rounded-md font-bold text-xl transition-all duration-300 transform hover:scale-105 shadow-2xl"
+                            variants={itemVariants}
+                        >
+                            <Link href="/login">
+                            Mulai Belajar Hiragana
+                            </Link>
+                        </motion.button>
+                    </div>
+                </motion.section>
             </div>
         </Layout>
     );
-}
+};
+
+export default PengenalanHuruf;

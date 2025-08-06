@@ -28,7 +28,9 @@ use Illuminate\Support\Facades\URL;
 
 Route::get('/', [BerandaController::class, 'Beranda'])->name('beranda');
 Route::get('/pengenalan-huruf', [BerandaController::class, 'PengenalanHuruf'])->name('PengenalanHuruf');
-
+Route::get('/pengenalan-quis-huruf', [BerandaController::class, 'PengenalanQuisHuruf'])->name('PengenalanQuisHuruf');
+Route::get('/pengenalan-kosakata', [BerandaController::class, 'PengenalanKosakata'])->name('PengenalanKosakata');
+Route::get('/pengenalan-quis-kosakata', [BerandaController::class, 'PengenalanQuisKosakata'])->name('PengenalanQuisKosakata');
 
 // Auth routes
 Route::middleware(['guest'])->group(function () {
