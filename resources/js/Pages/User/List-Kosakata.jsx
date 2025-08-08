@@ -142,7 +142,7 @@ const Alert = ({ message, onClose, title = 'Berhasil!', description = '' }) => {
     );
 };
 
-function VocabularyContent({ vocabulary, todayVocabulary, favoriteCount }) {
+function VocabularyContent({ vocabulary, todayVocabulary}) {
     const [searchTerm, setSearchTerm] = useState("");
     const [filter, setFilter] = useState("all");
     const [sortBy, setSortBy] = useState("a-z");
@@ -159,7 +159,6 @@ function VocabularyContent({ vocabulary, todayVocabulary, favoriteCount }) {
     const [lastStudied, setLastStudied] = useState("2 jam yang lalu");
     const [expandedCard, setExpandedCard] = useState(null);
     const [isMobilePage, setIsMobilePage] = useState(false);
-    const [todayVocabFavorite, setTodayVocabFavorite] = useState(false);
     const { sidebarOpen, isMobile } = useLayout();
     const contentRef = useRef(null);
     const filterSectionRef = useRef(null);
@@ -171,7 +170,7 @@ function VocabularyContent({ vocabulary, todayVocabulary, favoriteCount }) {
     const [isButtonLoading, setIsButtonLoading] = useState(false);
     const [alertMessage, setAlertMessage] = useState(null);
     const [loadingButtonId, setLoadingButtonId] = useState(null);
-    const [favoriteTotal, setFavoriteTotal] = useState(favoriteCount || 0);
+    
     const [audioInstance, setAudioInstance] = useState(null);
     const [hoverToday, setHoverToday] = useState(false);
 
@@ -242,9 +241,7 @@ function VocabularyContent({ vocabulary, todayVocabulary, favoriteCount }) {
             let filtered = [...vocabulary];
 
             // Apply filter
-            if (filter === "favorite") {
-                filtered = filtered.filter((item) => item.isFavorite);
-            } else if (filter === "learned") {
+            if (filter === "learned") {
                 filtered = filtered.filter((item) => item.isLearned);
             } else if (filter === "not-learned") {
                 filtered = filtered.filter((item) => !item.isLearned);
@@ -265,16 +262,14 @@ function VocabularyContent({ vocabulary, todayVocabulary, favoriteCount }) {
                 );
             }
 
-            // Apply sort
-            if (sortBy === "a-z") {
-                filtered.sort((a, b) => a.romaji.localeCompare(b.romaji));
-            } else if (sortBy === "newest") {
-                filtered.sort((a, b) => b.id - a.id);
-            } else if (sortBy === "favorite") {
-                filtered.sort(
-                    (a, b) => (b.isFavorite ? 1 : 0) - (a.isFavorite ? 1 : 0)
-                );
-            }
+          
+           // Apply sort
+if (sortBy === "a-z") {
+    filtered.sort((a, b) => a.romaji.localeCompare(b.romaji));
+} else if (sortBy === "newest") {
+    filtered.sort((a, b) => b.id - a.id);
+}
+
 
             setVocabList(filtered);
             setCurrentPage(1);
@@ -284,45 +279,7 @@ function VocabularyContent({ vocabulary, todayVocabulary, favoriteCount }) {
         filterAndSortVocabulary();
     }, [vocabulary, filter, sortBy, searchTerm]);
 
-    // Toggle favorite status with loading and alert
-    const toggleFavorite = async (id) => {
-        setLoadingButtonId(id);
-        setIsButtonLoading(true);
-        try {
-            const response = await axios.post(route('user.belajar.update-user-kosakata-favorite'), { id });
-            if (response.data.success) {
-                setAlertMessage('Kosakata berhasil ditandai sebagai favorit');
-                setVocabList((prev) => prev.map(item => item.id === id ? { ...item, isFavorite: !item.isFavorite } : item));
-                setFavoriteTotal((prev) => {
-                    const item = vocabList.find(v => v.id === id);
-                    return item && item.isFavorite ? prev - 1 : prev + 1;
-                });
-            }
-        } catch (error) {
-            setAlertMessage('Gagal mengubah status favorit');
-        } finally {
-            setIsButtonLoading(false);
-            setLoadingButtonId(null);
-        }
-    };
 
-    // Toggle learned status with loading and alert
-    const toggleLearned = async (id) => {
-        setLoadingButtonId(id);
-        setIsButtonLoading(true);
-        try {
-            const response = await axios.post(route('user.belajar.update-user-kosakata'), { id });
-            if (response.data.success) {
-                setAlertMessage('Status belajar berhasil diperbarui');
-                setVocabList((prev) => prev.map(item => item.id === id ? { ...item, isLearned: !item.isLearned } : item));
-            }
-        } catch (error) {
-            setAlertMessage('Gagal mengubah status belajar');
-        } finally {
-            setIsButtonLoading(false);
-            setLoadingButtonId(null);
-        }
-    };
 
     // Calculate pagination
     const totalPages = Math.ceil(vocabList.length / itemsPerPage);
@@ -358,7 +315,6 @@ function VocabularyContent({ vocabulary, todayVocabulary, favoriteCount }) {
     const stats = {
         total: vocabulary.length,
         learned: vocabulary.filter((item) => item.isLearned).length,
-        favorite: vocabulary.filter((item) => item.isFavorite).length,
     };
 
     // Toggle expanded card
@@ -384,24 +340,7 @@ function VocabularyContent({ vocabulary, todayVocabulary, favoriteCount }) {
         }
     };
 
-    const toggleTodayFavorite = async () => {
-        if (!todayVocab) return;
-        setLoadingButtonId(todayVocab.id);
-        setIsButtonLoading(true);
-        try {
-            const response = await axios.post(route('user.belajar.update-user-kosakata-favorite'), { id: todayVocab.id });
-            if (response.data.success) {
-                setAlertMessage('Kosakata berhasil ditandai sebagai favorit');
-                setTodayVocab({ ...todayVocab, isFavorite: !todayVocab.isFavorite });
-                setFavoriteTotal((prev) => todayVocab.isFavorite ? prev - 1 : prev + 1);
-            }
-        } catch (error) {
-            setAlertMessage('Gagal mengubah status favorit');
-        } finally {
-            setIsButtonLoading(false);
-            setLoadingButtonId(null);
-        }
-    };
+
 
     // Overlay/alert yang hanya bisa ditutup dengan tombol, lalu refresh halaman
     const handleAlertClose = () => {
@@ -523,13 +462,7 @@ function VocabularyContent({ vocabulary, todayVocabulary, favoriteCount }) {
                         <Card
                             className="overflow-hidden border border-primary/20 relative transition-all duration-300 ease-in-out hover:shadow-lg hover:scale-[1.01]"
                         >
-                            <div
-                                className={`absolute inset-0 -z-10 transition-all duration-500 ease-in-out ${
-                                    todayVocab.isFavorite
-                                        ? "bg-gradient-to-r from-yellow-500/10 via-primary/5 to-yellow-500/10 z-[100]"
-                                        : "bg-gradient-to-l from-primary/15 to-transparent"
-                                }`}
-                            ></div>
+   
                             <CardHeader className="pb-0">
                                 <div className="flex justify-between items-center">
                                     <CardTitle className="text-sm font-medium flex items-center">
@@ -658,25 +591,6 @@ function VocabularyContent({ vocabulary, todayVocabulary, favoriteCount }) {
                                                         <Button
                                                             variant="ghost"
                                                             size="icon"
-                                                            className="h-8 w-8 rounded-full hover:bg-primary/5 hover:text-primary transition-all duration-300 hover:scale-110"
-                                                            onClick={
-                                                                toggleTodayFavorite
-                                                            }
-                                                        >
-                                                            {todayVocab.isFavorite ? (
-                                                                <Star
-                                                                    size={16}
-                                                                    className="text-yellow-500 fill-yellow-500"
-                                                                />
-                                                            ) : (
-                                                                <Star
-                                                                    size={16}
-                                                                />
-                                                            )}
-                                                        </Button>
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="icon"
                                                             className="h-8 w-8 rounded-full hover:bg-primary/5 hover:text-primary"
                                                         >
                                                             <Share size={16} />
@@ -699,7 +613,7 @@ function VocabularyContent({ vocabulary, todayVocabulary, favoriteCount }) {
                     animate="visible"
                     className="mb-12"
                 >
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2  gap-4">
                         <motion.div variants={itemVariants}>
                             <Card className="border border-primary/20 h-full transition-all duration-300 ease-in-out hover:shadow-md hover:scale-[1.02] hover:bg-primary/[0.02]">
                                 <CardContent className="p-6 flex items-center gap-4">
@@ -763,35 +677,7 @@ function VocabularyContent({ vocabulary, todayVocabulary, favoriteCount }) {
                             </Card>
                         </motion.div>
 
-                        <motion.div variants={itemVariants}>
-                            <Card className="border border-yellow-500/20 h-full transition-all duration-300 ease-in-out hover:shadow-md hover:scale-[1.02] hover:bg-yellow-500/[0.02]">
-                                <CardContent className="p-6 flex items-center gap-4">
-                                    <div className="bg-yellow-500/10 p-3 rounded-xl">
-                                        <Flame
-                                            size={28}
-                                            className="text-yellow-500"
-                                        />
-                                    </div>
-                                    <div>
-                                        <div className="flex items-baseline gap-1">
-                                            <div className="text-3xl font-bold">
-                                                {favoriteTotal}
-                                            </div>
-                                            <div className="text-xs text-muted-foreground">
-                                                kata
-                                            </div>
-                                        </div>
-                                        <div className="text-sm font-medium text-muted-foreground">
-                                            Kosakata Favorit
-                                        </div>
-                                        <Progress
-                                            value={100}
-                                            className="h-1 mt-2"
-                                        />
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </motion.div>
+
                     </div>
                 </motion.div>
 
@@ -848,17 +734,13 @@ function VocabularyContent({ vocabulary, todayVocabulary, favoriteCount }) {
                                     >
                                         Terbaru
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem
-                                        onClick={() => setSortBy("favorite")}
-                                    >
-                                        Favorit
-                                    </DropdownMenuItem>
+
                                 </DropdownMenuContent>
                             </DropdownMenu>
 
                             {/* Tabs - Tambahkan class h-full ke TabsList */}
                             <Tabs defaultValue="all" className="w-fit h-full">
-                                <TabsList className="grid grid-cols-4 h-full p-1 rounded-full bg-muted/50">
+                                <TabsList className="grid grid-cols-3 h-full p-1 rounded-full bg-muted/50">
                                     <TabsTrigger
                                         value="all"
                                         onClick={() => setFilter("all")}
@@ -866,13 +748,7 @@ function VocabularyContent({ vocabulary, todayVocabulary, favoriteCount }) {
                                     >
                                         Semua
                                     </TabsTrigger>
-                                    <TabsTrigger
-                                        value="favorite"
-                                        onClick={() => setFilter("favorite")}
-                                        className="rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground h-8"
-                                    >
-                                        <Star size={16} />
-                                    </TabsTrigger>
+
                                     <TabsTrigger
                                         value="learned"
                                         onClick={() => setFilter("learned")}
@@ -959,13 +835,7 @@ function VocabularyContent({ vocabulary, todayVocabulary, favoriteCount }) {
                                 >
                                     <Card
                                         className="h-full border border-primary/10 overflow-hidden transition-all duration-300 hover:shadow-lg hover:translate-y-[-5px] hover:border-primary/30 flex flex-col"
-                                        style={{
-                                            background: `radial-gradient(circle at top right, ${
-                                                item.isFavorite
-                                                    ? "rgba(250, 204, 21, 0.05)"
-                                                    : "rgba(var(--primary), 0.03)"
-                                            }, transparent 70%)`,
-                                        }}
+                                       
                                     >
                                         {/* Card Header dengan layout yang lebih elegan dan left-aligned */}
                                         {/* Card Header */}
@@ -1014,28 +884,7 @@ function VocabularyContent({ vocabulary, todayVocabulary, favoriteCount }) {
                                                         {item.meaning}
                                                     </div>
                                                 </div>
-                                                <button
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        toggleFavorite(item.id);
-                                                    }}
-                                                    className="p-2 rounded-full hover:bg-yellow-500/10 transition-all duration-300 hover:scale-125 hover:rotate-12"
-                                                    disabled={isButtonLoading && loadingButtonId === item.id}
-                                                >
-                                                    {isButtonLoading && loadingButtonId === item.id ? (
-                                                        <div className="w-5 h-5 border-2 border-yellow-500 border-t-transparent rounded-full animate-spin" />
-                                                    ) : item.isFavorite ? (
-                                                        <Star
-                                                            size={20}
-                                                            className="text-yellow-500 fill-yellow-500"
-                                                        />
-                                                    ) : (
-                                                        <StarOff
-                                                            size={20}
-                                                            className="text-muted-foreground"
-                                                        />
-                                                    )}
-                                                </button>
+                                             
                                             </div>
                                         </CardHeader>
 
@@ -1046,9 +895,7 @@ function VocabularyContent({ vocabulary, todayVocabulary, favoriteCount }) {
                                                 <Button
                                                     variant="outline"
                                                     size="sm"
-                                                    onClick={() =>
-                                                        toggleLearned(item.id)
-                                                    }
+                           
                                                     className={`rounded-full transition-all duration-300 hover:scale-105 flex items-center justify-start ${
                                                         item.isLearned
                                                             ? "bg-green-500/5 text-green-600 border-green-500/30 hover:bg-green-500/10"
@@ -1287,256 +1134,6 @@ function VocabularyContent({ vocabulary, todayVocabulary, favoriteCount }) {
                 )}
             </div>
 
-            {/* Sticky Search Bar - DIBAWAH LAYAR dengan search dan filter langsung */}
-            <AnimatePresence>
-                {showStickyBar && (
-                    <motion.div
-                        initial={{ y: 100, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        exit={{ y: 100, opacity: 0 }}
-                        className={cn(
-                            "fixed bottom-0 max-full  bg-background/95 backdrop-blur-md border-t border-primary/20 shadow-[0_-4px_20px_rgba(0,0,0,0.1)] z-50 py-3 px-4",
-                            isMobile
-                                ? "left-0 right-0"
-                                : sidebarOpen
-                                ? "left-80 right-0"
-                                : "left-20 right-0",
-                            "transition-all duration-300"
-                        )}
-                    >
-                        <div className="max-w-6xl mx-auto">
-                            {/* Tampilkan search input langsung jika showBottomSearch true */}
-                            {showBottomSearch ? (
-                                <div className="mb-3">
-                                    <div className="flex items-center gap-2">
-                                        <div className="relative flex-grow">
-                                            <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
-                                                <Search className="h-4 w-4" />
-                                            </div>
-                                            <Input
-                                                placeholder="Cari kosakata..."
-                                                className="pl-9 border-primary/20 focus-visible:ring-primary/30 rounded-full"
-                                                value={searchTerm}
-                                                onChange={(e) =>
-                                                    setSearchTerm(
-                                                        e.target.value
-                                                    )
-                                                }
-                                                autoFocus
-                                            />
-                                        </div>
-                                        <Button
-                                            variant="outline"
-                                            size="icon"
-                                            className="rounded-full"
-                                            onClick={() =>
-                                                setShowBottomSearch(false)
-                                            }
-                                        >
-                                            <X size={16} />
-                                        </Button>
-                                    </div>
-                                </div>
-                            ) : showBottomFilter ? (
-                                <div className="mb-3">
-                                    <div className="flex flex-col gap-3">
-                                        <div className="flex items-center justify-between">
-                                            <h4 className="font-medium">
-                                                Filter & Urutkan
-                                            </h4>
-                                            <Button
-                                                variant="outline"
-                                                size="icon"
-                                                className="rounded-full"
-                                                onClick={() =>
-                                                    setShowBottomFilter(false)
-                                                }
-                                            >
-                                                <X size={16} />
-                                            </Button>
-                                        </div>
-
-                                        <div>
-                                            <h5 className="text-sm text-muted-foreground mb-2">
-                                                Tampilkan
-                                            </h5>
-                                            <div className="flex flex-wrap gap-2">
-                                                <Button
-                                                    size="sm"
-                                                    variant={
-                                                        filter === "all"
-                                                            ? "default"
-                                                            : "outline"
-                                                    }
-                                                    onClick={() =>
-                                                        setFilter("all")
-                                                    }
-                                                    className="rounded-full"
-                                                >
-                                                    Semua
-                                                </Button>
-                                                <Button
-                                                    size="sm"
-                                                    variant={
-                                                        filter === "favorite"
-                                                            ? "default"
-                                                            : "outline"
-                                                    }
-                                                    onClick={() =>
-                                                        setFilter("favorite")
-                                                    }
-                                                    className="rounded-full gap-1"
-                                                >
-                                                    <Star size={14} />
-                                                    Favorit
-                                                </Button>
-                                                <Button
-                                                    size="sm"
-                                                    variant={
-                                                        filter === "learned"
-                                                            ? "default"
-                                                            : "outline"
-                                                    }
-                                                    onClick={() =>
-                                                        setFilter("learned")
-                                                    }
-                                                    className="rounded-full gap-1"
-                                                >
-                                                    <Check size={14} />
-                                                    Sudah Dipelajari
-                                                </Button>
-                                                <Button
-                                                    size="sm"
-                                                    variant={
-                                                        filter === "not-learned"
-                                                            ? "default"
-                                                            : "outline"
-                                                    }
-                                                    onClick={() =>
-                                                        setFilter("not-learned")
-                                                    }
-                                                    className="rounded-full gap-1"
-                                                >
-                                                    <X size={14} />
-                                                    Belum Dipelajari
-                                                </Button>
-                                            </div>
-                                        </div>
-
-                                        <div>
-                                            <h5 className="text-sm text-muted-foreground mb-2">
-                                                Urutkan
-                                            </h5>
-                                            <div className="flex flex-wrap gap-2">
-                                                <Button
-                                                    size="sm"
-                                                    variant={
-                                                        sortBy === "a-z"
-                                                            ? "default"
-                                                            : "outline"
-                                                    }
-                                                    onClick={() =>
-                                                        setSortBy("a-z")
-                                                    }
-                                                    className="rounded-full"
-                                                >
-                                                    A-Z
-                                                </Button>
-                                                <Button
-                                                    size="sm"
-                                                    variant={
-                                                        sortBy === "newest"
-                                                            ? "default"
-                                                            : "outline"
-                                                    }
-                                                    onClick={() =>
-                                                        setSortBy("newest")
-                                                    }
-                                                    className="rounded-full"
-                                                >
-                                                    Terbaru
-                                                </Button>
-                                                <Button
-                                                    size="sm"
-                                                    variant={
-                                                        sortBy === "favorite"
-                                                            ? "default"
-                                                            : "outline"
-                                                    }
-                                                    onClick={() =>
-                                                        setSortBy("favorite")
-                                                    }
-                                                    className="rounded-full"
-                                                >
-                                                    Favorit
-                                                </Button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            ) : (
-                                <div className="flex items-center gap-3">
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        className="rounded-full border-primary/20 hover:bg-primary/10 gap-2"
-                                        onClick={() =>
-                                            setShowBottomSearch(true)
-                                        }
-                                    >
-                                        <Search size={16} />
-                                        Cari
-                                    </Button>
-
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        className="rounded-full border-primary/20 hover:bg-primary/10 gap-2"
-                                        onClick={() =>
-                                            setShowBottomFilter(true)
-                                        }
-                                    >
-                                        <Filter size={16} />
-                                        Filter
-                                    </Button>
-
-                                    <div className="ml-auto">
-                                        <Dialog>
-                                            <DialogTrigger asChild>
-                                                <Button
-                                                    size="sm"
-                                                    className="rounded-full gap-2"
-                                                >
-                                                    <FlipHorizontal size={16} />
-                                                    Mode Flashcard
-                                                </Button>
-                                            </DialogTrigger>
-                                            <DialogContent className="rounded-xl">
-                                                <DialogHeader>
-                                                    <DialogTitle>
-                                                        Mode Flashcard
-                                                    </DialogTitle>
-                                                    <DialogDescription>
-                                                        Ubah tampilan menjadi
-                                                        mode flashcard untuk
-                                                        latihan.
-                                                    </DialogDescription>
-                                                </DialogHeader>
-                                                <div className="py-4">
-                                                    <p>
-                                                        Fitur mode flashcard
-                                                        akan segera hadir!
-                                                    </p>
-                                                </div>
-                                            </DialogContent>
-                                        </Dialog>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
         </>
     );
 }
@@ -1586,14 +1183,14 @@ const Share = ({ size, className }) => {
 
 // Main component at the end
 export default function KosakataIndex() {
-    const { sample_vocabulary, today_vocabulary, favorite_count } = usePage().props;
+    const { sample_vocabulary, today_vocabulary} = usePage().props;
 
     return (
         <Dashboard>
             <VocabularyContent 
                 vocabulary={sample_vocabulary} 
                 todayVocabulary={today_vocabulary}
-                favoriteCount={favorite_count}
+          
             />
         </Dashboard>
     );

@@ -264,8 +264,8 @@ export default function Dashboard({ children }) {
                 </div>
                 {sidebarOpen && (
                   <div className="overflow-hidden">
-                    <h2 className="text-lg font-bold text-foreground dark:text-white">NihonggoVocabulary</h2>
-                    <p className="text-xs text-muted-foreground dark:text-slate-400">Vocabulary Dashboard</p>
+                    <h2 className="text-lg font-bold text-foreground dark:text-white">Kotobee</h2>
+                    <p className="text-xs text-muted-foreground dark:text-slate-400">Belajar Bahasa Jepang</p>
                   </div>
                 )}
               </div>
@@ -282,8 +282,8 @@ export default function Dashboard({ children }) {
                 <SidebarLink icon={<LayoutDashboard className="h-5 w-5" />} label="Dashboard" isActive={route().current('dashboard')} isOpen={sidebarOpen} href={route('dashboard')} disabled={isQuizPage}/>
                 <SidebarLink icon={<Type className="h-5 w-5" />} label="Huruf Jepang" isActive={['huruf', 'kategori-huruf-hiragana', 'huruf-hiragana','huruf-hiragana-detail'].some(name => route().current(name))}
                 isOpen={sidebarOpen} href={route('huruf')} disabled={isQuizPage} />
-                <SidebarLink icon={<BookOpenText className="h-5 w-5" />} label="Kosakata" isActive={['list-kosakata', 'detail-kosakata', 'kosakata-flashcard'].some(name => route().current(name))} isOpen={sidebarOpen} href={route('list-kosakata')} locked={currentLevel < 3} disabled={isQuizPage} />
-                <SidebarLink icon={<FlipVertical className="h-5 w-5" />} label="Flashcard" isActive={['flashcard'].some(name => route().current(name))} isOpen={sidebarOpen} href={route('flashcard')} locked={currentLevel < 3} disabled={isQuizPage} />
+                <SidebarLink icon={<BookOpenText className="h-5 w-5" />} label="Kosakata" isActive={['list-kosakata', 'detail-kosakata'].some(name => route().current(name))} isOpen={sidebarOpen} href={route('list-kosakata')} locked={currentLevel < 3} disabled={isQuizPage} />
+                
               
               
               </nav>
@@ -308,13 +308,7 @@ export default function Dashboard({ children }) {
                   locked={currentLevel < 3} 
                   disabled={isQuizPage} 
                 />
-                <SidebarLink
-                  icon={<Award className="h-5 w-5" />}
-                  label="Achievements"
-                  locked={true}
-                  isOpen={sidebarOpen}
-                  disabled={isQuizPage}
-                />
+
 
                 
               </nav>
@@ -382,7 +376,7 @@ export default function Dashboard({ children }) {
                     <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary dark:bg-violet-600 text-white">
                       <span className="font-bold">AS</span>
                     </div>
-                    <h2 className="text-lg font-bold text-foreground dark:text-white">NihonggoVocabulary</h2>
+                    <h2 className="text-lg font-bold text-foreground dark:text-white">Kotobee</h2>
                   </div>
                   <Button
                     variant="ghost"
@@ -401,8 +395,8 @@ export default function Dashboard({ children }) {
                   <SidebarLink icon={<LayoutDashboard className="h-5 w-5" />} label="Dashboard" isActive={route().current('dashboard')} isOpen={true} href={route('dashboard')}/>
                 <SidebarLink icon={<Type className="h-5 w-5" />} label="Huruf Jepang" isActive={['huruf', 'kategori-huruf-hiragana', 'huruf-hiragana','huruf-hiragana-detail'].some(name => route().current(name))}
                 isOpen={true} href={route('huruf')} />
-                <SidebarLink icon={<BookOpenText className="h-5 w-5" />} label="Kosakata" isActive={['list-kosakata', 'detail-kosakata', 'kosakata-flashcard'].some(name => route().current(name))} isOpen={true} href={route('list-kosakata')} />
-                <SidebarLink icon={<FlipVertical className="h-5 w-5" />} label="Flashcard" isActive={false} isOpen={true} href={route('list-kosakata')} />
+                <SidebarLink icon={<BookOpenText className="h-5 w-5" />} label="Kosakata" isActive={['list-kosakata', 'detail-kosakata'].some(name => route().current(name))} isOpen={true} href={route('list-kosakata')} />
+               
                   </nav>
 
                   {/* Level Bar for Mobile */}
@@ -422,12 +416,7 @@ export default function Dashboard({ children }) {
                   <SidebarLink icon={<PencilLine className="h-5 w-5" />} label="Kuis Huruf" isOpen={true} isActive={['pilih-huruf-quis','pilih-list-huruf-quis','pilih-level-quis','quis','review-quis'].some(name => route().current(name))} href={route('pilih-huruf-quis')} />
                 <SidebarLink icon={<ListChecks className="h-5 w-5" />} label="Kuis Kosakata" isOpen={true} isActive={['pilih-level-quis-kosakata','pilih-list-quis-kosakata','quis-kosakata','review-quis-kosakata','review-quis-kosakata-intermediate','review-quis-kosakata-advanced'].some(name => route().current(name))} href={route('pilih-level-quis-kosakata')}/>
                 <SidebarLink icon={<Trophy className="h-5 w-5" />} label="Leaderboard" isOpen={true} isActive={route().current('leaderboard')} href={route('leaderboard')} />
-                <SidebarLink
-                  icon={<Award className="h-5 w-5" />}
-                  label="Achievements"
-                  locked={true}
-                  isOpen={true}
-                />
+           
                   
                   </nav>
                 </div>
@@ -673,8 +662,8 @@ export default function Dashboard({ children }) {
         <div className="flex items-center gap-3">
           <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-primary to-violet-500 dark:from-violet-600 dark:to-indigo-500 flex items-center justify-center text-white font-bold text-sm shadow-md">NV</div>
           <div>
-            <h3 className="font-medium text-foreground dark:text-white">NihonggoVocabulary</h3>
-            <p className="text-xs text-muted-foreground dark:text-slate-400">© 2025 NihonggoVocabulary. All rights reserved.</p>
+            <h3 className="font-medium text-foreground dark:text-white">Kotonee</h3>
+            <p className="text-xs text-muted-foreground dark:text-slate-400">© 2025 Kotobee. All rights reserved.</p>
           </div>
         </div>
         

@@ -139,16 +139,12 @@ export default function HiraganaDetailPage() {
         gambar_huruf,
         jenis,
         kategori,
-        idList,
         status,
         isNull
     } = usePage().props;
 
     
 
-    const currentIndex = idList.findIndex((id) => id === huruf.id);
-    const prevId = currentIndex > 0 ? idList[currentIndex - 1] : null;
-    const nextId = currentIndex < idList.length - 1 ? idList[currentIndex + 1] : null;
 
     useEffect(() => {
         // Simulate initial page load
@@ -1079,75 +1075,7 @@ export default function HiraganaDetailPage() {
                                         </motion.div>
                                         
 
-                                        {/* Navigation - Enhanced */}
-                                        <motion.div
-                                            variants={itemVariants}
-                                            className="flex justify-between pt-6 border-t border-primary/10"
-                                        >
-                                            {prevId ? (
-                                                <Link
-                                                    href={route("huruf-hiragana-detail", {
-                                                        jenis:jenis,
-                                                        kategori:kategori,
-                                                        id: prevId,
-                                                    })}
-                                                
-                                                    data={{ idList }}
-                                                >
-                                                    <Button
-                                                        variant="outline"
-                                                        className="flex items-center gap-2 rounded-xl border-primary/20 hover:bg-primary/10 hover:border-primary/30 transition-all shadow-sm hover:shadow"
-                                                    >
-                                                        <ChevronLeft size={18} />
-                                                        <span>Huruf Sebelumnya</span>
-                                                    </Button>
-                                                </Link>
-                                            ) : (
-                                        
-                                                <Button
-                                                disabled
-                                                    variant="outline"
-                                                    className="flex items-center gap-2 rounded-xl border-primary/20 hover:bg-primary/10 hover:border-primary/30 transition-all shadow-sm hover:shadow"
-                                                >
-                                                    <ChevronLeft size={18} />
-                                                    <span>Huruf Sebelumnya</span>
-                                                </Button>
-                                            
-                                            )}
-                                            {
-                                            nextId ? (
-                                                <Link
-                                                    href={route("huruf-hiragana-detail", {
-                                                        jenis:jenis,
-                                                        kategori:kategori,
-                                                        id: nextId,
-                                                    })}
-                                                
-                                                    data={{ idList }}
-                                                >
-                                                    <Button
-                                                        variant="outline"
-                                                        className="flex items-center gap-2 rounded-xl border-primary/20 hover:bg-primary/10 hover:border-primary/30 transition-all shadow-sm hover:shadow"
-                                                    >
-                                                        <span>Huruf Selanjutnya</span>
-                                                        <ChevronRight size={18} />
-                                                    </Button>
-                                                </Link>
-                                            ) : (
-            
-                                                <Button
-                                                disabled
-                                                    variant="outline"
-                                                    className="flex items-center gap-2 rounded-xl border-primary/20 hover:bg-primary/10 hover:border-primary/30 transition-all shadow-sm hover:shadow"
-                                                >
-                                                    <span>Huruf Selanjutnya</span>
-                                                    <ChevronRight size={18} />
-                                                </Button>
-        
-                                            )
-                                            }
-                                            
-                                        </motion.div>
+                                   
                                     </motion.div>
                                 </motion.div>
                             )}

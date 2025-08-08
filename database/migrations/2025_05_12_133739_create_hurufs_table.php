@@ -18,6 +18,7 @@ return new class extends Migration
             $table->enum('kategori_huruf', ['gojuon', 'dakuten', 'handakuten', 'youon', 'sokuon', 'choon']);
             $table->text('deskripsi')->nullable();
             $table->string('romaji');
+            $table->unsignedTinyInteger('urutan')->nullable();
             $table->unsignedTinyInteger('jumlah_coretan')->nullable();
             $table->string('kategori')->nullable(); // Contoh: vokal, non vokal
             $table->string('groups')->nullable(); // 'a','ka','sa','ta',dll

@@ -118,7 +118,7 @@ const HiraganaCard = ({ character, romaji, jenis, kategori, id, hurufs, audio, i
                 </AlertDialogContent>
             </AlertDialog>
             <motion.div
-                className="relative bg-gradient-to-br from-background to-background/90 border border-primary/20 rounded-2xl shadow-lg overflow-hidden h-[180px] group"
+                className="relative bg-gradient-to-br from-background to-background/90 border border-primary/20 rounded-2xl shadow-lg overflow-hidden h-[260px] group"
                 whileHover={{
                     scale: 1.05,
                     boxShadow: "0 15px 30px rgba(0, 0, 0, 0.15)",
@@ -167,38 +167,16 @@ const HiraganaCard = ({ character, romaji, jenis, kategori, id, hurufs, audio, i
                 </div>
 
                 {/* Character content */}
-                <div className="p-6 flex flex-col items-center justify-center h-full relative z-10">
-                    <motion.span
-                        className="text-6xl font-bold mb-3 text-primary transition-all duration-300"
-                        animate={{
-                            scale: isHovered ? 0.9 : 1,
-                            y: isHovered ? -10 : 0,
-                            opacity: isHovered ? 0.5 : 1,
-                        }}
-                        transition={{ duration: 0.3 }}
-                    >
+                <div className="p-6 flex flex-col items-center justify-center h-full relative z-10 group hover:scale-105 transition-transform duration-300">
+                    <span className="text-6xl font-bold mb-3 text-primary transition-all duration-300">
                         {character}
-                    </motion.span>
+                    </span>
 
-                    <motion.span
-                        className="text-sm font-medium text-foreground/80 mb-2"
-                        animate={{
-                            opacity: isHovered ? 0.5 : 1,
-                            y: isHovered ? -5 : 0,
-                        }}
-                        transition={{ duration: 0.3 }}
-                    >
+                    <span className="text-sm font-medium text-foreground/80 mb-2">
                         {romaji}
-                    </motion.span>
+                    </span>
 
-                    <motion.div
-                        className="mt-1 flex items-center"
-                        animate={{
-                            opacity: isHovered ? 0 : 1,
-                            y: isHovered ? -5 : 0,
-                        }}
-                        transition={{ duration: 0.3 }}
-                    >
+                    <div className="mt-1 flex items-center">
                         <span
                             className={`inline-block w-3 h-3 rounded-full mr-2 ${
                                 is_learned ? "bg-green-500" : "bg-amber-500"
@@ -207,50 +185,9 @@ const HiraganaCard = ({ character, romaji, jenis, kategori, id, hurufs, audio, i
                         <span className="text-xs text-foreground/70">
                             {is_learned ? "Sudah dipelajari" : "Belum dipelajari"}
                         </span>
-                    </motion.div>
-                </div>
-
-                {/* Overlay that slides up on hover */}
-                <motion.div
-                    className="absolute inset-0 bg-gradient-to-br from-primary to-primary/90 z-10 flex flex-col items-center justify-center p-4"
-                    initial={{ y: "100%" }}
-                    animate={{ y: isHovered ? "0%" : "100%" }}
-                    transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                >
-                    <motion.span
-                        className="text-5xl font-bold mb-2 text-primary-foreground"
-                        initial={{ scale: 0.8, opacity: 0 }}
-                        animate={{
-                            scale: isHovered ? 1 : 0.8,
-                            opacity: isHovered ? 1 : 0,
-                        }}
-                        transition={{ delay: 0.1, duration: 0.3 }}
-                    >
-                        {character}
-                    </motion.span>
-
-                    <motion.span
-                        className="text-sm font-medium text-primary-foreground/90 mb-4"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: isHovered ? 1 : 0 }}
-                        transition={{ delay: 0.2, duration: 0.3 }}
-                    >
-                        {romaji}
-                    </motion.span>
-
-                    <motion.button
-                        className="px-5 py-2 bg-primary-foreground text-primary rounded-lg text-sm font-medium shadow-md flex items-center space-x-2"
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{
-                            opacity: isHovered ? 1 : 0,
-                            y: isHovered ? 0 : 10,
-                        }}
-                        whileHover={{
-                            scale: 1.05,
-                            boxShadow: "0 5px 15px rgba(0, 0, 0, 0.1)",
-                        }}
-                        whileTap={{ scale: 0.95 }}
-                        transition={{ delay: 0.3, duration: 0.2 }}
+                    </div>
+                    <button
+                        className="px-5 py-2 bg-primary-foreground text-primary rounded-lg text-sm font-medium border flex items-center space-x-2 mt-3 hover:bg-primary hover:text-gray-200 hover:border-0 dark:border-purple-500 transition-all "             
                     >
                         <BookOpen size={16} />
                         <span>
@@ -260,29 +197,23 @@ const HiraganaCard = ({ character, romaji, jenis, kategori, id, hurufs, audio, i
                                 kategori: kategori,
                                 id: id,
                             })}
-                            data={{ idList: hurufs.map((h) => h.id) }}
                         >
-                            Pelajari
+                            Lihat Detail
                         </Link>
                         </span>
-                    </motion.button>
-
-                    <motion.button
-                        className="mt-2 px-3 py-1 bg-primary-foreground/20 text-primary-foreground rounded-lg text-xs font-medium flex items-center space-x-1"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: isHovered ? 1 : 0 }}
-                        whileHover={{
-                            scale: 1.05,
-                            backgroundColor: "rgba(255, 255, 255, 0.3)",
-                        }}
-                        whileTap={{ scale: 0.95 }}
-                        transition={{ delay: 0.4, duration: 0.2 }}
-                        onClick={handleClick}
+                    </button>
+                    <button
+                       className="px-5 py-2 bg-primary-foreground text-primary rounded-lg text-sm font-medium border flex items-center space-x-2 mt-2 hover:bg-primary hover:text-gray-200 hover:border-0 dark:border-purple-500 transition-all"   
+                       onClick={handleClick}
+ 
                     >
                         <Volume2 size={12} />
-                        <span>Dengarkan</span>
-                    </motion.button>
-                </motion.div>
+                        <span>Putar Suara</span>
+                    </button>
+                </div>
+
+
+               
 
                 {/* Decorative elements that appear on hover */}
                 <motion.div

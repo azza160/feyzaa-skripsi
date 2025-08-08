@@ -42,7 +42,7 @@ class KosakataController extends Controller
 
         // Ambil data user_kosakatas dan transform ke associative array untuk lookup yang lebih cepat
         $userKosakatas = $user->kosakatas()
-            ->select('kosakatas.id', 'user_kosakatas.is_favorite', 'user_kosakatas.is_learned', 'user_kosakatas.last_completed_at')
+            ->select('kosakatas.id', 'user_kosakatas.is_learned', 'user_kosakatas.last_completed_at')
             ->get()
             ->keyBy('id');
 
@@ -57,8 +57,6 @@ class KosakataController extends Controller
                 'romaji' => $item->romaji,
                 'meaning' => $item->arti,
                 'audio' => $item->audio,
-                //check data isFavorite,jika dari pivot nilainya 1 maka true, jika 0 maka false dan jika null maka false
-                'isFavorite' => $userKosakata ? ($userKosakata->pivot->is_favorite ? true : false) : false,
                 'isLearned' => $userKosakata ? ($userKosakata->pivot->is_learned ? true : false) : false,
                 'category' => 'umum', // default atau bisa tambahkan kolom kategori nanti
                 'example' => $contoh?->kanji,
@@ -76,14 +74,12 @@ class KosakataController extends Controller
         $todayIndex = crc32($today) % ($kosakataCount > 0 ? $kosakataCount : 1);
         $todayKosakata = $kosakataCount > 0 ? $formatted[$todayIndex] : null;
 
-        // --- Tambahan: Favorite Count langsung dari DB ---
-        $favoriteCount = $user->kosakatas()->wherePivot('is_favorite', true)->count();
+
 
         return Inertia::render('User/List-Kosakata', [
             'user' => $user,
             'sample_vocabulary' => $formatted,
             'today_vocabulary' => $todayKosakata,
-            'favorite_count' => $favoriteCount,
             'currentLevel' => $user->level,
             'currentExp' => $user->exp,
             'maxExp' => $this->calculateNextLevelExp($user->level),
@@ -99,9 +95,8 @@ class KosakataController extends Controller
             'contohKalimats',
         ])->findOrFail($id);
     
-        // Ambil status favorite & learned dari pivot user_kosakatas
+        // Ambil status learned dari pivot user_kosakatas
         $userKosakata = $user->kosakatas()->where('kosakatas.id', $kosakata->id)->first();
-        $isFavorite = $userKosakata ? ($userKosakata->pivot->is_favorite ? true : false) : false;
         $isLearned = $userKosakata ? ($userKosakata->pivot->is_learned ? true : false) : false;
 
         // Mapping struktur data yang frontend butuhkan
@@ -115,7 +110,6 @@ class KosakataController extends Controller
             'meaning' => $kosakata->arti,
             'type' => 'verb', // misal masih hardcoded, nanti bisa dari kolom baru
             'level' => 'N5', // nanti bisa dari kolom baru
-            'isFavorite' => $isFavorite,
             'isLearned' => $isLearned,
             'audio' => $kosakata->audio,
     
@@ -156,7 +150,6 @@ class KosakataController extends Controller
             'stats' => [
                 'views' => 1234, // misal placeholder dulu
                 'learners' => 567,
-                'favorites' => 89,
                 'lastUpdated' => $kosakata->updated_at ? $kosakata->updated_at->format('Y-m-d') : null,
             ],
             'tags' => ['食べ物', '動詞'], // nanti bisa dari tabel relasi tags

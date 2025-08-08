@@ -11,7 +11,7 @@ class Huruf extends Model
     public $incrementing = false; // karena id manual dan tipe string
     protected $keyType = 'string'; // ubah key type ke string
 
-    protected $fillable = ['id', 'huruf', 'jenis_huruf', 'kategori_huruf', 'deskripsi', 'romaji', 'jumlah_coretan', 'kategori', 'catatan', 'groups','audio'];
+    protected $fillable = ['id', 'huruf', 'jenis_huruf', 'kategori_huruf', 'deskripsi', 'romaji', 'jumlah_coretan', 'kategori', 'catatan', 'groups','audio','urutan'];
 
     // Relasi ke contoh penggunaan
     public function contohPenggunaans()

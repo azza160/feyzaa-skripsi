@@ -15,14 +15,13 @@ use function Laravel\Prompts\progress;
 
 class HurufController extends Controller
 {
-
     private function calculateNextLevelExp($currentLevel)
     {
         $levelConfigs = config('exp.levels'); // ambil dari config/exp.php
-     
+
         // Ambil semua level yang tersedia
         $availableLevels = array_keys($levelConfigs);
-    
+
         // Ambil level maksimal dari config
         $maxLevel = max($availableLevels);
 
@@ -30,25 +29,27 @@ class HurufController extends Controller
         if ($currentLevel >= $maxLevel) {
             return null; // null = tidak ada level berikutnya
         }
-        
+
         return $levelConfigs[$currentLevel]['max_exp'] ?? null;
     }
-    
-    public function pilihHuruf(){
+
+    public function pilihHuruf()
+    {
         $this->cleanupActiveQuisSession();
         $user = auth()->user();
         $isKatakanaUnlocked = $user->level >= 2;
 
-        return Inertia::render('User/Huruf',[
+        return Inertia::render('User/Huruf', [
             'currentLevel' => $user->level,
             'currentExp' => $user->exp,
             'maxExp' => $this->calculateNextLevelExp($user->level),
             'user' => $user,
-            'isKatakanaUnlocked' => $isKatakanaUnlocked
+            'isKatakanaUnlocked' => $isKatakanaUnlocked,
         ]);
     }
 
-    public function kategoriHiragana(){
+    public function kategoriHiragana()
+    {
         $this->cleanupActiveQuisSession();
         $user = auth()->user();
         //ambil data dari table user_belajar yang pembelajaran_id nya belajar-hiragana-gojuon
@@ -61,33 +62,33 @@ class HurufController extends Controller
             'gojuon' => [
                 'max' => 46,
                 'status' => 'belum mulai',
-                'progress' => 0
+                'progress' => 0,
             ],
             'dakuten' => [
                 'max' => 20,
                 'status' => 'belum mulai',
-                'progress' => 0
+                'progress' => 0,
             ],
             'handakuten' => [
                 'max' => 5,
                 'status' => 'belum mulai',
-                'progress' => 0
+                'progress' => 0,
             ],
             'youon' => [
                 'max' => 36,
                 'status' => 'belum mulai',
-                'progress' => 0
+                'progress' => 0,
             ],
             'sokuon' => [
                 'max' => 1,
                 'status' => 'belum mulai',
-                'progress' => 0
+                'progress' => 0,
             ],
             'choon' => [
                 'max' => 5,
                 'status' => 'belum mulai',
-                'progress' => 0
-            ]
+                'progress' => 0,
+            ],
         ];
 
         //ambil dari progress data yang sudah ada di table user_belajar,lalu masukan ke dalam array categories data progress dan status
@@ -97,24 +98,21 @@ class HurufController extends Controller
             $categories[$category]['status'] = $item->status;
         }
 
-       
-
-    
-
         return Inertia::render('User/Kategori-Hiragana', [
             'currentLevel' => $user->level,
             'currentExp' => $user->exp,
             'maxExp' => $this->calculateNextLevelExp($user->level),
             'user' => $user,
             'categoriesProgress' => $categories,
-            'progress_gojuon' => $progress_gojuon
+            'progress_gojuon' => $progress_gojuon,
         ]);
     }
 
-    public function kategoriKatakana(){
+    public function kategoriKatakana()
+    {
         $this->cleanupActiveQuisSession();
         $user = auth()->user();
-        
+
         // Check if user has required level
         if ($user->level < 2) {
             return redirect()->route('huruf')->with('error', 'Anda harus mencapai level 2 untuk mengakses Katakana.');
@@ -132,33 +130,33 @@ class HurufController extends Controller
             'gojuon' => [
                 'max' => 46,
                 'status' => 'belum mulai',
-                'progress' => 0
+                'progress' => 0,
             ],
             'dakuten' => [
                 'max' => 20,
                 'status' => 'belum mulai',
-                'progress' => 0
+                'progress' => 0,
             ],
             'handakuten' => [
                 'max' => 5,
                 'status' => 'belum mulai',
-                'progress' => 0
+                'progress' => 0,
             ],
             'youon' => [
                 'max' => 33,
                 'status' => 'belum mulai',
-                'progress' => 0
+                'progress' => 0,
             ],
             'sokuon' => [
                 'max' => 1,
                 'status' => 'belum mulai',
-                'progress' => 0
+                'progress' => 0,
             ],
             'choon' => [
                 'max' => 5,
                 'status' => 'belum mulai',
-                'progress' => 0
-            ]
+                'progress' => 0,
+            ],
         ];
 
         //ambil dari progress data yang sudah ada di table user_belajar,lalu masukan ke dalam array categories data progress dan status
@@ -174,7 +172,7 @@ class HurufController extends Controller
             'maxExp' => $this->calculateNextLevelExp($user->level),
             'user' => $user,
             'categoriesProgress' => $categories,
-            'progress_gojuon' => $progress_gojuon
+            'progress_gojuon' => $progress_gojuon,
         ]);
     }
 
@@ -186,17 +184,14 @@ class HurufController extends Controller
         $contoh_penggunaan = Contoh_Penggunaan::where('huruf_id', $huruf->id)->get();
         $gambar_huruf = Gambar_Huruf::where('huruf_id', $huruf->id)->get();
 
-
-
         //cek apakah huruf sudah di pelajari di table user_huruf
         $isLearned = UserHuruf::where('user_id', $user->id)->where('huruf_id', $huruf->id)->first();
-        
+
         $status = $isLearned ? $isLearned->is_learned : false;
         //check apakah null atau tidak
         $isNull = $isLearned ? false : true;
-        
-        return Inertia::render('User/Detail-Huruf', [
 
+        return Inertia::render('User/Detail-Huruf', [
             'currentLevel' => $user->level,
             'currentExp' => $user->exp,
             'maxExp' => $this->calculateNextLevelExp($user->level),
@@ -205,10 +200,9 @@ class HurufController extends Controller
             'gambar_huruf' => $gambar_huruf,
             'jenis' => $jenis,
             'kategori' => $kategori,
-            'idList' => request()->input('idList'),
             'user' => $user,
             'status' => $status,
-            'isNull' => $isNull
+            'isNull' => $isNull,
         ]);
     }
 
@@ -216,7 +210,7 @@ class HurufController extends Controller
     {
         $this->cleanupActiveQuisSession();
         $user = auth()->user();
-        
+
         // Check if user tries to access Katakana without required level
         if ($jenis === 'katakana' && $user->level < 2) {
             return redirect()->route('huruf')->with('error', 'Anda harus mencapai level 2 untuk mengakses Katakana.');
@@ -225,8 +219,6 @@ class HurufController extends Controller
         // Validasi manual untuk jenis dan kategori huruf
         $allowedJenis = ['hiragana', 'katakana'];
         $allowedKategori = ['gojuon', 'dakuten', 'handakuten', 'youon', 'sokuon', 'choon'];
-
-       
 
         if (!in_array($jenis, $allowedJenis) || !in_array($kategori, $allowedKategori)) {
             abort(404);
@@ -240,11 +232,10 @@ class HurufController extends Controller
                 $category = str_replace("belajar-{$jenis}-", '', $item->pembelajaran_id);
                 return [$category => $item->progress];
             });
-        
 
         // Check if category should be locked
         $isLocked = false;
-        switch($kategori) {
+        switch ($kategori) {
             case 'gojuon':
                 $isLocked = false; // Always unlocked
                 break;
@@ -273,13 +264,14 @@ class HurufController extends Controller
         // Get all hurufs for the specified jenis and kategori
         $hurufs = Huruf::where('jenis_huruf', $jenis)
             ->where('kategori_huruf', $kategori)
-            ->orderBy('id')
+            ->orderBy('urutan') // urutin berdasarkan urutan yang lo set
             ->get();
 
         // Get learned hurufs for the current user
-        $learnedHurufs = $user->hurufs()
+        $learnedHurufs = $user
+            ->hurufs()
             ->where('is_learned', true)
-            ->pluck('hurufs.id')  // Specify the table name for id
+            ->pluck('hurufs.id') // Specify the table name for id
             ->toArray();
 
         // Add is_learned status to each huruf
@@ -289,19 +281,16 @@ class HurufController extends Controller
         });
 
         //mengambil data progress dari table user_belajar
-        $progress = UserBelajar::where('user_id', $user->id)
-    ->where('pembelajaran_id', "belajar-{$jenis}-{$kategori}")
-    ->first()?->progress ?? 0;
+        $progress =
+            UserBelajar::where('user_id', $user->id)
+                ->where('pembelajaran_id', "belajar-{$jenis}-{$kategori}")
+                ->first()?->progress ?? 0;
 
-        
         //mengambil nilai max pada data pembelajaran yang terkait dengan kategori
         $max = Pembelajaran::where('id', "belajar-{$jenis}-{$kategori}")->first()->max;
-      
-      
-        //hitung presentase progress dengan maximal nilai 100%
-        $presentase = floor(($progress / $max) * 100)   ;
 
-       
+        //hitung presentase progress dengan maximal nilai 100%
+        $presentase = floor(($progress / $max) * 100);
 
         return Inertia::render('User/List-Huruf', [
             'currentLevel' => $user->level,
@@ -312,7 +301,7 @@ class HurufController extends Controller
             'kategori' => $kategori,
             'user' => $user,
             'presentase' => $presentase,
-            'max' => $max
+            'max' => $max,
         ]);
     }
 }

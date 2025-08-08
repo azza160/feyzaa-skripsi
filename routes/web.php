@@ -25,7 +25,6 @@ use Illuminate\Support\Facades\URL;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-
 Route::get('/', [BerandaController::class, 'Beranda'])->name('beranda');
 Route::get('/pengenalan-huruf', [BerandaController::class, 'PengenalanHuruf'])->name('PengenalanHuruf');
 Route::get('/pengenalan-quis-huruf', [BerandaController::class, 'PengenalanQuisHuruf'])->name('PengenalanQuisHuruf');
@@ -71,7 +70,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/kosakata',[KosakataController::class,'getAllKosakata'])->name('list-kosakata');
     Route::get('/dashboard/kosakata/detail-kosakata/{id}', [KosakataController::class,"getDetailKosakata"])->name('detail-kosakata');
     
-    Route::get('/dashboard/flashcard', [KosakataController::class,'flashcard'])->name('flashcard');
+    
 
     //route quis huruf
     Route::get('/dashboard/pilih-huruf-quis',[QuisController::class,'pilihHurufQuisShow'])->name('pilih-huruf-quis');

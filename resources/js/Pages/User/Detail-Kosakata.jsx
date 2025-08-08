@@ -63,87 +63,6 @@ import {
 import axios from "axios";
 
 
-// Sample data - in a real app, this would come from props or API
-const vocabularyData = {
-    id: 1,
-    word: "食べる",
-    kanji: "食べる",
-    furigana: "たべる",
-    romaji: "taberu",
-    meaning: "to eat",
-    type: "verb",
-    level: "N5",
-    progress: 65,
-    isFavorite: false,
-    isLearned: false,
-    audio: "/audio/taberu.mp3",
-    examples: [
-        {
-            id: 1,
-            kanji: "私 は 毎日 朝ごはん を 食べます。",
-            furigana: "わたし は まいにち あさごはん を たべます。",
-            romaji: "Watashi wa mainichi asagohan o tabemasu.",
-            meaning: "I eat breakfast every day.",
-            audio: "/audio/example1.mp3",
-        },
-    ],
-    conjugations: [
-        {
-            form: "Present (Plain)",
-            kanji: "食べる",
-            furigana: "たべる",
-            romaji: "taberu",
-            meaning: "eat",
-            audio: "/audio/taberu_plain.mp3",
-            examples: [
-                {
-                    kanji: "私 は 毎日 果物 を 食べる。",
-                    furigana: "わたし は まいにち くだもの を たべる。",
-                    romaji: "Watashi wa mainichi kudamono o taberu.",
-                    meaning: "I eat fruit every day.",
-                },
-                {
-                    kanji: "彼 は よく ここ で 食べる。",
-                    furigana: "かれ は よく ここ で たべる。",
-                    romaji: "Kare wa yoku koko de taberu.",
-                    meaning: "He often eats here.",
-                },
-            ],
-        },
-        {
-            form: "Present (Polite)",
-            kanji: "食べます",
-            furigana: "たべます",
-            romaji: "tabemasu",
-            meaning: "eat",
-            audio: "/audio/taberu_polite.mp3",
-            examples: [
-                {
-                    kanji: "私 は 朝 ご飯 を 食べます。",
-                    furigana: "わたし は あさ ごはん を たべます。",
-                    romaji: "Watashi wa asa gohan o tabemasu.",
-                    meaning: "I eat breakfast.",
-                },
-                {
-                    kanji: "彼女 は いつも 7時 に 食べます。",
-                    furigana: "かのじょ は いつも 7じ に たべます。",
-                    romaji: "Kanojo wa itsumo shichi-ji ni tabemasu.",
-                    meaning: "She always eats at 7 o'clock.",
-                },
-            ],
-        },
-    ],
-
-    mnemonics: "Think of 'taberu' as 'table-ru' - you eat at a table!",
-    notes: "This is a regular -ru verb (Group 2), which means its conjugation follows a predictable pattern.",
-    stats: {
-        views: 1243,
-        learners: 856,
-        favorites: 124,
-        lastUpdated: "2023-11-15",
-    },
-    tags: ["食べ物", "動詞", "日常生活"],
-};
 
 // Empty data for comparison
 const emptyConjugations = [];
@@ -151,7 +70,6 @@ const emptyPatterns = [];
 
 const VocabularyDetailContent = ({vocabularyData}) => {
     const [showFurigana, setShowFurigana] = useState(true);
-    const [isFavorite, setIsFavorite] = useState(vocabularyData.isFavorite);
     const [isLearned, setIsLearned] = useState(vocabularyData.isLearned);
     const [progress, setProgress] = useState(vocabularyData.progress);
     const [activeExample, setActiveExample] = useState(null);
@@ -283,25 +201,6 @@ const VocabularyDetailContent = ({vocabularyData}) => {
         },
     };
 
-
-    const toggleFavorite = async () => {
-        setIsButtonLoading(true);
-        try {
-            const response = await axios.post(route('user.belajar.update-user-kosakata-favorite'), { id: vocabularyData.id });
-            if (response.data.success) {
-                setIsFavorite((prev) => !prev);
-                setAlertMessage('Kosakata berhasil ditandai sebagai favorit');
-                setAlertTitle('Berhasil!');
-                setAlertDesc(isFavorite ? 'Kosakata dihapus dari favorit.' : 'Kosakata ditambahkan ke favorit.');
-            }
-        } catch (error) {
-            setAlertMessage('Gagal mengubah status favorit');
-            setAlertTitle('Gagal!');
-            setAlertDesc('Terjadi kesalahan saat memperbarui status favorit.');
-        } finally {
-            setIsButtonLoading(false);
-        }
-    };
 
     const toggleLearned = async () => {
         setIsButtonLoading(true);
@@ -579,34 +478,7 @@ const VocabularyDetailContent = ({vocabularyData}) => {
                                         </TooltipContent>
                                     </Tooltip>
                                 </TooltipProvider>
-                                <TooltipProvider>
-                                    <Tooltip>
-                                        <TooltipTrigger asChild>
-                                            <Button
-                                                variant={
-                                                    isFavorite
-                                                        ? "default"
-                                                        : "outline"
-                                                }
-                                                size="icon"
-                                                onClick={toggleFavorite}
-                                                className="rounded-full transition-all duration-300 hover:bg-primary/10"
-                                                disabled={isButtonLoading}
-                                            >
-                                                {isFavorite ? (
-                                                    <BookmarkCheck className="h-4 w-4" />
-                                                ) : (
-                                                    <Bookmark className="h-4 w-4" />
-                                                )}
-                                            </Button>
-                                        </TooltipTrigger>
-                                        <TooltipContent>
-                                            {isFavorite
-                                                ? "Hapus dari Favorit"
-                                                : "Tambahkan ke Favorit"}
-                                        </TooltipContent>
-                                    </Tooltip>
-                                </TooltipProvider>
+                        
                             </motion.div>
 
                             <div className="flex items-center gap-3">
@@ -893,11 +765,7 @@ const VocabularyDetailContent = ({vocabularyData}) => {
                         {/* Main Vocabulary Card - Enhanced with better design */}
                         <motion.div variants={itemVariants}>
                             <Card
-                                className={`mb-10 overflow-hidden border-2 border-primary/20 relative shadow-xl shadow-primary/5 ${
-                                    isFavorite
-                                        ? "bg-gradient-to-br from-transparent via-amber-50/10 to-transparent"
-                                        : ""
-                                }`}
+                                className={`mb-10 overflow-hidden border-2 border-primary/20 relative shadow-xl shadow-primary/5`}
                             >
                                 {/* Background decorative elements */}
                                 <div className="absolute -right-20 top-10 w-40 h-40 bg-primary/5 rounded-full blur-3xl"></div>
@@ -916,36 +784,7 @@ const VocabularyDetailContent = ({vocabularyData}) => {
                                             </CardDescription>
                                         </div>
 
-                                        <div className="flex items-center gap-2">
-                                            <TooltipProvider>
-                                                <Tooltip>
-                                                    <TooltipTrigger asChild>
-                                                        <Button
-                                                            variant={
-                                                                isFavorite
-                                                                    ? "default"
-                                                                    : "outline"
-                                                            }
-                                                            size="icon"
-                                                            onClick={toggleFavorite}
-                                                            className="rounded-full transition-all duration-300 hover:bg-primary/10"
-                                                            disabled={isButtonLoading}
-                                                        >
-                                                            {isFavorite ? (
-                                                                <BookmarkCheck className="h-4 w-4" />
-                                                            ) : (
-                                                                <Bookmark className="h-4 w-4" />
-                                                            )}
-                                                        </Button>
-                                                    </TooltipTrigger>
-                                                    <TooltipContent>
-                                                        {isFavorite
-                                                            ? "Hapus dari Favorit"
-                                                            : "Tambahkan ke Favorit"}
-                                                    </TooltipContent>
-                                                </Tooltip>
-                                            </TooltipProvider>
-                                        </div>
+                              
                                     </div>
                                 </CardHeader>
 
