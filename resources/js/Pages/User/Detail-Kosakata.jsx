@@ -61,6 +61,8 @@ import {
     AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
 import axios from "axios";
+import ExpAlert from "../../components/ExpAlert";
+import LevelUpAlert from "../../components/LevelUpAlert";
 
 
 
@@ -98,6 +100,10 @@ const VocabularyDetailContent = ({vocabularyData}) => {
     const [alertTitle, setAlertTitle] = useState('');
     const [alertDesc, setAlertDesc] = useState('');
     const [isButtonLoading, setIsButtonLoading] = useState(false);
+    const [showExpAlert, setShowExpAlert] = useState(false);
+    const [showLevelUpAlert, setShowLevelUpAlert] = useState(false);
+    const [expData, setExpData] = useState(null);
+    const [levelUpData, setLevelUpData] = useState(null);
 
 
 
@@ -147,6 +153,27 @@ const VocabularyDetailContent = ({vocabularyData}) => {
         window.addEventListener("scroll", handleScroll, { passive: true });
         return () => window.removeEventListener("scroll", handleScroll);
     }, [lastScrollY]);
+
+    // Check for stored alert data on component mount
+    useEffect(() => {
+        // Check for level up data
+        const storedLevelUpData = localStorage.getItem('levelUpData');
+        if (storedLevelUpData) {
+            const levelUpData = JSON.parse(storedLevelUpData);
+            setLevelUpData(levelUpData);
+            setShowLevelUpAlert(true);
+            localStorage.removeItem('levelUpData'); // Clear the stored data
+        }
+
+        // Check for exp data
+        const storedExpData = localStorage.getItem('expData');
+        if (storedExpData) {
+            const expData = JSON.parse(storedExpData);
+            setExpData(expData);
+            setShowExpAlert(true);
+            localStorage.removeItem('expData'); // Clear the stored data
+        }
+    }, []);
 
     // Animation variants
     const containerVariants = {
@@ -207,10 +234,31 @@ const VocabularyDetailContent = ({vocabularyData}) => {
         try {
             const response = await axios.post(route('user.belajar.update-user-kosakata'), { id: vocabularyData.id });
             if (response.data.success) {
-                setIsLearned((prev) => !prev);
-                setAlertMessage('Status belajar berhasil diperbarui');
-                setAlertTitle('Berhasil!');
-                setAlertDesc(isLearned ? 'Kosakata dihapus dari daftar dipelajari.' : 'Kosakata ditandai sudah dipelajari.');
+                setIsLearned(true);
+                
+                // Store alert data in localStorage before refreshing
+                if (response.data.data && response.data.data.leveledUp) {
+                    // Level up occurred
+                    localStorage.setItem('levelUpData', JSON.stringify({
+                        level: response.data.data.newLevel,
+                        unlockedFeatures: response.data.data.unlockedFeatures
+                    }));
+                } else {
+                    // EXP gained
+                    localStorage.setItem('expData', JSON.stringify({
+                        currentExp: response.data.data.currentExp,
+                        expGained: response.data.data.expGained,
+                        nextLevelExp: response.data.data.nextLevelExp,
+                        textAlert1: response.data.message
+                    }));
+                }
+                
+                // Refresh the page
+                window.location.reload();
+            } else {
+                setAlertMessage(response.data.message);
+                setAlertTitle('Gagal!');
+                setAlertDesc('Kosakata sudah dipelajari dan tidak dapat dihapus.');
             }
         } catch (error) {
             setAlertMessage('Gagal memperbarui status belajar');
@@ -939,24 +987,40 @@ const VocabularyDetailContent = ({vocabularyData}) => {
                                             </TooltipProvider>
                                         </div>
 
-                                        <Button
-                                            variant={isLearned ? "outline" : "default"}
-                                            onClick={toggleLearned}
-                                            disabled={isButtonLoading}
-                                            className="gap-2 rounded-full px-4"
-                                        >
-                                            {isLearned ? (
-                                                <>
-                                                    <Star className="h-4 w-4 text-amber-500" />
-                                                    <span>Tandai belum dipelajari</span>
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <GraduationCap className="h-4 w-4" />
-                                                    <span>Tandai sudah dipelajari</span>
-                                                </>
-                                            )}
-                                        </Button>
+                                        <TooltipProvider>
+                                            <Tooltip>
+                                                <TooltipTrigger asChild>
+                                                    <div>
+                                                        <Button
+                                                            variant={isLearned ? "outline" : "default"}
+                                                            onClick={toggleLearned}
+                                                            disabled={isButtonLoading || isLearned}
+                                                            className={cn(
+                                                                "gap-2 rounded-full px-4",
+                                                                isLearned && "opacity-50 cursor-not-allowed"
+                                                            )}
+                                                        >
+                                                            {isLearned ? (
+                                                                <>
+                                                                    <Star className="h-4 w-4 text-amber-500" />
+                                                                    <span>Tandai belum dipelajari</span>
+                                                                </>
+                                                            ) : (
+                                                                <>
+                                                                    <GraduationCap className="h-4 w-4" />
+                                                                    <span>Tandai sudah dipelajari</span>
+                                                                </>
+                                                            )}
+                                                        </Button>
+                                                    </div>
+                                                </TooltipTrigger>
+                                                {isLearned && (
+                                                    <TooltipContent>
+                                                        <p>Kosakata sudah dipelajari dan tidak dapat dihapus</p>
+                                                    </TooltipContent>
+                                                )}
+                                            </Tooltip>
+                                        </TooltipProvider>
                                     </div>
                                 </CardContent>
                             </Card>
@@ -1310,6 +1374,26 @@ const VocabularyDetailContent = ({vocabularyData}) => {
                         <Button onClick={handleAlertClose} className="mt-2 w-32 rounded-full">OK</Button>
                     </motion.div>
                 </div>
+            )}
+
+            {/* EXP Alert */}
+            {showExpAlert && expData && (
+                <ExpAlert
+                    onClose={() => setShowExpAlert(false)}
+                    currentExp={expData.currentExp}
+                    expGained={expData.expGained}
+                    nextLevelExp={expData.nextLevelExp}
+                    textAlert1={expData.textAlert1}
+                />
+            )}
+
+            {/* Level Up Alert */}
+            {showLevelUpAlert && levelUpData && (
+                <LevelUpAlert
+                    onClose={() => setShowLevelUpAlert(false)}
+                    level={levelUpData.level}
+                    unlockedFeatures={levelUpData.unlockedFeatures}
+                />
             )}
         </>
     );

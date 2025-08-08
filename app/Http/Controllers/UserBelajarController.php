@@ -507,83 +507,75 @@ class UserBelajarController extends Controller
 
         $userKosakata = DB::table('user_kosakatas')->where('user_id', $user->id)->where('kosakata_id', $request->id)->first();
 
+        // If already learned, return error (cannot unlearn)
         if($userKosakata && $userKosakata->is_learned){
-            DB::table('user_kosakatas')->where('user_id', $user->id)->where('kosakata_id', $request->id)->update(['is_learned' => false,'last_completed_at' => null,'updated_at' => now()]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Kosakata sudah dipelajari dan tidak dapat dihapus',
+            ]);
+        }
+        
+        // If not learned or doesn't exist, mark as learned and give EXP
+        if(!$userKosakata || !$userKosakata->is_learned){
+            // Add or update user_kosakata record
+            if($userKosakata){
+                DB::table('user_kosakatas')->where('user_id', $user->id)->where('kosakata_id', $request->id)->update([
+                    'is_learned' => true,
+                    'last_completed_at' => now(),
+                    'updated_at' => now()
+                ]);
+            } else {
+                DB::table('user_kosakatas')->insert([
+                    'user_id' => $user->id,
+                    'kosakata_id' => $request->id,
+                    'is_learned' => true,
+                    'is_favorite' => false,
+                    'last_completed_at' => now(),
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+
+            // Add 20 EXP to user
+            $oldExp = $user->exp;
+            $user->exp += 20;
+            $user->save();
+
+            // Check for level up
+            $leveledUp = false;
+            $newLevel = $user->level;
+            $unlockedFeatures = [];
+            
+            if(self::checkLevelUp($user)){
+                $leveledUp = true;
+                $newLevel = $user->level;
+                $unlockedFeatures = $this->getUnlockedFeatures($newLevel);
+            }
+
+            // Get current level data for response
+            $currentLevel = $user->level;
+            $currentExp = $user->exp;
+            $nextLevelExp = config('exp.levels')[$currentLevel]['max_exp'] ?? null;
 
             return response()->json([
                 'success' => true,
-                'message' => 'Kosakata berhasil dihapus dari daftar kosakata yang sudah di pelajari',
-            ]);
-        }else if($userKosakata && !$userKosakata->is_learned){
-            DB::table('user_kosakatas')->where('user_id', $user->id)->where('kosakata_id', $request->id)->update(['is_learned' => true,'last_completed_at' => now(),'updated_at' => now()]);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Kosakata berhasil ditambahkan ke daftar kosakata yang sudah di pelajari',
-            ]);
-        }else{
-            $userKosakata = DB::table('user_kosakatas')->insert([
-                'user_id' => $user->id,
-                'kosakata_id' => $request->id,
-                'is_learned' => true,
-                'is_favorite' => false,
-                'last_completed_at' => now(),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Kosakata berhasil ditambahkan ke daftar kosakata yang sudah di pelajari',
+                'message' => 'Kosakata berhasil ditandai sudah dipelajari! +20 EXP',
+                'data' => [
+                    'expGained' => 20,
+                    'currentExp' => $currentExp,
+                    'nextLevelExp' => $nextLevelExp,
+                    'leveledUp' => $leveledUp,
+                    'newLevel' => $newLevel,
+                    'unlockedFeatures' => $unlockedFeatures
+                ]
             ]);
         }
 
         return response()->json([
-            'success' => true,
-            'message' => 'Kosakata berhasil diupdate',
+            'success' => false,
+            'message' => 'Terjadi kesalahan',
         ]);
-        
-        
     }
 
-    public function updateUserKosakataFavorite(Request $request)
-    {
-        $user = Auth::user();
-
-        $userKosakata = DB::table('user_kosakatas')->where('user_id', $user->id)->where('kosakata_id', $request->id)->first();
-
-        if($userKosakata && $userKosakata->is_favorite){
-            DB::table('user_kosakatas')->where('user_id', $user->id)->where('kosakata_id', $request->id)->update(['is_favorite' => false,'updated_at' => now()]);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Kosakata berhasil dihapus dari daftar kosakata favorit',
-            ]);
-        }else if($userKosakata && !$userKosakata->is_favorite){
-            DB::table('user_kosakatas')->where('user_id', $user->id)->where('kosakata_id', $request->id)->update(['is_favorite' => true,'updated_at' => now()]);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Kosakata berhasil ditambahkan ke daftar kosakata favorit',
-            ]);
-        }else{
-            $userKosakata = DB::table('user_kosakatas')->insert([
-                'user_id' => $user->id,
-                'kosakata_id' => $request->id,
-                'is_favorite' => true,
-                'is_learned' => false,
-                'last_completed_at' => null,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Kosakata berhasil ditambahkan ke daftar kosakata favorit',
-            ]);
-        }
-
-        
-        
-    }
+  
 }

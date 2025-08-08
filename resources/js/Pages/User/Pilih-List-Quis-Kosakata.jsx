@@ -464,39 +464,18 @@ export default function VocabularySelector() {
           // Debug: Log error yang diterima
           console.log('Error saat memulai kuis kosakata intermediate:', errors);
           
-          if (errors.message && errors.message.includes('batas maksimal')) {
-            console.log('Rate limit error terdeteksi');
-            // Gunakan SweetAlert2 untuk menampilkan pesan error rate limit
-            try {
-              Swal.fire({
-                icon: 'warning',
-                title: 'Batas Kuis Tercapai!',
-                text: errors.message,
-                confirmButtonText: 'Mengerti',
-                confirmButtonColor: '#3085d6',
-                timer: 10000,
-                timerProgressBar: true
-              });
-            } catch (e) {
-              console.error('Error saat menampilkan SweetAlert:', e);
-              // Fallback ke alert biasa jika SweetAlert gagal
-              alert(errors.message || "Anda telah mencapai batas maksimal kuis per jam");
-            }
-          } else {
-            console.log('Error umum terdeteksi');
-            // Gunakan SweetAlert2 untuk error lainnya
-            try {
-              Swal.fire({
-                icon: 'error',
-                title: 'Gagal Memulai Kuis',
-                text: errors.message || "Terjadi kesalahan",
-                confirmButtonText: 'Tutup'
-              });
-            } catch (e) {
-              console.error('Error saat menampilkan SweetAlert:', e);
-              // Fallback ke alert biasa jika SweetAlert gagal
-              alert(errors.message || "Terjadi kesalahan saat memulai kuis");
-            }
+          // Handle general errors
+          try {
+            Swal.fire({
+              icon: 'error',
+              title: 'Gagal Memulai Kuis',
+              text: errors.message || "Terjadi kesalahan",
+              confirmButtonText: 'Tutup'
+            });
+          } catch (e) {
+            console.error('Error saat menampilkan SweetAlert:', e);
+            // Fallback ke alert biasa jika SweetAlert gagal
+            alert(errors.message || "Terjadi kesalahan saat memulai kuis");
           }
         }
       })
@@ -516,39 +495,18 @@ export default function VocabularySelector() {
           // Debug: Log error yang diterima
           console.log('Error saat memulai kuis kosakata advanced:', errors);
           
-          if (errors.message && errors.message.includes('batas maksimal')) {
-            console.log('Rate limit error terdeteksi');
-            // Gunakan SweetAlert2 untuk menampilkan pesan error rate limit
-            try {
-              Swal.fire({
-                icon: 'warning',
-                title: 'Batas Kuis Tercapai!',
-                text: errors.message,
-                confirmButtonText: 'Mengerti',
-                confirmButtonColor: '#3085d6',
-                timer: 10000,
-                timerProgressBar: true
-              });
-            } catch (e) {
-              console.error('Error saat menampilkan SweetAlert:', e);
-              // Fallback ke alert biasa jika SweetAlert gagal
-              alert(errors.message || "Anda telah mencapai batas maksimal kuis per jam");
-            }
-          } else {
-            console.log('Error umum terdeteksi');
-            // Gunakan SweetAlert2 untuk error lainnya
-            try {
-              Swal.fire({
-                icon: 'error',
-                title: 'Gagal Memulai Kuis',
-                text: errors.message || "Terjadi kesalahan",
-                confirmButtonText: 'Tutup'
-              });
-            } catch (e) {
-              console.error('Error saat menampilkan SweetAlert:', e);
-              // Fallback ke alert biasa jika SweetAlert gagal
-              alert(errors.message || "Terjadi kesalahan saat memulai kuis");
-            }
+          // Handle general errors
+          try {
+            Swal.fire({
+              icon: 'error',
+              title: 'Gagal Memulai Kuis',
+              text: errors.message || "Terjadi kesalahan",
+              confirmButtonText: 'Tutup'
+            });
+          } catch (e) {
+            console.error('Error saat menampilkan SweetAlert:', e);
+            // Fallback ke alert biasa jika SweetAlert gagal
+            alert(errors.message || "Terjadi kesalahan saat memulai kuis");
           }
         }
       })
@@ -567,39 +525,18 @@ export default function VocabularySelector() {
         // Debug: Log error yang diterima
         console.log('Error saat memulai kuis kosakata general:', errors);
         
-        if (errors.message && errors.message.includes('batas maksimal')) {
-          console.log('Rate limit error terdeteksi');
-          // Gunakan SweetAlert2 untuk menampilkan pesan error rate limit
-          try {
-            Swal.fire({
-              icon: 'warning',
-              title: 'Batas Kuis Tercapai!',
-              text: errors.message,
-              confirmButtonText: 'Mengerti',
-              confirmButtonColor: '#3085d6',
-              timer: 10000,
-              timerProgressBar: true
-            });
-          } catch (e) {
-            console.error('Error saat menampilkan SweetAlert:', e);
-            // Fallback ke alert biasa jika SweetAlert gagal
-            alert(errors.message || "Anda telah mencapai batas maksimal kuis per jam");
-          }
-        } else {
-          console.log('Error umum terdeteksi');
-          // Gunakan SweetAlert2 untuk error lainnya
-          try {
-            Swal.fire({
-              icon: 'error',
-              title: 'Gagal Memulai Kuis',
-              text: errors.message || "Terjadi kesalahan",
-              confirmButtonText: 'Tutup'
-            });
-          } catch (e) {
-            console.error('Error saat menampilkan SweetAlert:', e);
-            // Fallback ke alert biasa jika SweetAlert gagal
-            alert(errors.message || "Terjadi kesalahan saat memulai kuis");
-          }
+        // Handle general errors
+        try {
+          Swal.fire({
+            icon: 'error',
+            title: 'Gagal Memulai Kuis',
+            text: errors.message || "Terjadi kesalahan",
+            confirmButtonText: 'Tutup'
+          });
+        } catch (e) {
+          console.error('Error saat menampilkan SweetAlert:', e);
+          // Fallback ke alert biasa jika SweetAlert gagal
+          alert(errors.message || "Terjadi kesalahan saat memulai kuis");
         }
       }
     })
@@ -752,39 +689,18 @@ export default function VocabularySelector() {
                             // Debug: Log error yang diterima
                             console.log('Error saat memulai kuis kosakata intermediate random:', errors);
                             
-                            if (errors.message && errors.message.includes('batas maksimal')) {
-                              console.log('Rate limit error terdeteksi (random mode)');
-                              // Gunakan SweetAlert2 untuk menampilkan pesan error rate limit
-                              try {
-                                Swal.fire({
-                                  icon: 'warning',
-                                  title: 'Batas Kuis Tercapai!',
-                                  text: errors.message,
-                                  confirmButtonText: 'Mengerti',
-                                  confirmButtonColor: '#3085d6',
-                                  timer: 10000,
-                                  timerProgressBar: true
-                                });
-                              } catch (e) {
-                                console.error('Error saat menampilkan SweetAlert (random mode):', e);
-                                // Fallback ke alert biasa jika SweetAlert gagal
-                                alert(errors.message || "Anda telah mencapai batas maksimal kuis per jam");
-                              }
-                            } else {
-                              console.log('Error umum terdeteksi (random mode)');
-                              // Gunakan SweetAlert2 untuk error lainnya
-                              try {
-                                Swal.fire({
-                                  icon: 'error',
-                                  title: 'Gagal Memulai Kuis',
-                                  text: errors.message || "Terjadi kesalahan",
-                                  confirmButtonText: 'Tutup'
-                                });
-                              } catch (e) {
-                                console.error('Error saat menampilkan SweetAlert (random mode):', e);
-                                // Fallback ke alert biasa jika SweetAlert gagal
-                                alert(errors.message || "Terjadi kesalahan saat memulai kuis");
-                              }
+                            // Handle general errors
+                            try {
+                              Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal Memulai Kuis',
+                                text: errors.message || "Terjadi kesalahan",
+                                confirmButtonText: 'Tutup'
+                              });
+                            } catch (e) {
+                              console.error('Error saat menampilkan SweetAlert (random mode advanced):', e);
+                              // Fallback ke alert biasa jika SweetAlert gagal
+                              alert(errors.message || "Terjadi kesalahan saat memulai kuis");
                             }
                           }
                         })
@@ -801,39 +717,18 @@ export default function VocabularySelector() {
                             // Debug: Log error yang diterima
                             console.log('Error saat memulai kuis kosakata advanced random:', errors);
                             
-                            if (errors.message && errors.message.includes('batas maksimal')) {
-                              console.log('Rate limit error terdeteksi (random mode advanced)');
-                              // Gunakan SweetAlert2 untuk menampilkan pesan error rate limit
-                              try {
-                                Swal.fire({
-                                  icon: 'warning',
-                                  title: 'Batas Kuis Tercapai!',
-                                  text: errors.message,
-                                  confirmButtonText: 'Mengerti',
-                                  confirmButtonColor: '#3085d6',
-                                  timer: 10000,
-                                  timerProgressBar: true
-                                });
-                              } catch (e) {
-                                console.error('Error saat menampilkan SweetAlert (random mode advanced):', e);
-                                // Fallback ke alert biasa jika SweetAlert gagal
-                                alert(errors.message || "Anda telah mencapai batas maksimal kuis per jam");
-                              }
-                            } else {
-                              console.log('Error umum terdeteksi (random mode advanced)');
-                              // Gunakan SweetAlert2 untuk error lainnya
-                              try {
-                                Swal.fire({
-                                  icon: 'error',
-                                  title: 'Gagal Memulai Kuis',
-                                  text: errors.message || "Terjadi kesalahan",
-                                  confirmButtonText: 'Tutup'
-                                });
-                              } catch (e) {
-                                console.error('Error saat menampilkan SweetAlert (random mode advanced):', e);
-                                // Fallback ke alert biasa jika SweetAlert gagal
-                                alert(errors.message || "Terjadi kesalahan saat memulai kuis");
-                              }
+                            // Handle general errors
+                            try {
+                              Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal Memulai Kuis',
+                                text: errors.message || "Terjadi kesalahan",
+                                confirmButtonText: 'Tutup'
+                              });
+                            } catch (e) {
+                              console.error('Error saat menampilkan SweetAlert (random mode advanced):', e);
+                              // Fallback ke alert biasa jika SweetAlert gagal
+                              alert(errors.message || "Terjadi kesalahan saat memulai kuis");
                             }
                           }
                         })
@@ -848,39 +743,18 @@ export default function VocabularySelector() {
                           // Debug: Log error yang diterima
                           console.log('Error saat memulai kuis kosakata general random:', errors);
                           
-                          if (errors.message && errors.message.includes('batas maksimal')) {
-                            console.log('Rate limit error terdeteksi (random mode general)');
-                            // Gunakan SweetAlert2 untuk menampilkan pesan error rate limit
-                            try {
-                              Swal.fire({
-                                icon: 'warning',
-                                title: 'Batas Kuis Tercapai!',
-                                text: errors.message,
-                                confirmButtonText: 'Mengerti',
-                                confirmButtonColor: '#3085d6',
-                                timer: 10000,
-                                timerProgressBar: true
-                              });
-                            } catch (e) {
-                              console.error('Error saat menampilkan SweetAlert (random mode general):', e);
-                              // Fallback ke alert biasa jika SweetAlert gagal
-                              alert(errors.message || "Anda telah mencapai batas maksimal kuis per jam");
-                            }
-                          } else {
-                            console.log('Error umum terdeteksi (random mode general)');
-                            // Gunakan SweetAlert2 untuk error lainnya
-                            try {
-                              Swal.fire({
-                                icon: 'error',
-                                title: 'Gagal Memulai Kuis',
-                                text: errors.message || "Terjadi kesalahan",
-                                confirmButtonText: 'Tutup'
-                              });
-                            } catch (e) {
-                              console.error('Error saat menampilkan SweetAlert (random mode general):', e);
-                              // Fallback ke alert biasa jika SweetAlert gagal
-                              alert(errors.message || "Terjadi kesalahan saat memulai kuis");
-                            }
+                          // Handle general errors
+                          try {
+                            Swal.fire({
+                              icon: 'error',
+                              title: 'Gagal Memulai Kuis',
+                              text: errors.message || "Terjadi kesalahan",
+                              confirmButtonText: 'Tutup'
+                            });
+                          } catch (e) {
+                            console.error('Error saat menampilkan SweetAlert (random mode general):', e);
+                            // Fallback ke alert biasa jika SweetAlert gagal
+                            alert(errors.message || "Terjadi kesalahan saat memulai kuis");
                           }
                         }
                       })

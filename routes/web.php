@@ -76,7 +76,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/pilih-huruf-quis',[QuisController::class,'pilihHurufQuisShow'])->name('pilih-huruf-quis');
     Route::get('/dashboard/pilih-level-quis/{jenis}',[QuisController::class,'pilihLevelQuisShow'])->name('pilih-level-quis');
     Route::get('/dashboard/pilih-list-huruf-quis',[QuisController::class,'pilihListHurufQuis'])->name('pilih-list-huruf-quis');
-    Route::post('/dashboard/start-quis',[QuisController::class,'startQuis'])->name('start-quis')->middleware('quiz.rate.limit');
+    Route::post('/dashboard/start-quis',[QuisController::class,'startQuis'])->name('start-quis');
     Route::get('/dashboard/quis/{sessionId}',[QuisController::class,'QuisShow'])->name('quis');
     Route::post('/dashboard/quis/save-answer',[QuisController::class,'saveAnswer'])->name('save-quiz-answer');
     Route::get('/dashboard/review-quis/{sessionId}',[QuisController::class,'ReviewQuisShow'])->name('review-quis');
@@ -87,15 +87,15 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/pilih-level-quis-kosakata',[QuisKosakataController::class,'pilihLevelQuisShow'])->name('pilih-level-quis-kosakata');
     Route::get('/dashboard/pilih-list-quis-kosakata',[QuisKosakataController::class,'pilihListQuisKosakata'])->name('pilih-list-quis-kosakata');
     Route::get('/dashboard/quis-kosakata/{sessionId}',[QuisKosakataController::class,'QuisKosakataShow'])->name('quis-kosakata');
-    Route::post('/dashboard/kuis-kosakata/start', [QuisKosakataController::class, 'startSession'])->name('start-quis-kosakata')->middleware('quiz.rate.limit');
+    Route::post('/dashboard/kuis-kosakata/start', [QuisKosakataController::class, 'startSession'])->name('start-quis-kosakata');
     // Tambahkan endpoint baru untuk intermediate
-    Route::post('/dashboard/kuis-kosakata/intermediate/start', [QuisKosakataController::class, 'startIntermediateSession'])->name('start-quis-kosakata-intermediate')->middleware('quiz.rate.limit');
+    Route::post('/dashboard/kuis-kosakata/intermediate/start', [QuisKosakataController::class, 'startIntermediateSession'])->name('start-quis-kosakata-intermediate');
     Route::post('/dashboard/quis-kosakata/save-answer', [\App\Http\Controllers\QuisKosakataController::class, 'saveAnswer'])->name('save-quis-kosakata-answer');
     Route::post('/dashboard/quis-kosakata/delete-session', [\App\Http\Controllers\QuisKosakataController::class, 'deleteSession'])->name('delete-quis-kosakata-session');
     Route::get('/dashboard/review-quis-kosakata/{sessionId}', [\App\Http\Controllers\QuisKosakataController::class, 'ReviewQuisKosakataShow'])->name('review-quis-kosakata');
     Route::get('/dashboard/quis-kosakata-intermediate/{sessionId}', [QuisKosakataController::class, 'QuisKosakataIntermediateShow'])->name('quis-kosakata-intermediate');
     Route::get('/dashboard/review-quis-kosakata-intermediate/{sessionId}', [QuisKosakataController::class, 'ReviewQuisKosakataIntermediateShow'])->name('review-quis-kosakata-intermediate');
-    Route::post('/dashboard/kuis-kosakata/advanced/start', [QuisKosakataController::class, 'startAdvancedSession'])->name('start-quis-kosakata-advanced')->middleware('quiz.rate.limit');
+    Route::post('/dashboard/kuis-kosakata/advanced/start', [QuisKosakataController::class, 'startAdvancedSession'])->name('start-quis-kosakata-advanced');
     Route::get('/dashboard/quis-kosakata-advanced/{sessionId}', [QuisKosakataController::class, 'QuisKosakataAdvancedShow'])->name('quis-kosakata-advanced');
     Route::get('/dashboard/review-quis-kosakata-advanced/{sessionId}', [QuisKosakataController::class, 'ReviewQuisKosakataAdvancedShow'])->name('review-quis-kosakata-advanced');
 

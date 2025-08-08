@@ -461,39 +461,18 @@ export default function QuizLevelSelector() {
           console.log('Error saat memulai kuis kosakata random dari level page:', errors);
           setIsLoading(false);
           
-          if (errors.message && errors.message.includes('batas maksimal')) {
-            console.log('Rate limit error terdeteksi (level page)');
-            // Gunakan SweetAlert2 untuk menampilkan pesan error rate limit
-            try {
-              window.Swal.fire({
-                icon: 'warning',
-                title: 'Batas Kuis Tercapai!',
-                text: errors.message,
-                confirmButtonText: 'Mengerti',
-                confirmButtonColor: '#3085d6',
-                timer: 10000,
-                timerProgressBar: true
-              });
-            } catch (e) {
-              console.error('Error saat menampilkan SweetAlert (level page):', e);
-              // Fallback ke alert biasa jika SweetAlert gagal
-              alert(errors.message || "Anda telah mencapai batas maksimal kuis per jam");
-            }
-          } else {
-            console.log('Error umum terdeteksi (level page)');
-            // Gunakan SweetAlert2 untuk error lainnya
-            try {
-              window.Swal.fire({
-                icon: 'error',
-                title: 'Gagal Memulai Kuis',
-                text: errors.message || "Terjadi kesalahan",
-                confirmButtonText: 'Tutup'
-              });
-            } catch (e) {
-              console.error('Error saat menampilkan SweetAlert (level page):', e);
-              // Fallback ke alert biasa jika SweetAlert gagal
-              alert(errors.message || "Terjadi kesalahan saat memulai kuis");
-            }
+          // Handle general errors
+          try {
+            window.Swal.fire({
+              icon: 'error',
+              title: 'Gagal Memulai Kuis',
+              text: errors.message || "Terjadi kesalahan",
+              confirmButtonText: 'Tutup'
+            });
+          } catch (e) {
+            console.error('Error saat menampilkan SweetAlert (level page):', e);
+            // Fallback ke alert biasa jika SweetAlert gagal
+            alert(errors.message || "Terjadi kesalahan saat memulai kuis");
           }
         }
       })

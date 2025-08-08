@@ -551,29 +551,13 @@ export default function QuizLetterSelect() {
         // Debug: Log error yang diterima
         console.log('Error saat memulai kuis:', errors);
         
-        // Handle rate limiting error
-        if (errors.message && errors.message.includes('batas maksimal')) {
-          console.log('Rate limit error terdeteksi');
-          // Gunakan fungsi helper showAlert untuk menampilkan pesan error rate limit
-          showAlert({
-            icon: 'warning',
-            title: 'Batas Kuis Tercapai!',
-            text: errors.message,
-            confirmButtonText: 'Mengerti',
-            confirmButtonColor: '#3085d6',
-            timer: 10000,
-            timerProgressBar: true
-          });
-        } else {
-          console.log('Error umum terdeteksi');
-          // Gunakan fungsi helper showAlert untuk error lainnya
-          showAlert({
-            icon: 'error',
-            title: 'Gagal Memulai Kuis',
-            text: errors.message || "Terjadi kesalahan",
-            confirmButtonText: 'Tutup'
-          });
-        }
+        // Handle general errors
+        showAlert({
+          icon: 'error',
+          title: 'Gagal Memulai Kuis',
+          text: errors.message || "Terjadi kesalahan",
+          confirmButtonText: 'Tutup'
+        });
       }
     })
   }

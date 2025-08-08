@@ -78,7 +78,7 @@ export default function ExpAlert({ onClose, currentExp, expGained, nextLevelExp,
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.7 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999]"
             onClick={handleClose}
           />
 
@@ -88,7 +88,7 @@ export default function ExpAlert({ onClose, currentExp, expGained, nextLevelExp,
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
             transition={{ type: "spring", damping: 20, stiffness: 300 }}
-            className="fixed inset-0 flex items-center justify-center z-[500] p-4 overflow-hidden"
+            className="fixed inset-0 flex items-center justify-center z-[10000] p-4 overflow-hidden"
           >
             <div className="w-full max-w-md max-h-[90vh] flex flex-col">
               <div className="relative overflow-hidden bg-gradient-to-br from-violet-50 to-pink-50 dark:from-violet-950 dark:to-pink-950 rounded-2xl shadow-2xl border border-violet-200/50 dark:border-violet-800/30 flex-1 flex flex-col">

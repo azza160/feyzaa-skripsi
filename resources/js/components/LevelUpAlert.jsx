@@ -91,7 +91,7 @@ export default function LevelUpAlert({ onClose, level, unlockedFeatures }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.7 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999]"
             onClick={handleClose}
           />
 
@@ -101,7 +101,7 @@ export default function LevelUpAlert({ onClose, level, unlockedFeatures }) {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
             transition={{ type: "spring", damping: 20, stiffness: 300 }}
-            className="fixed inset-0 flex items-center justify-center z-50 p-4 overflow-hidden"
+            className="fixed inset-0 flex items-center justify-center z-[10000] p-4 overflow-hidden"
           >
             <div className="w-full max-w-md max-h-[90vh] flex flex-col">
               <div className="relative overflow-hidden bg-gradient-to-br from-violet-50 to-pink-50 dark:from-violet-950 dark:to-pink-950 rounded-2xl shadow-2xl border border-violet-200/50 dark:border-violet-800/30 flex-1 flex flex-col">
@@ -214,7 +214,7 @@ export default function LevelUpAlert({ onClose, level, unlockedFeatures }) {
                         className="mb-4"
                       >
                         <p className="text-slate-600 dark:text-slate-300">
-                          Selamat! Anda telah mencapai level 6. Teruslah belajar untuk membuka fitur dan konten baru!
+                          Selamat! Anda telah mencapai level {level}. Teruslah belajar untuk membuka fitur dan konten baru!
                         </p>
                       </motion.div>
 
