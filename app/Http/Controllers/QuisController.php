@@ -37,16 +37,16 @@ class QuisController extends Controller
         
         switch ($level) {
             case 2:
-                $features = ['Akses ke Kuis Level 2', 'Fitur Latihan Tambahan'];
+                $features = ['Fitur Pembelajaran Huruf Katakana', 'Fitur Quis Katakana'];
                 break;
             case 3:
-                $features = ['Akses ke Kuis Level 3', 'Fitur Flashcard'];
+                $features = ['Fitur Pembelajaran Kosakata', 'Fitur Quis Kosakata Level Beginner'];
                 break;
             case 4:
-                $features = ['Akses ke Kuis Level 4', 'Fitur Review Otomatis'];
+                $features = ['Fitur Quis Kosakata Level Intermediate'];
                 break;
             case 5:
-                $features = ['Akses ke Kuis Level 5', 'Fitur Statistik Belajar'];
+                $features = ['Fitur Quis Kosakata Level Advanced'];
                 break;
             default:
                 $features = ['Fitur Baru Terbuka!'];

@@ -23,7 +23,7 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Link, router, usePage } from "@inertiajs/react";
+import { Head, Link, router, usePage } from "@inertiajs/react";
 import { Loading } from "../../components/Loading";
 
 // Content Loading Component
@@ -161,6 +161,9 @@ export default function DashboardUser() {
 
     return (
         <DashboardLayout>
+            <Head>
+                <title>Jenis Huruf</title>
+            </Head>
             <AnimatePresence>
                 {isButtonLoading && <Loading />}
                 

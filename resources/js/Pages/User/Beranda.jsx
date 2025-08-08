@@ -125,7 +125,7 @@ export default function Home() {
         },
         {
             level: 2,
-            exp: 1000,
+            exp: 500,
             title: "Berkembang",
             description: "Lanjut ke tahap berikutnya",
             features: ["Pembelajaran Katakana", "Kuis Katakana"],
@@ -135,7 +135,7 @@ export default function Home() {
         },
         {
             level: 3,
-            exp: 2200,
+            exp: 1000,
             title: "Menengah",
             description: "Mulai belajar kosakata",
             features: ["Bank Kosakata", "Kuis Kosakata Beginner"],
@@ -145,7 +145,7 @@ export default function Home() {
         },
         {
             level: 4,
-            exp: 3400,
+            exp: 1500,
             title: "Mahir",
             description: "Tingkatkan kemampuan",
             features: ["Kuis Kosakata Intermediate"],
@@ -155,7 +155,7 @@ export default function Home() {
         },
         {
             level: 5,
-            exp: 4500,
+            exp: 2000,
             title: "Expert",
             description: "Level tertinggi",
             features: ["Kuis Kosakata Advanced"],

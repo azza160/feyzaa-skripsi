@@ -180,9 +180,14 @@ class HurufController extends Controller
     {
         $this->cleanupActiveQuisSession();
         $user = auth()->user();
+         // Check if user tries to access Katakana without required level
+         if ($jenis === 'katakana' && $user->level < 2) {
+            return redirect()->route('huruf')->with('error', 'Anda harus mencapai level 2 untuk mengakses Katakana.');
+        }
         $huruf = Huruf::where('id', $id)->first();
         $contoh_penggunaan = Contoh_Penggunaan::where('huruf_id', $huruf->id)->get();
         $gambar_huruf = Gambar_Huruf::where('huruf_id', $huruf->id)->get();
+
 
         //cek apakah huruf sudah di pelajari di table user_huruf
         $isLearned = UserHuruf::where('user_id', $user->id)->where('huruf_id', $huruf->id)->first();

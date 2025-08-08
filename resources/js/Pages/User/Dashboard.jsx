@@ -41,68 +41,11 @@ import {
     Type,
 } from "lucide-react";
 import { motion } from "framer-motion";
-import { usePage, Link, router } from "@inertiajs/react";
+import { usePage, Link, router, Head } from "@inertiajs/react";
 import axios from "axios";
 import { Badge } from "@/components/ui/badge";
 
-// Mock data for preview since we don't have access to Inertia's usePage
-const mockData = {
-    auth: {
-        user: {
-            name: "Pelajar Demo",
-        },
-    },
-    pembelajaranProgress: [
-        {
-            id: 1,
-            nama: "Hiragana",
-            desk: "Huruf dasar bahasa Jepang untuk kata-kata asli Jepang",
-            progress: 75,
-            max: 100,
-            status: "In Progress",
-            route_name: "belajar.hiragana",
-            type: "huruf",
-            lastStudied: "2 jam yang lalu",
-            level: "Dasar",
-        },
-        {
-            id: 2,
-            nama: "Katakana",
-            desk: "Huruf untuk kata serapan dari bahasa asing",
-            progress: 40,
-            max: 100,
-            status: "In Progress",
-            route_name: "belajar.katakana",
-            type: "huruf",
-            lastStudied: "1 hari yang lalu",
-            level: "Dasar",
-        },
-        {
-            id: 3,
-            nama: "Kosakata N5",
-            desk: "Kosakata dasar level N5 untuk pemula",
-            progress: 60,
-            max: 100,
-            status: "In Progress",
-            route_name: "belajar.kosakata",
-            type: "kosakata",
-            lastStudied: "3 jam yang lalu",
-            level: "N5",
-        },
-        {
-            id: 4,
-            nama: "Kanji Dasar",
-            desk: "Kanji dasar yang sering digunakan dalam kehidupan sehari-hari",
-            progress: 25,
-            max: 100,
-            status: "In Progress",
-            route_name: "belajar.kanji",
-            type: "huruf",
-            lastStudied: "5 hari yang lalu",
-            level: "Menengah",
-        },
-    ],
-};
+
 
 export default function DashboardUser() {
     const [chartPeriod, setChartPeriod] = useState("monthly");
@@ -237,6 +180,9 @@ export default function DashboardUser() {
 
     return (
         <>
+        <Head>
+            <title>Dashboard</title>
+        </Head>
             <DashboardLayout>
                 {showWelcomeAlert && (
                     <WelcomeAlert
@@ -807,11 +753,8 @@ export default function DashboardUser() {
                                                             </span>
                                                         </div>
                                                         <span className="font-medium text-pink-700 dark:text-pink-300">
-                                                            {kosakataProgress >
-                                                            0
-                                                                ? kosakataProgress
-                                                                : 0}
-                                                            /{maxKosakata}
+                                                            
+                                                        {maxKosakata} /{maxKosakata}
                                                         </span>
                                                     </div>
 
@@ -819,12 +762,12 @@ export default function DashboardUser() {
                                                         <div className="flex items-center gap-2">
                                                             <div className="w-2 h-2 rounded-full bg-rose-500"></div>
                                                             <span className="text-slate-700 dark:text-slate-300">
-                                                                Kosakata Favorit
+                                                                Kosakata Dipelajari
                                                             </span>
                                                         </div>
                                                         <span className="font-medium text-rose-700 dark:text-rose-300">
-                                                            {kosakataFavorit > 0
-                                                                ? kosakataFavorit
+                                                            {jumlahKosakata > 0
+                                                                ? jumlahKosakata
                                                                 : 0}
                                                             /{maxKosakata}
                                                         </span>

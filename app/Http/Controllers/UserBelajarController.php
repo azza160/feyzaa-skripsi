@@ -362,13 +362,13 @@ class UserBelajarController extends Controller
                 'nama' => 'Belajar huruf ' . $namaHuruf,
                 'deskripsi' => 'Pengguna telah mempelajari dan memahami karakter huruf ' . $namaHuruf . ' dalam sistem penulisan Jepang.',
                 'user_id' => $user->id,
-                'total_exp' => 5,
+                'total_exp' => 15,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
 
             //tambah exp ke user
-            $user->exp += 5;
+            $user->exp += 15;
             $user->save();  
 
             //cek apakah user level up
@@ -395,10 +395,10 @@ class UserBelajarController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'exp anda bertambah 5 exp',
+                'message' => 'exp anda bertambah 15 exp',
                 'data' => [
                     'currentExp' => $currentExp,
-                    'expGained' => 5,
+                    'expGained' => 15,
                     'nextLevelExp' => $nextLevelExp
                 ]
             ]);
@@ -443,7 +443,13 @@ class UserBelajarController extends Controller
             ],
             3 => [
                 'Belajar Kosakata',
-                'Kuis Kosakata'
+                'Kuis Kosakata Level Beginer'
+            ],
+            4 => [
+                'Kuis Kosakata Level Intermediate'
+            ],
+            5 => [
+                'Kuis Kosakata Level Advanced'
             ]
         ];
 

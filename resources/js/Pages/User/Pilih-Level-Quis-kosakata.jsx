@@ -216,14 +216,14 @@ const comparison = [
 function QuizSystemModal({ isOpen, onClose, onStartQuiz, level, mode, isLoading }) {
   const [currentStep, setCurrentStep] = useState(0)
   const expSystem = {
-    beginner: [15, 7, 3, 0],
-    intermediate: [25, 12, 5, 0],
-    advanced: [35, 18, 7, 0],
+    beginner: [20, 12, 8, 0],
+    intermediate: [30, 17, 10, 0],
+    advanced: [40, 23, 12, 0],
   }
   const timeLimit = {
-    beginner: '5 menit',
-    intermediate: '10 menit',
-    advanced: '12 menit',
+    beginner: '10 menit',
+    intermediate: '12 menit',
+    advanced: '17 menit',
   }
   // Fallback jika level tidak valid
   const safeLevel = ['beginner', 'intermediate', 'advanced'].includes(level) ? level : 'beginner';
@@ -608,7 +608,21 @@ export default function QuizLevelSelector() {
                     layout
                   >
                     {levels.map((level, index) => {
-                      let isLocked = progressKosakata < level.minWordsRequired
+                      // Level-based access control
+                      let isLocked = false
+                      let lockReason = ""
+                      
+                      if (level.id === "beginner") {
+                        isLocked = currentLevel < 3
+                        lockReason = "Level 3+ dibutuhkan"
+                      } else if (level.id === "intermediate") {
+                        isLocked = currentLevel < 4
+                        lockReason = "Level 4+ dibutuhkan"
+                      } else if (level.id === "advanced") {
+                        isLocked = currentLevel < 5
+                        lockReason = "Level 5+ dibutuhkan"
+                      }
+                      
                       const isSelected = selectedLevel === level.id
 
                       return (
@@ -619,7 +633,7 @@ export default function QuizLevelSelector() {
                           transition={{ duration: 0.5, delay: index * 0.1 }}
                           className={cn(
                             'group',
-                            isLocked ? 'cursor-not-allowed grayscale relative' : 'cursor-pointer',
+                            isLocked ? 'cursor-not-allowed opacity-60 relative' : 'cursor-pointer',
                             isSelected && 'ring-4 ring-primary scale-105 rounded-2xl',
                           )}
                           onClick={() => !isLocked && handleLevelSelect(level)}
@@ -631,6 +645,7 @@ export default function QuizLevelSelector() {
                               level.gradient,
                               !isLocked && 'hover:scale-[1.02] hover:shadow-lg hover:shadow-primary/20',
                               isSelected && 'ring-2 ring-primary ring-offset-2 shadow-lg rounded-2xl',
+                              isLocked && 'opacity-60 grayscale',
                               'transition-all duration-300'
                             )}
                           >
@@ -645,9 +660,10 @@ export default function QuizLevelSelector() {
 
                             {/* Overlay jika terkunci */}
                             {isLocked && (
-                              <div className="absolute inset-0 bg-black/40 z-20 flex flex-col items-center justify-center rounded-2xl">
-                                <Lock className="w-10 h-10 text-white/80 mb-2" />
-                                <span className="bg-amber-500/90 text-white text-xs font-bold px-3 py-1 rounded-full mb-2">Terkunci</span>
+                              <div className="absolute inset-0 bg-black/50 z-20 flex flex-col items-center justify-center rounded-2xl">
+                                <Lock className="w-12 h-12 text-white/90 mb-3" />
+                                <span className="bg-red-500/90 text-white text-xs font-bold px-3 py-1 rounded-full mb-2">Terkunci</span>
+                                <span className="text-white/80 text-xs text-center px-4">{lockReason}</span>
                               </div>
                             )}
                             <CardContent className="p-6 flex flex-col h-full relative z-10">
@@ -669,27 +685,34 @@ export default function QuizLevelSelector() {
 
                               <p className="text-white/90 text-sm mb-6 flex-grow">{level.description}</p>
 
-                              {/* Progress Bar */}
+                              {/* Level Requirement */}
                               <div className="mb-6">
                                 <div className="flex justify-between text-xs text-white/80 mb-1">
-                                  <span>Progress</span>
-                                  <span>{progressKosakata}/{totalKosakata}</span>
+                                  <span>Level Dibutuhkan</span>
+                                  <span>Level {level.id === "beginner" ? "3" : level.id === "intermediate" ? "4" : "5"}+</span>
                                 </div>
                                 <div className="h-2 bg-white/20 rounded-full overflow-hidden">
                                   <motion.div
-                                    className="h-full bg-white/40 rounded-full"
+                                    className={cn(
+                                      "h-full rounded-full",
+                                      currentLevel >= (level.id === "beginner" ? 3 : level.id === "intermediate" ? 4 : 5) 
+                                        ? "bg-emerald-400" 
+                                        : "bg-red-400"
+                                    )}
                                     initial={{ width: 0 }}
-                                    animate={{ width: `${Math.min((progressKosakata / totalKosakata) * 100, 100)}%` }}
+                                    animate={{ 
+                                      width: `${Math.min((currentLevel / (level.id === "beginner" ? 3 : level.id === "intermediate" ? 4 : 5)) * 100, 100)}%` 
+                                    }}
                                     transition={{ duration: 0.5 }}
                                   />
                                 </div>
                                 {isLocked && (
                                   <div className="mt-2 text-xs text-white/70 flex items-center gap-1">
                                     <Lock className="w-3 h-3" />
-                                    <span>Butuh {level.minWordsRequired - progressKosakata} kata lagi</span>
+                                    <span>{lockReason}</span>
                                   </div>
                                 )}
-                                {!isLocked && progressKosakata >= level.minWordsRequired && (
+                                {!isLocked && (
                                   <div className="mt-2 text-xs text-emerald-300 flex items-center gap-1">
                                     <CheckCircle className="w-3 h-3" />
                                     <span>Level tersedia!</span>
@@ -710,13 +733,18 @@ export default function QuizLevelSelector() {
                               <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 text-center mt-auto transition-all duration-300 group-hover:bg-white/20">
                                 <p className="text-white/90 text-sm">
                                   {isLocked ? (
-                                    <span>Perlu {level.minWordsRequired} kata</span>
+                                    <span>{lockReason}</span>
                                   ) : (
                                     <span className="font-medium group-hover:text-white transition-colors">
                                       {isSelected ? 'Level Dipilih' : 'Mulai Level Ini'}
                                     </span>
                                   )}
                                 </p>
+                              </div>
+                              <div className="w-full flex justify-center mt-3">
+                                <div className={`text-sm ${level.color} border border-slate-50/25 p-2 rounded text-slate-200`}>
+                                    setelah level diclick,silahkan scroll kebawah
+                                </div>
                               </div>
                             </CardContent>
                           </div>

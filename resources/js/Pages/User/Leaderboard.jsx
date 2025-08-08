@@ -278,21 +278,40 @@ const LeaderboardContent = ({ topUsers, currentUser, globalStats, user, currentL
               <span>🔤 {user.charactersLearned || 0} Huruf</span>
             </div>
 
-            {/* Progress bar - Mobile */}
-            <div>
-              <div className="flex justify-between text-xs text-muted-foreground mb-1">
-                <span>Progress ke Level {user.level + 1}</span>
-                <span>{Math.round(getProgressToNext(user.exp))}%</span>
-              </div>
-              <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
-                <motion.div
-                  className="h-full bg-gradient-to-r from-primary to-primary/80 rounded-full"
-                  initial={{ width: 0 }}
-                  animate={{ width: `${getProgressToNext(user.exp)}%` }}
-                  transition={{ delay: index * 0.1 + 0.5, duration: 1, ease: "easeOut" }}
-                />
-              </div>
-            </div>
+       {/* Progress bar - Mobile */}
+<div>
+  <div className="flex justify-between text-xs text-muted-foreground mb-1 mt-5">
+    {user.level >= 5 ? (
+      <>
+        <span>Level Maksimal</span>
+        <span>100%</span>
+      </>
+    ) : (
+      <>
+        <span>Progress ke Level {user.level + 1}</span>
+        <span>{Math.round(getProgressToNext(user.exp))}%</span>
+      </>
+    )}
+  </div>
+  <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
+    <motion.div
+      className="h-full bg-gradient-to-r from-primary to-primary/80 rounded-full"
+      initial={{ width: 0 }}
+      animate={{
+        width:
+          user.level >= 5
+            ? "100%"
+            : `${getProgressToNext(user.exp)}%`,
+      }}
+      transition={{
+        delay: index * 0.1 + 0.5,
+        duration: 1,
+        ease: "easeOut",
+      }}
+    />
+  </div>
+</div>
+
           </div>
         </div>
 
@@ -376,20 +395,40 @@ const LeaderboardContent = ({ topUsers, currentUser, globalStats, user, currentL
           </div>
 
           {/* Progress bar */}
-          <div className="mt-4">
-            <div className="flex justify-between text-xs text-muted-foreground mb-1">
-              <span>Progress ke Level {user.level + 1}</span>
-              <span>{Math.round(getProgressToNext(user.exp))}%</span>
-            </div>
-            <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
-              <motion.div
-                className="h-full bg-gradient-to-r from-primary to-primary/80 rounded-full"
-                initial={{ width: 0 }}
-                animate={{ width: `${getProgressToNext(user.exp)}%` }}
-                transition={{ delay: index * 0.1 + 0.5, duration: 1, ease: "easeOut" }}
-              />
-            </div>
-          </div>
+          {/* Progress bar - Mobile */}
+<div>
+  <div className="flex justify-between text-xs text-muted-foreground mb-1 mt-5">
+    {user.level >= 5 ? (
+      <>
+        <span>Level Maksimal</span>
+        <span>100%</span>
+      </>
+    ) : (
+      <>
+        <span>Progress ke Level {user.level + 1}</span>
+        <span>{Math.round(getProgressToNext(user.exp))}%</span>
+      </>
+    )}
+  </div>
+  <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
+    <motion.div
+      className="h-full bg-gradient-to-r from-primary to-primary/80 rounded-full"
+      initial={{ width: 0 }}
+      animate={{
+        width:
+          user.level >= 5
+            ? "100%"
+            : `${getProgressToNext(user.exp)}%`,
+      }}
+      transition={{
+        delay: index * 0.1 + 0.5,
+        duration: 1,
+        ease: "easeOut",
+      }}
+    />
+  </div>
+</div>
+
         </div>
       </div>
     </motion.div>

@@ -17,40 +17,7 @@ const Swal = window.Swal
 // Gunakan fungsi helper showAlert yang sudah ditambahkan di app.js
 const showAlert = window.showAlert
 
-// Dummy data - hanya huruf yang sudah dipelajari
-const hiraganaLetters = [
-  { id: "a", character: "あ", romaji: "a", example: "あめ (ame) - hujan", group: "a" },
-  { id: "i", character: "い", romaji: "i", example: "いぬ (inu) - anjing", group: "a" },
-  { id: "u", character: "う", romaji: "u", example: "うみ (umi) - laut", group: "a" },
-  { id: "e", character: "え", romaji: "e", example: "えき (eki) - stasiun", group: "a" },
-  { id: "o", character: "お", romaji: "o", example: "おと (oto) - suara", group: "a" },
-  { id: "ka", character: "か", romaji: "ka", example: "かさ (kasa) - payung", group: "ka" },
-  { id: "ki", character: "き", romaji: "ki", example: "きた (kita) - utara", group: "ka" },
-  { id: "ku", character: "く", romaji: "ku", example: "くに (kuni) - negara", group: "ka" },
-  { id: "ko", character: "こ", romaji: "ko", example: "こえ (koe) - suara", group: "ka" },
-  { id: "sa", character: "さ", romaji: "sa", example: "さけ (sake) - sake", group: "sa" },
-  { id: "shi", character: "し", romaji: "shi", example: "しま (shima) - pulau", group: "sa" },
-  { id: "na", character: "な", romaji: "na", example: "なつ (natsu) - musim panas", group: "na" },
-  { id: "ni", character: "に", romaji: "ni", example: "にく (niku) - daging", group: "na" },
-  { id: "no", character: "の", romaji: "no", example: "のみもの (nomimono) - minuman", group: "na" },
-  { id: "ha", character: "は", romaji: "ha", example: "はな (hana) - bunga", group: "ha" },
-  { id: "hi", character: "ひ", romaji: "hi", example: "ひと (hito) - orang", group: "ha" },
-  { id: "ma", character: "ま", romaji: "ma", example: "まち (machi) - kota", group: "ma" },
-  { id: "mi", character: "み", romaji: "mi", example: "みず (mizu) - air", group: "ma" },
-  { id: "ya", character: "や", romaji: "ya", example: "やま (yama) - gunung", group: "ya" },
-  { id: "yu", character: "ゆ", romaji: "yu", example: "ゆき (yuki) - salju", group: "ya" },
-]
 
-const letterGroups = [
-  { id: "all", name: "Semua Huruf", count: hiraganaLetters.length },
-  { id: "a", name: "Group A", count: hiraganaLetters.filter((l) => l.group === "a").length },
-  { id: "ka", name: "Group KA", count: hiraganaLetters.filter((l) => l.group === "ka").length },
-  { id: "sa", name: "Group SA", count: hiraganaLetters.filter((l) => l.group === "sa").length },
-  { id: "na", name: "Group NA", count: hiraganaLetters.filter((l) => l.group === "na").length },
-  { id: "ha", name: "Group HA", count: hiraganaLetters.filter((l) => l.group === "ha").length },
-  { id: "ma", name: "Group MA", count: hiraganaLetters.filter((l) => l.group === "ma").length },
-  { id: "ya", name: "Group YA", count: hiraganaLetters.filter((l) => l.group === "ya").length },
-]
 
 // Letter Card Component
 const LetterCard = ({ letter, isSelected, onClick }) => {
@@ -186,21 +153,21 @@ const QuizSystemModal = ({ isOpen, onClose, onStartQuiz, level, jenis, isRandomM
   
   const expSystem = {
     beginner: {
-      firstAttempt: 10,
-      secondAttempt: 5,
-      thirdAttempt: 2,
+      firstAttempt: 15,
+      secondAttempt: 10,
+      thirdAttempt: 7,
       maxAttempt: 3
     },
     intermediate: {
-      firstAttempt: 15,
-      secondAttempt: 8,
-      thirdAttempt: 3,
+      firstAttempt: 20,
+      secondAttempt: 13,
+      thirdAttempt: 8,
       maxAttempt: 3
     },
     advanced: {
-      firstAttempt: 20,
-      secondAttempt: 10,
-      thirdAttempt: 5,
+      firstAttempt: 25,
+      secondAttempt: 15,
+      thirdAttempt: 10,
       maxAttempt: 3
     }
   }
@@ -209,9 +176,9 @@ const QuizSystemModal = ({ isOpen, onClose, onStartQuiz, level, jenis, isRandomM
   const currentExpSystem = expSystem
 
   const timeLimit = {
-    beginner: "5 menit",
-    intermediate: "7 menit", 
-    advanced: "10 menit"
+    beginner: "7 menit",
+    intermediate: "10 menit", 
+    advanced: "15 menit"
   }
 
   const steps = [

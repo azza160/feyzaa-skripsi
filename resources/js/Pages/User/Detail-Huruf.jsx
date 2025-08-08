@@ -15,7 +15,7 @@ import {
     GraduationCap,
     RefreshCw,
 } from "lucide-react";
-import { Link,router } from "@inertiajs/react";
+import { Head, Link,router } from "@inertiajs/react";
 import { usePage } from "@inertiajs/react"; // Inertia hook untuk mengambil data
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogFooter, AlertDialogAction, AlertDialogCancel } from "@/components/ui/alert-dialog";
 import Dashboard from "../../Layouts/DashboardLayout";
@@ -234,7 +234,7 @@ export default function HiraganaDetailPage() {
                     setTimeout(() => {
                         router.reload();
                     }, 3000);
-                } else if (response.data.message === 'exp anda bertambah 5 exp') {
+                } else if (response.data.message === 'exp anda bertambah 15 exp') {
                     setShowExpAlert(true);
                     // Pass the exp data to ExpAlert
                     setExpData({
@@ -307,6 +307,9 @@ export default function HiraganaDetailPage() {
     return (
         <Dashboard>
             <>
+                <Head>
+                    <title>Detail Huruf </title>
+                </Head>
                 {isLoading && <Loading />}
                 <AnimatePresence mode="wait">
                     {showLevelUp && <LevelUpAlert onClose={() => setShowLevelUp(false)} level={levelUpData?.level} unlockedFeatures={levelUpData?.unlockedFeatures} />}

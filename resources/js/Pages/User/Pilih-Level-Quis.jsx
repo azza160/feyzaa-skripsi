@@ -491,6 +491,11 @@ export default function QuizLevelSelect() {
                                   )}
                                 </p>
                               </div>
+                              <div className="w-full flex justify-center mt-3">
+                                <div className={`text-sm ${level.color} border border-slate-50/25 p-2 rounded text-slate-200`}>
+                                    setelah level diclick,silahkan scroll kebawah
+                                </div>
+                              </div>
                             </CardContent>
                           </div>
                         </motion.div>

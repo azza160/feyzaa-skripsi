@@ -38,16 +38,16 @@ class QuisKosakataController extends Controller
         
         switch ($level) {
             case 2:
-                $features = ['Akses ke Kuis Level 2', 'Fitur Latihan Tambahan'];
+                $features = ['Fitur Pembelajaran Huruf Katakana', 'Fitur Quis Katakana'];
                 break;
             case 3:
-                $features = ['Akses ke Kuis Level 3', 'Fitur Flashcard'];
+                $features = ['Fitur Pembelajaran Kosakata', 'Fitur Quis Kosakata Level Beginner'];
                 break;
             case 4:
-                $features = ['Akses ke Kuis Level 4', 'Fitur Review Otomatis'];
+                $features = ['Fitur Quis Kosakata Level Intermediate'];
                 break;
             case 5:
-                $features = ['Akses ke Kuis Level 5', 'Fitur Statistik Belajar'];
+                $features = ['Fitur Quis Kosakata Level Advanced'];
                 break;
             default:
                 $features = ['Fitur Baru Terbuka!'];
@@ -63,9 +63,9 @@ class QuisKosakataController extends Controller
     private function calculateExpForBeginner($attempt)
     {
         return match($attempt) {
-            1 => 15,
-            2 => 7,
-            3 => 3,
+            1 => 20,
+            2 => 12,
+            3 => 8,
             default => 0,
         };
     }
@@ -74,9 +74,9 @@ class QuisKosakataController extends Controller
     private function calculateExpForIntermediate($attempt)
     {
         return match($attempt) {
-            1 => 25,
-            2 => 12,
-            3 => 5,
+            1 => 30,
+            2 => 17,
+            3 => 10,
             default => 0,
         };
     }
@@ -84,9 +84,9 @@ class QuisKosakataController extends Controller
     private function calculateExpForAdvanced($attempt)
     {
         return match($attempt) {
-            1 => 35,
-            2 => 18,
-            3 => 7,
+            1 => 40,
+            2 => 23,
+            3 => 12,
             default => 0,
         };
     }
@@ -134,6 +134,18 @@ class QuisKosakataController extends Controller
         $progressKosakata = \App\Models\User::find($user->id)->kosakatas()->wherePivot('is_learned', true)->count();
         $totalKosakata = Kosakata::count();
 
+        // Level-based access control
+        $unlockedLevels = [];
+        if ($user->level >= 3) {
+            $unlockedLevels[] = 'beginner';
+        }
+        if ($user->level >= 4) {
+            $unlockedLevels[] = 'intermediate';
+        }
+        if ($user->level >= 5) {
+            $unlockedLevels[] = 'advanced';
+        }
+
         return Inertia::render('User/Pilih-Level-Quis-kosakata', [
             'user' => $user,
             'currentLevel' => $user->level,
@@ -141,6 +153,7 @@ class QuisKosakataController extends Controller
             'maxExp' => $this->calculateNextLevelExp($user->level),
             'progressKosakata' => $progressKosakata,
             'totalKosakata' => $totalKosakata,
+            'unlockedLevels' => $unlockedLevels,
         ]);
     }
 
@@ -201,6 +214,15 @@ class QuisKosakataController extends Controller
             abort(403, 'Unauthorized access to this quiz session.');
         }
 
+        // Level-based access control
+        if ($session->level === 'beginner' && $user->level < 3) {
+            abort(403, 'Level 3+ dibutuhkan untuk mengakses kuis beginner.');
+        } elseif ($session->level === 'intermediate' && $user->level < 4) {
+            abort(403, 'Level 4+ dibutuhkan untuk mengakses kuis intermediate.');
+        } elseif ($session->level === 'advanced' && $user->level < 5) {
+            abort(403, 'Level 5+ dibutuhkan untuk mengakses kuis advanced.');
+        }
+
         $level = $session->level;
         $mode = $session->mode;
         $soalList = $session->soal;
@@ -241,6 +263,11 @@ class QuisKosakataController extends Controller
         // Cek kepemilikan session
         if ($session->user_id !== $user->id) {
             abort(403, 'Unauthorized access to this quiz session.');
+        }
+
+        // Level-based access control
+        if ($user->level < 4) {
+            abort(403, 'Level 4+ dibutuhkan untuk mengakses kuis intermediate.');
         }
 
         $level = $session->level;
@@ -338,15 +365,19 @@ class QuisKosakataController extends Controller
 
         // Tentukan timer sesuai level
         $remainingTime = match($level) {
-            'beginner' => 300, // 5 menit
-            'intermediate' => 600, // 10 menit
-            'advanced' => 720, // 12 menit
-            default => 300,
+            'beginner' => 600, // 5 menit
+                'intermediate' => 720, // 10 menit
+                'advanced' => 1020, // 12 menit
+                default => 600,
         };
 
-        // FOKUS HANYA PADA LEVEL BEGINNER
-        if ($level !== 'beginner') {
-            abort(400, 'Level ini belum tersedia. Hanya level beginner yang tersedia saat ini.');
+        // Level-based access control
+        if ($level === 'beginner' && $user->level < 3) {
+            abort(403, 'Level 3+ dibutuhkan untuk mengakses kuis beginner.');
+        } elseif ($level === 'intermediate' && $user->level < 4) {
+            abort(403, 'Level 4+ dibutuhkan untuk mengakses kuis intermediate.');
+        } elseif ($level === 'advanced' && $user->level < 5) {
+            abort(403, 'Level 5+ dibutuhkan untuk mengakses kuis advanced.');
         }
 
         if ($request->isMethod('post') && $mode === 'random') {
@@ -481,6 +512,11 @@ class QuisKosakataController extends Controller
         // Timer untuk intermediate
         $remainingTime = 600; // 10 menit
 
+        // Level-based access control
+        if ($user->level < 4) {
+            abort(403, 'Level 4+ dibutuhkan untuk mengakses kuis intermediate.');
+        }
+
         if ($level !== 'intermediate') {
             abort(400, 'Level ini hanya untuk intermediate.');
         }
@@ -548,6 +584,11 @@ class QuisKosakataController extends Controller
         // Timer untuk advanced
         $remainingTime = 720; // 12 menit
 
+        // Level-based access control
+        if ($user->level < 5) {
+            abort(403, 'Level 5+ dibutuhkan untuk mengakses kuis advanced.');
+        }
+
         if ($level !== 'advanced') {
             abort(400, 'Level ini hanya untuk advanced.');
         }
@@ -603,6 +644,11 @@ class QuisKosakataController extends Controller
 
         if ($session->user_id !== $user->id) {
             abort(403, 'Unauthorized access to this quiz session.');
+        }
+
+        // Level-based access control
+        if ($user->level < 5) {
+            abort(403, 'Level 5+ dibutuhkan untuk mengakses kuis advanced.');
         }
 
         $level = $session->level;
@@ -741,6 +787,15 @@ class QuisKosakataController extends Controller
                 abort(404, $errorMsg);
             }
 
+            // Level-based access control
+            if ($session->level === 'beginner' && $user->level < 3) {
+                abort(403, 'Level 3+ dibutuhkan untuk mengakses review kuis beginner.');
+            } elseif ($session->level === 'intermediate' && $user->level < 4) {
+                abort(403, 'Level 4+ dibutuhkan untuk mengakses review kuis intermediate.');
+            } elseif ($session->level === 'advanced' && $user->level < 5) {
+                abort(403, 'Level 5+ dibutuhkan untuk mengakses review kuis advanced.');
+            }
+
             $userAnswers = $session->user_answers ?? [];
             $isIntermediate = $session->level === 'intermediate';
             $isAdvanced = $session->level === 'advanced';
@@ -762,19 +817,19 @@ class QuisKosakataController extends Controller
             if ($session->ended_at) {
                 // Jika session sudah selesai, hitung dari remaining_time untuk akurasi
                 $waktuKuis = match($session->level) {
-                    'beginner' => 300, // 5 menit
-                    'intermediate' => 600, // 10 menit
-                    'advanced' => 720, // 12 menit
-                    default => 300,
+                    'beginner' => 600, // 5 menit
+                    'intermediate' => 720, // 10 menit
+                    'advanced' => 1020, // 12 menit
+                    default => 600,
                 };
                 $timeSpent = $waktuKuis - ($session->remaining_time ?? 0);
             } else {
                 // Jika session belum selesai, hitung dari remaining time
                 $waktuKuis = match($session->level) {
-                    'beginner' => 300, // 5 menit
-                    'intermediate' => 600, // 10 menit
-                    'advanced' => 720, // 12 menit
-                    default => 300,
+                    'beginner' => 600, // 5 menit
+                    'intermediate' => 720, // 10 menit
+                    'advanced' => 1020, // 12 menit
+                    default => 600,
                 };
                 $timeSpent = $waktuKuis - ($session->remaining_time ?? 0);
             }
@@ -983,6 +1038,11 @@ class QuisKosakataController extends Controller
             ->where('user_id', $user->id)
             ->firstOrFail();
 
+        // Level-based access control
+        if ($user->level < 4) {
+            abort(403, 'Level 4+ dibutuhkan untuk mengakses review kuis intermediate.');
+        }
+
         $userAnswers = $session->user_answers ?? [];
         $soalIds = $session->selected_soal ?? [];
         if (!is_array($soalIds) || count($soalIds) === 0) {
@@ -1103,19 +1163,19 @@ class QuisKosakataController extends Controller
         if ($session->ended_at) {
             // Jika session sudah selesai, hitung dari remaining_time untuk akurasi
             $waktuKuis = match($session->level) {
-                'beginner' => 300, // 5 menit
-                'intermediate' => 600, // 10 menit
-                'advanced' => 720, // 12 menit
-                default => 300,
+                'beginner' => 600, // 5 menit
+                'intermediate' => 720, // 10 menit
+                'advanced' => 1020, // 12 menit
+                default => 600,
             };
             $timeSpent = $waktuKuis - ($session->remaining_time ?? 0);
         } else {
             // Jika session belum selesai, hitung dari remaining time
             $waktuKuis = match($session->level) {
-                'beginner' => 300, // 5 minutes
-                'intermediate' => 600, // 10 minutes
-                'advanced' => 720, // 12 minutes
-                default => 300,
+                'beginner' => 600, // 5 menit
+                'intermediate' => 720, // 10 menit
+                'advanced' => 1020, // 12 menit
+                default => 600,
             };
             $timeSpent = $waktuKuis - ($session->remaining_time ?? 0);
         }
@@ -1331,19 +1391,19 @@ class QuisKosakataController extends Controller
         if ($session->ended_at) {
             // Jika session sudah selesai, hitung dari remaining_time untuk akurasi
             $waktuKuis = match($session->level) {
-                'beginner' => 300, // 5 menit
-                'intermediate' => 600, // 10 menit
-                'advanced' => 720, // 12 menit
-                default => 300,
+                'beginner' => 600, // 5 menit
+                'intermediate' => 720, // 10 menit
+                'advanced' => 1020, // 12 menit
+                default => 600,
             };
             $timeSpent = $waktuKuis - ($session->remaining_time ?? 0);
         } else {
             // Jika session belum selesai, hitung dari remaining time
             $waktuKuis = match($session->level) {
-                'beginner' => 300, // 5 menit
-                'intermediate' => 600, // 10 menit
-                'advanced' => 720, // 12 menit
-                default => 300,
+                'beginner' => 600, // 5 menit
+                'intermediate' => 720, // 10 menit
+                'advanced' => 1020, // 12 menit
+                default => 600,
             };
             $timeSpent = $waktuKuis - ($session->remaining_time ?? 0);
         }

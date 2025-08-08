@@ -104,7 +104,7 @@ class DashboardController extends Controller
                 ->whereDate('last_completed_at', now()->today())
                 ->count(),
             'maxKosakata' => Kosakata::count(),
-            'kosakataFavorit' => $user->kosakatas()->wherePivot('is_favorite', true)->count(),
+           
         ];
     }
     

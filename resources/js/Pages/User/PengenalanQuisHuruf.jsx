@@ -485,7 +485,7 @@ export default function Component() {
                     character="あ"
                     options={["a", "i", "ka", "na"]}
                     correctAnswer={0}
-                    timeLimit={5}
+                    timeLimit={7}
                     description="Karakter tunggal tanpa kombinasi apapun"
                 />
                 </motion.div>
@@ -517,7 +517,7 @@ export default function Component() {
                     character="さくら"
                     options={["sakura", "takura", "nakura", "makura"]}
                     correctAnswer={0}
-                    timeLimit={7}
+                    timeLimit={10}
                     description="Kombinasi 3-4 karakter untuk membentuk kata"
                 />
                 </motion.div>
@@ -549,7 +549,7 @@ export default function Component() {
                     character="じゅうぎょう"
                     options={["juugyou", "juukiyou", "juugirou", "juukyou"]}
                     correctAnswer={0}
-                    timeLimit={10}
+                    timeLimit={15}
                     description="Kombinasi 5-6 karakter dengan tanda baca (dakuten, handakuten, dll)"
                 />
                 </motion.div>
@@ -643,7 +643,7 @@ export default function Component() {
                                 level === "beginner" ? "green" : level === "intermediate" ? "yellow" : "red"
                             }-600 text-gray-800`}
                             >
-                            {level === "beginner" ? "10 EXP" : level === "intermediate" ? "15 EXP" : "20 EXP"}
+                            {level === "beginner" ? "15 EXP" : level === "intermediate" ? "20 EXP" : "25 EXP"}
                             </Badge>
                         </div>
                         <div
@@ -660,7 +660,7 @@ export default function Component() {
                                 level === "beginner" ? "green" : level === "intermediate" ? "yellow" : "red"
                             }-600`}
                             >
-                            {level === "beginner" ? "5 EXP" : level === "intermediate" ? "8 EXP" : "10 EXP"}
+                            {level === "beginner" ? "10 EXP" : level === "intermediate" ? "13 EXP" : "15 EXP"}
                             </Badge>
                         </div>
                         <div
@@ -677,7 +677,7 @@ export default function Component() {
                                 level === "beginner" ? "green" : level === "intermediate" ? "yellow" : "red"
                             }-600`}
                             >
-                            {level === "beginner" ? "2 EXP" : level === "intermediate" ? "3 EXP" : "5 EXP"}
+                            {level === "beginner" ? "7 EXP" : level === "intermediate" ? "8 EXP" : "10 EXP"}
                             </Badge>
                         </div>
                         <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">

@@ -24,7 +24,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import Dashboard from "../../Layouts/DashboardLayout";
-import { Link, router, usePage } from "@inertiajs/react";
+import { Head, Link, router, usePage } from "@inertiajs/react";
 import { Loading } from "../../components/Loading";
 import { useEffect } from "react";
 import axios from "axios";
@@ -325,6 +325,9 @@ export default function KategoriKatakana() {
 
     return (
         <Dashboard>
+            <Head>
+                <title>Huruf Katakana</title>
+            </Head>
             <AnimatePresence>
                 {isButtonLoading && <Loading />}
                 <div className="text-foreground ">

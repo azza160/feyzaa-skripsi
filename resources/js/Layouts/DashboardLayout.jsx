@@ -167,6 +167,17 @@ export default function Dashboard({ children }) {
     }
   }, [isMobile, isQuizPage])
 
+  // Level-based access control for features
+  const isFeatureLocked = currentLevel < 3
+
+  const handleLockedClickCapture = (e) => {
+    if (isFeatureLocked) {
+      e.preventDefault()
+      e.stopPropagation()
+      window.alert('Level Anda belum cukup untuk mengakses fitur ini. Capai level 3 untuk membuka akses.')
+    }
+  }
+
   const toggleSidebar = () => {
     if (isMobile) {
       setShowMobileMenu(!showMobileMenu)
@@ -282,7 +293,9 @@ export default function Dashboard({ children }) {
                 <SidebarLink icon={<LayoutDashboard className="h-5 w-5" />} label="Dashboard" isActive={route().current('dashboard')} isOpen={sidebarOpen} href={route('dashboard')} disabled={isQuizPage}/>
                 <SidebarLink icon={<Type className="h-5 w-5" />} label="Huruf Jepang" isActive={['huruf', 'kategori-huruf-hiragana', 'huruf-hiragana','huruf-hiragana-detail'].some(name => route().current(name))}
                 isOpen={sidebarOpen} href={route('huruf')} disabled={isQuizPage} />
-                <SidebarLink icon={<BookOpenText className="h-5 w-5" />} label="Kosakata" isActive={['list-kosakata', 'detail-kosakata'].some(name => route().current(name))} isOpen={sidebarOpen} href={route('list-kosakata')} locked={currentLevel < 3} disabled={isQuizPage} />
+                <div onClickCapture={handleLockedClickCapture}>
+                  <SidebarLink icon={<BookOpenText className="h-5 w-5" />} label="Kosakata" isActive={['list-kosakata', 'detail-kosakata'].some(name => route().current(name))} isOpen={sidebarOpen} href={route('list-kosakata')} locked={isFeatureLocked} disabled={isQuizPage} />
+                </div>
                 
               
               
@@ -297,7 +310,9 @@ export default function Dashboard({ children }) {
               <nav className="space-y-1">
                 <SidebarLink icon={<PencilLine className="h-5 w-5" />} label="Kuis Huruf" isOpen={sidebarOpen} isActive={['pilih-huruf-quis','pilih-list-huruf-quis','pilih-level-quis','quis','review-quis'].some(name => route().current(name))} href={route('pilih-huruf-quis')} disabled={isQuizPage} />
 
-                <SidebarLink icon={<ListChecks className="h-5 w-5" />} label="Kuis Kosakata" isOpen={sidebarOpen} isActive={['pilih-level-quis-kosakata','pilih-list-quis-kosakata','quis-kosakata','review-quis-kosakata','review-quis-kosakata-intermediate','review-quis-kosakata-advanced'].some(name => route().current(name))} href={route('pilih-level-quis-kosakata')} locked={currentLevel < 3} disabled={isQuizPage}/>
+                <div onClickCapture={handleLockedClickCapture}>
+                  <SidebarLink icon={<ListChecks className="h-5 w-5" />} label="Kuis Kosakata" isOpen={sidebarOpen} isActive={['pilih-level-quis-kosakata','pilih-list-quis-kosakata','quis-kosakata','review-quis-kosakata','review-quis-kosakata-intermediate','review-quis-kosakata-advanced'].some(name => route().current(name))} href={route('pilih-level-quis-kosakata')} locked={isFeatureLocked} disabled={isQuizPage}/>
+                </div>
 
                 <SidebarLink 
                   icon={<Trophy className="h-5 w-5" />} 
@@ -305,7 +320,6 @@ export default function Dashboard({ children }) {
                   isOpen={sidebarOpen} 
                   isActive={route().current('leaderboard')} 
                   href={route('leaderboard')} 
-                  locked={currentLevel < 3} 
                   disabled={isQuizPage} 
                 />
 
@@ -395,7 +409,9 @@ export default function Dashboard({ children }) {
                   <SidebarLink icon={<LayoutDashboard className="h-5 w-5" />} label="Dashboard" isActive={route().current('dashboard')} isOpen={true} href={route('dashboard')}/>
                 <SidebarLink icon={<Type className="h-5 w-5" />} label="Huruf Jepang" isActive={['huruf', 'kategori-huruf-hiragana', 'huruf-hiragana','huruf-hiragana-detail'].some(name => route().current(name))}
                 isOpen={true} href={route('huruf')} />
-                <SidebarLink icon={<BookOpenText className="h-5 w-5" />} label="Kosakata" isActive={['list-kosakata', 'detail-kosakata'].some(name => route().current(name))} isOpen={true} href={route('list-kosakata')} />
+                <div onClickCapture={handleLockedClickCapture}>
+                  <SidebarLink icon={<BookOpenText className="h-5 w-5" />} label="Kosakata" isActive={['list-kosakata', 'detail-kosakata'].some(name => route().current(name))} isOpen={true} href={route('list-kosakata')} locked={isFeatureLocked} />
+                </div>
                
                   </nav>
 
@@ -414,7 +430,9 @@ export default function Dashboard({ children }) {
                   </h3>
                   <nav className="space-y-1">
                   <SidebarLink icon={<PencilLine className="h-5 w-5" />} label="Kuis Huruf" isOpen={true} isActive={['pilih-huruf-quis','pilih-list-huruf-quis','pilih-level-quis','quis','review-quis'].some(name => route().current(name))} href={route('pilih-huruf-quis')} />
-                <SidebarLink icon={<ListChecks className="h-5 w-5" />} label="Kuis Kosakata" isOpen={true} isActive={['pilih-level-quis-kosakata','pilih-list-quis-kosakata','quis-kosakata','review-quis-kosakata','review-quis-kosakata-intermediate','review-quis-kosakata-advanced'].some(name => route().current(name))} href={route('pilih-level-quis-kosakata')}/>
+                <div onClickCapture={handleLockedClickCapture}>
+                  <SidebarLink icon={<ListChecks className="h-5 w-5" />} label="Kuis Kosakata" isOpen={true} isActive={['pilih-level-quis-kosakata','pilih-list-quis-kosakata','quis-kosakata','review-quis-kosakata','review-quis-kosakata-intermediate','review-quis-kosakata-advanced'].some(name => route().current(name))} href={route('pilih-level-quis-kosakata')} locked={isFeatureLocked}/>
+                </div>
                 <SidebarLink icon={<Trophy className="h-5 w-5" />} label="Leaderboard" isOpen={true} isActive={route().current('leaderboard')} href={route('leaderboard')} />
            
                   

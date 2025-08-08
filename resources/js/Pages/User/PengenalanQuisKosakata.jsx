@@ -56,7 +56,7 @@ export default function VocabularyQuizPreview() {
             textColor: "text-green-700",
             description:
                 'Soal pada kuis ini terdiri dari 2 tipe utama yang dirancang untuk membangun fondasi kosakata Jepang yang kuat. Tipe pertama adalah "Jepang to Indonesia" dimana Anda akan melihat kata dalam bahasa Jepang (kanji, furigana, dan romaji) dan harus memilih arti yang tepat dalam bahasa Indonesia. Tipe kedua adalah "Indonesia to Jepang" dimana Anda akan melihat kata dalam bahasa Indonesia dan harus memilih padanan yang tepat dalam bahasa Jepang. Level ini fokus pada pengenalan dasar kosakata dan kemampuan menghubungkan kata antara kedua bahasa.',
-            time: "5 menit",
+            time: "10 menit",
             questions: 10,
             preview: {
                 type: "japan-to-indonesia",
@@ -85,7 +85,7 @@ export default function VocabularyQuizPreview() {
             textColor: "text-blue-700",
             description:
                 'Level ini menggunakan tipe soal "Fill in the Blank" yang menguji pemahaman kontekstual kosakata dalam kalimat utuh. Anda akan diberikan kalimat bahasa Jepang dengan satu bagian yang kosong, kemudian harus memilih kosakata yang paling tepat untuk melengkapi kalimat tersebut. Tipe soal ini dirancang untuk meningkatkan kemampuan penggunaan kata dalam konteks yang berbeda, serta memperkuat pemahaman tata bahasa dasar. Level ini membantu transisi dari hafalan kosakata murni menuju pemahaman penggunaan praktis dalam komunikasi.',
-            time: "10 menit",
+            time: "12 menit",
             questions: 10,
             preview: {
                 question:
@@ -139,7 +139,7 @@ export default function VocabularyQuizPreview() {
             textColor: "text-purple-700",
             description:
                 "Level tertinggi ini menguji kemampuan memilih penggunaan kalimat yang paling natural dan tepat dengan kosakata tertentu. Anda akan diberikan satu kosakata target, kemudian harus memilih dari 4 contoh kalimat mana yang menggunakan kata tersebut dengan cara yang paling alami dan sesuai konteks dalam bahasa Jepang. Level ini membutuhkan pemahaman mendalam tentang nuansa bahasa, register formal/informal, dan penggunaan yang tepat dalam situasi berbeda. Tipe soal ini dirancang untuk mengasah intuisi bahasa dan kemampuan berkomunikasi seperti penutur asli.",
-            time: "12 menit",
+            time: "17 menit",
             questions: 10,
             preview: {
                 question:
@@ -198,9 +198,9 @@ export default function VocabularyQuizPreview() {
             borderColor: "border-green-200",
             textColor: "text-green-700",
             attempts: [
-                { attempt: 1, exp: 15, description: "Percobaan Pertama" },
-                { attempt: 2, exp: 7, description: "Percobaan Kedua" },
-                { attempt: 3, exp: 3, description: "Percobaan Ketiga" },
+                { attempt: 1, exp: 20, description: "Percobaan Pertama" },
+                { attempt: 2, exp: 12, description: "Percobaan Kedua" },
+                { attempt: 3, exp: 8, description: "Percobaan Ketiga" },
                 {
                     attempt: "4+",
                     exp: 0,
@@ -216,9 +216,9 @@ export default function VocabularyQuizPreview() {
             borderColor: "border-blue-200",
             textColor: "text-blue-700",
             attempts: [
-                { attempt: 1, exp: 25, description: "Percobaan Pertama" },
-                { attempt: 2, exp: 12, description: "Percobaan Kedua" },
-                { attempt: 3, exp: 5, description: "Percobaan Ketiga" },
+                { attempt: 1, exp: 30, description: "Percobaan Pertama" },
+                { attempt: 2, exp: 17, description: "Percobaan Kedua" },
+                { attempt: 3, exp: 10, description: "Percobaan Ketiga" },
                 {
                     attempt: "4+",
                     exp: 0,
@@ -234,9 +234,9 @@ export default function VocabularyQuizPreview() {
             borderColor: "border-purple-200",
             textColor: "text-purple-700",
             attempts: [
-                { attempt: 1, exp: 35, description: "Percobaan Pertama" },
-                { attempt: 2, exp: 18, description: "Percobaan Kedua" },
-                { attempt: 3, exp: 7, description: "Percobaan Ketiga" },
+                { attempt: 1, exp: 40, description: "Percobaan Pertama" },
+                { attempt: 2, exp: 23, description: "Percobaan Kedua" },
+                { attempt: 3, exp: 12, description: "Percobaan Ketiga" },
                 {
                     attempt: "4+",
                     exp: 0,

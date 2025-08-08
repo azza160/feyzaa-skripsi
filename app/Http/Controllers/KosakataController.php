@@ -32,8 +32,23 @@ class KosakataController extends Controller
         return $levelConfigs[$currentLevel]['max_exp'] ?? null;
     }
 
+    private function redirectIfUserLevelBelow(int $minimumLevel)
+    {
+        $user = Auth::user();
+        if (!$user || (int) $user->level < $minimumLevel) {
+            return redirect()->back()->with(
+                'error',
+                'Level Anda belum cukup untuk mengakses halaman ini. Minimal level ' . $minimumLevel . '.'
+            );
+        }
+        return null;
+    }
+
     public function getAllKosakata()
     {
+        if ($redirect = $this->redirectIfUserLevelBelow(3)) {
+            return $redirect;
+        }
         $this->cleanupActiveQuisSession();
         $user = Auth::user();
         
@@ -87,6 +102,9 @@ class KosakataController extends Controller
     }
 
     public function getDetailKosakata($id){
+        if ($redirect = $this->redirectIfUserLevelBelow(3)) {
+            return $redirect;
+        }
         $this->cleanupActiveQuisSession();
         $user = Auth::user();
 
@@ -167,6 +185,9 @@ class KosakataController extends Controller
     }
 
     public function flashcard(){
+        if ($redirect = $this->redirectIfUserLevelBelow(3)) {
+            return $redirect;
+        }
         $this->cleanupActiveQuisSession();
         $user = Auth::user();
 

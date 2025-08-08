@@ -258,21 +258,21 @@ class QuizService
         // Beginner: 10/5/2/0, Intermediate: 15/8/3/0, Advanced: 20/10/5/0
         return match($level) {
             'beginner' => match($attempt) {
-                1 => 10,
-                2 => 5,
-                3 => 2,
+                1 => 15,
+                2 => 10,
+                3 => 7,
                 default => 0,
             },
             'intermediate' => match($attempt) {
-                1 => 15,
-                2 => 8,
-                3 => 3,
+                1 => 20,
+                2 => 13,
+                3 => 8,
                 default => 0,
             },
             'advanced' => match($attempt) {
-                1 => 20,
-                2 => 10,
-                3 => 5,
+                1 => 25,
+                2 => 15,
+                3 => 10,
                 default => 0,
             },
             default => 0,

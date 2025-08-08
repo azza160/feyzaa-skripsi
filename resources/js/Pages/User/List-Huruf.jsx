@@ -16,7 +16,7 @@ import {
 import Dashboard from "../../Layouts/DashboardLayout";
 import { useLayout } from "../../Layouts/DashboardLayout";
 import { cn } from "@/lib/utils";
-import { Link } from "@inertiajs/react";
+import { Head, Link } from "@inertiajs/react";
 import { usePage } from "@inertiajs/react"; // Inertia hook untuk mengambil data
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogFooter, AlertDialogAction, AlertDialogCancel } from "@/components/ui/alert-dialog";
 
@@ -508,367 +508,375 @@ function HiraganaContent() {
         );
     }
 
+    
+
     return (
-        <div className="bg-transparent text-foreground relative overflow-hidden">
-            {/* Decorative background elements */}
-            <div className="fixed inset-0 pointer-events-none overflow-hidden">
-                <FloatingElement
-                    className="top-[10%] left-[5%] text-primary/20"
-                    delay={1}
-                >
-                    <Sakura size={40} />
-                </FloatingElement>
-                <FloatingElement
-                    className="top-[30%] right-[8%] text-primary/15"
-                    delay={2}
-                >
-                    <Cherry size={50} />
-                </FloatingElement>
-                <FloatingElement
-                    className="bottom-[20%] left-[12%] text-primary/10"
-                    delay={3}
-                >
-                    <Sakura size={60} />
-                </FloatingElement>
-                <FloatingElement
-                    className="top-[60%] right-[15%] text-primary/20"
-                    delay={4}
-                >
-                    <Cherry size={35} />
-                </FloatingElement>
-                <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(circle_at_top_right,_var(--primary)_0px,_transparent_1000px)] opacity-[0.03]"></div>
-            </div>
-
-            <div className="max-w-6xl mx-auto px-4 relative z-10">
-                {/* Breadcrump */}
-                <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="flex items-center space-x-2 text-sm bg-gradient-to-r from-background to-muted/50 dark:from-slate-950 dark:to-slate-900/50 p-3 rounded-lg shadow-sm border border-border/50 dark:border-slate-800/50  mb-[50px] w-fit"
-                >
-                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                        <Link href={route("dashboard")}>
-                            <span className="text-muted-foreground dark:text-slate-400 hover:text-violet-800 dark:hover:text-violet-300 transition-all duration-300">
-                                Dashboard
-                            </span>
-                        </Link>
-                        <span className="text-primary dark:text-violet-400">
-                            /
-                        </span>
-                        <Link href={route("huruf")}>
-                            <span className="text-muted-foreground dark:text-slate-400 hover:text-violet-800 dark:hover:text-violet-300 transition-all duration-300">
-                                Huruf Jepang
-                            </span>
-                        </Link>
-                        <span className="text-primary dark:text-violet-400">
-                            /
-                        </span>
-                        <Link
-                            href={route(
-                                jenis === "hiragana"
-                                    ? "kategori-huruf-hiragana"
-                                    : "kategori-huruf-katakana"
-                            )}
-                        >
-                            <span className="text-muted-foreground dark:text-slate-400 hover:text-viol;let-800 dark:hover:text-violet-300 transition-all duration-300 capitalize">
-                                Kategori Huruf {jenis}
-                            </span>
-                        </Link>
-                        <span className="text-primary dark:text-violet-400">
-                            /
-                        </span>
-                        <Link
-                            href={route("huruf-list", {
-                                jenis: jenis,
-                                kategori: kategori,
-                            })}
-                        >
-                            <span className="text-violet-400 dark:text-violet-600">
-                                Huruf {jenis} {kategori}
-                            </span>
-                        </Link>
-                    </div>
-                    <motion.div
-                        className="h-1 w-1 rounded-full bg-primary/50 dark:bg-violet-500/50"
-                        animate={{ scale: [1, 1.5, 1] }}
-                        transition={{
-                            duration: 2,
-                            repeat: Number.POSITIVE_INFINITY,
-                        }}
-                    />
-                </motion.div>
-
-                {/* Header */}
-                <header className="text-center mb-16 relative">
-                    <div className="absolute top-0 left-0 w-full h-full -z-10">
-                        <div className="absolute top-10 left-10 w-20 h-20 bg-primary/5 rounded-full blur-xl"></div>
-                        <div className="absolute bottom-0 right-10 w-32 h-32 bg-primary/10 rounded-full blur-xl"></div>
-                    </div>
-
-                    {/* Header Section dengan desain yang ditingkatkan */}
-                    <motion.div
-                        initial={{ y: -20, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{ duration: 0.5 }}
-                        className="mb-5 text-center relative"
+        <>
+            <Head>
+                <title>List HuruF</title>
+            </Head>
+            <div className="bg-transparent text-foreground relative overflow-hidden">
+                {/* Decorative background elements */}
+                <div className="fixed inset-0 pointer-events-none overflow-hidden">
+                    <FloatingElement
+                        className="top-[10%] left-[5%] text-primary/20"
+                        delay={1}
                     >
-                        <div className="py-8 px-4 relative z-0 bg-gradient-to-r from-violet-500/20 via-purple-500/10 to-pink-500/10 dark:from-violet-800/30 dark:via-purple-800/20 dark:to-pink-800/20 rounded-lg">
-                            <div className="inline-block mb-4 bg-violet-500/20 p-2 rounded-full">
-                                <GraduationCap className="h-8 w-8 text-slate-900 dark:text-slate-200" />
-                            </div>
-                            <h1 className="text-4xl md:text-5xl font-bold mb-3 text-slate-900 dark:text-slate-200 capitalize">
-                                Huruf {jenis} {"-"} {kategori}
-                            </h1>
-                            {renderDeskripsi({ jenis, kategori })}
-                        </div>
-                    </motion.div>
+                        <Sakura size={40} />
+                    </FloatingElement>
+                    <FloatingElement
+                        className="top-[30%] right-[8%] text-primary/15"
+                        delay={2}
+                    >
+                        <Cherry size={50} />
+                    </FloatingElement>
+                    <FloatingElement
+                        className="bottom-[20%] left-[12%] text-primary/10"
+                        delay={3}
+                    >
+                        <Sakura size={60} />
+                    </FloatingElement>
+                    <FloatingElement
+                        className="top-[60%] right-[15%] text-primary/20"
+                        delay={4}
+                    >
+                        <Cherry size={35} />
+                    </FloatingElement>
+                    <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(circle_at_top_right,_var(--primary)_0px,_transparent_1000px)] opacity-[0.03]"></div>
+                </div>
 
-                    {/* Progress indicator */}
+                <div className="max-w-6xl mx-auto px-4 relative z-10">
+                    {/* Breadcrump */}
                     <motion.div
-                        className="bg-primary/10 p-4 rounded-xl inline-flex items-center space-x-3"
-                        initial={{ opacity: 0, y: 20 }}
+                        initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.8, duration: 0.5 }}
+                        transition={{ duration: 0.3 }}
+                        className="flex items-center space-x-2 text-sm bg-gradient-to-r from-background to-muted/50 dark:from-slate-950 dark:to-slate-900/50 p-3 rounded-lg shadow-sm border border-border/50 dark:border-slate-800/50  mb-[50px] w-fit"
                     >
-                        <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center text-primary">
-                            <span className="text-sm font-bold">
-                                {presentase}%
+                        <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                            <Link href={route("dashboard")}>
+                                <span className="text-muted-foreground dark:text-slate-400 hover:text-violet-800 dark:hover:text-violet-300 transition-all duration-300">
+                                    Dashboard
+                                </span>
+                            </Link>
+                            <span className="text-primary dark:text-violet-400">
+                                /
                             </span>
+                            <Link href={route("huruf")}>
+                                <span className="text-muted-foreground dark:text-slate-400 hover:text-violet-800 dark:hover:text-violet-300 transition-all duration-300">
+                                    Huruf Jepang
+                                </span>
+                            </Link>
+                            <span className="text-primary dark:text-violet-400">
+                                /
+                            </span>
+                            <Link
+                                href={route(
+                                    jenis === "hiragana"
+                                        ? "kategori-huruf-hiragana"
+                                        : "kategori-huruf-katakana"
+                                )}
+                            >
+                                <span className="text-muted-foreground dark:text-slate-400 hover:text-viol;let-800 dark:hover:text-violet-300 transition-all duration-300 capitalize">
+                                    Kategori Huruf {jenis}
+                                </span>
+                            </Link>
+                            <span className="text-primary dark:text-violet-400">
+                                /
+                            </span>
+                            <Link
+                                href={route("huruf-list", {
+                                    jenis: jenis,
+                                    kategori: kategori,
+                                })}
+                            >
+                                <span className="text-violet-400 dark:text-violet-600">
+                                    Huruf {jenis} {kategori}
+                                </span>
+                            </Link>
                         </div>
-                        <div className="text-left">
-                            <p className="font-medium">
-                                Mulai Perjalanan Hiragana Anda
-                            </p>
-                            <p className="text-sm text-foreground/70">
-                                Pelajari {max} karakter untuk membuka kategori
-                                berikutnya
-                            </p>
-                        </div>
+                        <motion.div
+                            className="h-1 w-1 rounded-full bg-primary/50 dark:bg-violet-500/50"
+                            animate={{ scale: [1, 1.5, 1] }}
+                            transition={{
+                                duration: 2,
+                                repeat: Number.POSITIVE_INFINITY,
+                            }}
+                        />
                     </motion.div>
-                </header>
 
-                {/* Hiragana Grid */}
-                <AnimatePresence mode="wait">
-                    {isPageLoading ? (
+                    {/* Header */}
+                    <header className="text-center mb-16 relative">
+                        <div className="absolute top-0 left-0 w-full h-full -z-10">
+                            <div className="absolute top-10 left-10 w-20 h-20 bg-primary/5 rounded-full blur-xl"></div>
+                            <div className="absolute bottom-0 right-10 w-32 h-32 bg-primary/10 rounded-full blur-xl"></div>
+                        </div>
+
+                        {/* Header Section dengan desain yang ditingkatkan */}
                         <motion.div
-                            key="loading"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: 0.3 }}
-                            className="min-h-[400px] flex items-center justify-center"
+                            initial={{ y: -20, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ duration: 0.5 }}
+                            className="mb-5 text-center relative"
                         >
-                            <ContentLoading />
+                            <div className="py-8 px-4 relative z-0 bg-gradient-to-r from-violet-500/20 via-purple-500/10 to-pink-500/10 dark:from-violet-800/30 dark:via-purple-800/20 dark:to-pink-800/20 rounded-lg">
+                                <div className="inline-block mb-4 bg-violet-500/20 p-2 rounded-full">
+                                    <GraduationCap className="h-8 w-8 text-slate-900 dark:text-slate-200" />
+                                </div>
+                                <h1 className="text-4xl md:text-5xl font-bold mb-3 text-slate-900 dark:text-slate-200 capitalize">
+                                    Huruf {jenis} {"-"} {kategori}
+                                </h1>
+                                {renderDeskripsi({ jenis, kategori })}
+                            </div>
                         </motion.div>
-                    ) : (
+
+                        {/* Progress indicator */}
                         <motion.div
-                            key="content"
+                            className="bg-primary/10 p-4 rounded-xl inline-flex items-center space-x-3"
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
-                            transition={{ duration: 0.5 }}
+                            transition={{ delay: 0.8, duration: 0.5 }}
                         >
+                            <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+                                <span className="text-sm font-bold">
+                                    {presentase}%
+                                </span>
+                            </div>
+                            <div className="text-left">
+                                <p className="font-medium">
+                                    Mulai Perjalanan Hiragana Anda
+                                </p>
+                                <p className="text-sm text-foreground/70">
+                                    Pelajari {max} karakter untuk membuka kategori
+                                    berikutnya
+                                </p>
+                            </div>
+                        </motion.div>
+                    </header>
+
+                    {/* Hiragana Grid */}
+                    <AnimatePresence mode="wait">
+                        {isPageLoading ? (
                             <motion.div
-                                className="grid grid-cols-1  sm:grid-cols-3  lg:grid-cols-4 xl:grid-cols-5 gap-5 mb-24"
+                                key="loading"
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
-                                transition={{ duration: 0.5 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.3 }}
+                                className="min-h-[400px] flex items-center justify-center"
                             >
-                                {filteredCharacters.map((item, index) => (
-                                    <motion.div
-                                        key={item.id}
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{
-                                            delay: index * 0.05,
-                                            duration: 0.3,
-                                        }}
-                                    >
-                                        <HiraganaCard
-                                            character={item.huruf}
-                                            romaji={item.romaji}
-                                            jenis={jenis}
-                                            kategori={kategori}
-                                            id={item.id}
-                                            hurufs={hurufs}
-                                            audio={item.audio}
-                                            is_learned={item.is_learned}
-                                        />
-                                    </motion.div>
-                                ))}
+                                <ContentLoading />
                             </motion.div>
-
-                            {/* Learning Tips Section */}
+                        ) : (
                             <motion.div
-                                className="mb-24 grid md:grid-cols-2 gap-6"
+                                key="content"
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.3, duration: 0.5 }}
+                                exit={{ opacity: 0, y: -20 }}
+                                transition={{ duration: 0.5 }}
                             >
-                                <div className="bg-gradient-to-r from-primary/5 to-primary/10 rounded-2xl p-6 border border-primary/10 shadow-inner relative overflow-hidden">
-                                    <div className="absolute top-0 right-0 w-40 h-40 bg-primary/5 rounded-full blur-3xl -z-10"></div>
-                                    <h3 className="text-xl font-semibold mb-4 flex items-center">
-                                        <span className="bg-primary/20 text-primary w-8 h-8 rounded-full flex items-center justify-center mr-3">
-                                            <span className="text-sm">あ</span>
-                                        </span>
-                                        Tentang Hiragana
-                                    </h3>
-                                    <p className="text-foreground/80 mb-3 pl-4 border-l-2 border-primary/30">
-                                        📌 Hiragana terdiri dari 46 karakter dasar yang
-                                        mewakili setiap suku kata dalam bahasa Jepang.
-                                    </p>
-                                    <p className="text-foreground/80 pl-4 border-l-2 border-primary/30">
-                                        📌 Hiragana digunakan untuk menulis kata-kata asli
-                                        Jepang, akhiran kata kerja, dan partikel tata
-                                        bahasa.
-                                    </p>
-                                </div>
-
-                                <div className="bg-gradient-to-r from-primary/10 to-primary/5 rounded-2xl p-6 border border-primary/10 shadow-inner relative overflow-hidden">
-                                    <div className="absolute bottom-0 left-0 w-40 h-40 bg-primary/5 rounded-full blur-3xl -z-10"></div>
-                                    <h3 className="text-xl font-semibold mb-4 flex items-center">
-                                        <span className="bg-primary/20 text-primary w-8 h-8 rounded-full flex items-center justify-center mr-3">
-                                            <span className="text-sm">✓</span>
-                                        </span>
-                                        Tips Belajar
-                                    </h3>
-                                    <ul className="space-y-2">
-                                        <li className="flex items-start space-x-2">
-                                            <span className="text-primary">•</span>
-                                            <span className="text-foreground/80">
-                                                Pelajari 5 karakter setiap hari untuk hasil
-                                                optimal
-                                            </span>
-                                        </li>
-                                        <li className="flex items-start space-x-2">
-                                            <span className="text-primary">•</span>
-                                            <span className="text-foreground/80">
-                                                Praktikkan menulis karakter untuk memperkuat
-                                                ingatan
-                                            </span>
-                                        </li>
-                                        <li className="flex items-start space-x-2">
-                                            <span className="text-primary">•</span>
-                                            <span className="text-foreground/80">
-                                                Dengarkan pengucapan untuk meningkatkan
-                                                kemampuan mendengar
-                                            </span>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </motion.div>
-
-                            {/* Call to Action */}
-                            <motion.div
-                                className="mb-24 bg-primary text-primary-foreground rounded-2xl p-8 relative overflow-hidden"
-                                whileHover={{ scale: 1.01 }}
-                                transition={{ duration: 0.3 }}
-                            >
-                                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,255,255,0.1)_0px,_transparent_600px)]"></div>
-                                <div className="relative z-10 text-center">
-                                    <h3 className="text-2xl font-bold mb-4">
-                                        Siap untuk menguasai Hiragana?
-                                    </h3>
-                                    <p className="mb-6 text-primary-foreground/90 max-w-2xl mx-auto">
-                                        Lanjutkan perjalanan belajar bahasa Jepang Anda
-                                        dengan kursus lengkap kami. Dapatkan akses ke
-                                        latihan interaktif, pengucapan audio, dan banyak
-                                        lagi!
-                                    </p>
-                                    <button className="bg-primary-foreground text-primary px-6 py-3 rounded-lg font-medium shadow-lg hover:shadow-xl transition-shadow">
-                                        Mulai Kursus Lengkap
-                                    </button>
-                                </div>
-                            </motion.div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-            </div>
-
-            {/* Filter Button (Sticky) */}
-            <div
-                className={cn(
-                    "fixed bottom-0 z-30",
-                    isMobile
-                        ? "left-0 right-0"
-                        : sidebarOpen
-                        ? "left-80 right-0"
-                        : "left-20 right-0",
-                    "transition-all duration-300"
-                )}
-            >
-                <motion.div
-                    className="bg-background border-t border-primary/10 shadow-lg"
-                    initial={{ y: filterOpen ? 0 : "100%" }}
-                    animate={{ y: filterOpen ? 0 : "0%" }}
-                    transition={{ duration: 0.3 }}
-                >
-                    {/* Filter Toggle Button */}
-                    <div className="flex justify-center" onClick={() => setFilterOpen(!filterOpen)}>
-                        <motion.button
-                            className="flex items-center justify-center space-x-2 py-3 px-6 text-primary font-medium"
-                            whileTap={{ scale: 0.95 }}
-                        >
-                            <span>Filter Huruf</span>
-                            <motion.div
-                                animate={{ rotate: filterOpen ? 180 : 0 }}
-                                transition={{ duration: 0.3 }}
-                            >
-                                <ChevronUp size={18} />
-                            </motion.div>
-                        </motion.button>
-                    </div>
-
-                    {/* Filter Drawer */}
-                    <AnimatePresence>
-                        {filterOpen && (
-                            <motion.div
-                                className="bg-background p-4 border-t border-primary/10"
-                                initial={{ height: 0, opacity: 0 }}
-                                animate={{ height: "auto", opacity: 1 }}
-                                exit={{ height: 0, opacity: 0 }}
-                                transition={{ duration: 0.3 }}
-                            >
-                                <div className="flex justify-between items-center mb-4">
-                                    <h3 className="font-semibold">
-                                        Pilih Kelompok Huruf
-                                    </h3>
-                                    <button
-                                        onClick={() => setFilterOpen(false)}
-                                        className="text-foreground/70 hover:text-foreground"
-                                    >
-                                        <X size={18} />
-                                    </button>
-                                </div>
-
-                                <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 mb-4">
-                                    <FilterButton
-                                        label="Semua"
-                                        active={activeFilter === "all"}
-                                        onClick={() => applyFilter("all")}
-                                    />
-                                    {Object.keys(hiraganaData).map((group) => (
-                                        <FilterButton
-                                            key={group}
-                                            label={group}
-                                            active={activeFilter === group}
-                                            onClick={() => applyFilter(group)}
-                                        />
+                                <motion.div
+                                    className="grid grid-cols-1  sm:grid-cols-3  lg:grid-cols-4 xl:grid-cols-5 gap-5 mb-24"
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    transition={{ duration: 0.5 }}
+                                >
+                                    {filteredCharacters.map((item, index) => (
+                                        <motion.div
+                                            key={item.id}
+                                            initial={{ opacity: 0, y: 20 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{
+                                                delay: index * 0.05,
+                                                duration: 0.3,
+                                            }}
+                                        >
+                                            <HiraganaCard
+                                                character={item.huruf}
+                                                romaji={item.romaji}
+                                                jenis={jenis}
+                                                kategori={kategori}
+                                                id={item.id}
+                                                hurufs={hurufs}
+                                                audio={item.audio}
+                                                is_learned={item.is_learned}
+                                            />
+                                        </motion.div>
                                     ))}
-                                </div>
+                                </motion.div>
+
+                                {/* Learning Tips Section */}
+                                <motion.div
+                                    className="mb-24 grid md:grid-cols-2 gap-6"
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 0.3, duration: 0.5 }}
+                                >
+                                    <div className="bg-gradient-to-r from-primary/5 to-primary/10 rounded-2xl p-6 border border-primary/10 shadow-inner relative overflow-hidden">
+                                        <div className="absolute top-0 right-0 w-40 h-40 bg-primary/5 rounded-full blur-3xl -z-10"></div>
+                                        <h3 className="text-xl font-semibold mb-4 flex items-center">
+                                            <span className="bg-primary/20 text-primary w-8 h-8 rounded-full flex items-center justify-center mr-3">
+                                                <span className="text-sm">あ</span>
+                                            </span>
+                                            Tentang Hiragana
+                                        </h3>
+                                        <p className="text-foreground/80 mb-3 pl-4 border-l-2 border-primary/30">
+                                            📌 Hiragana terdiri dari 46 karakter dasar yang
+                                            mewakili setiap suku kata dalam bahasa Jepang.
+                                        </p>
+                                        <p className="text-foreground/80 pl-4 border-l-2 border-primary/30">
+                                            📌 Hiragana digunakan untuk menulis kata-kata asli
+                                            Jepang, akhiran kata kerja, dan partikel tata
+                                            bahasa.
+                                        </p>
+                                    </div>
+
+                                    <div className="bg-gradient-to-r from-primary/10 to-primary/5 rounded-2xl p-6 border border-primary/10 shadow-inner relative overflow-hidden">
+                                        <div className="absolute bottom-0 left-0 w-40 h-40 bg-primary/5 rounded-full blur-3xl -z-10"></div>
+                                        <h3 className="text-xl font-semibold mb-4 flex items-center">
+                                            <span className="bg-primary/20 text-primary w-8 h-8 rounded-full flex items-center justify-center mr-3">
+                                                <span className="text-sm">✓</span>
+                                            </span>
+                                            Tips Belajar
+                                        </h3>
+                                        <ul className="space-y-2">
+                                            <li className="flex items-start space-x-2">
+                                                <span className="text-primary">•</span>
+                                                <span className="text-foreground/80">
+                                                    Pelajari 5 karakter setiap hari untuk hasil
+                                                    optimal
+                                                </span>
+                                            </li>
+                                            <li className="flex items-start space-x-2">
+                                                <span className="text-primary">•</span>
+                                                <span className="text-foreground/80">
+                                                    Praktikkan menulis karakter untuk memperkuat
+                                                    ingatan
+                                                </span>
+                                            </li>
+                                            <li className="flex items-start space-x-2">
+                                                <span className="text-primary">•</span>
+                                                <span className="text-foreground/80">
+                                                    Dengarkan pengucapan untuk meningkatkan
+                                                    kemampuan mendengar
+                                                </span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </motion.div>
+
+                                {/* Call to Action */}
+                                <motion.div
+                                    className="mb-24 bg-primary text-primary-foreground rounded-2xl p-8 relative overflow-hidden"
+                                    whileHover={{ scale: 1.01 }}
+                                    transition={{ duration: 0.3 }}
+                                >
+                                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,255,255,0.1)_0px,_transparent_600px)]"></div>
+                                    <div className="relative z-10 text-center">
+                                        <h3 className="text-2xl font-bold mb-4">
+                                            Siap untuk menguasai Hiragana?
+                                        </h3>
+                                        <p className="mb-6 text-primary-foreground/90 max-w-2xl mx-auto">
+                                            Lanjutkan perjalanan belajar bahasa Jepang Anda
+                                            dengan kursus lengkap kami. Dapatkan akses ke
+                                            latihan interaktif, pengucapan audio, dan banyak
+                                            lagi!
+                                        </p>
+                                        <button className="bg-primary-foreground text-primary px-6 py-3 rounded-lg font-medium shadow-lg hover:shadow-xl transition-shadow">
+                                            Mulai Kursus Lengkap
+                                        </button>
+                                    </div>
+                                </motion.div>
                             </motion.div>
                         )}
                     </AnimatePresence>
-                </motion.div>
+                </div>
+
+                {/* Filter Button (Sticky) */}
+                <div
+                    className={cn(
+                        "fixed bottom-0 z-30",
+                        isMobile
+                            ? "left-0 right-0"
+                            : sidebarOpen
+                            ? "left-80 right-0"
+                            : "left-20 right-0",
+                        "transition-all duration-300"
+                    )}
+                >
+                    <motion.div
+                        className="bg-background border-t border-primary/10 shadow-lg"
+                        initial={{ y: filterOpen ? 0 : "100%" }}
+                        animate={{ y: filterOpen ? 0 : "0%" }}
+                        transition={{ duration: 0.3 }}
+                    >
+                        {/* Filter Toggle Button */}
+                        <div className="flex justify-center" onClick={() => setFilterOpen(!filterOpen)}>
+                            <motion.button
+                                className="flex items-center justify-center space-x-2 py-3 px-6 text-primary font-medium"
+                                whileTap={{ scale: 0.95 }}
+                            >
+                                <span>Filter Huruf</span>
+                                <motion.div
+                                    animate={{ rotate: filterOpen ? 180 : 0 }}
+                                    transition={{ duration: 0.3 }}
+                                >
+                                    <ChevronUp size={18} />
+                                </motion.div>
+                            </motion.button>
+                        </div>
+
+                        {/* Filter Drawer */}
+                        <AnimatePresence>
+                            {filterOpen && (
+                                <motion.div
+                                    className="bg-background p-4 border-t border-primary/10"
+                                    initial={{ height: 0, opacity: 0 }}
+                                    animate={{ height: "auto", opacity: 1 }}
+                                    exit={{ height: 0, opacity: 0 }}
+                                    transition={{ duration: 0.3 }}
+                                >
+                                    <div className="flex justify-between items-center mb-4">
+                                        <h3 className="font-semibold">
+                                            Pilih Kelompok Huruf
+                                        </h3>
+                                        <button
+                                            onClick={() => setFilterOpen(false)}
+                                            className="text-foreground/70 hover:text-foreground"
+                                        >
+                                            <X size={18} />
+                                        </button>
+                                    </div>
+
+                                    <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 mb-4">
+                                        <FilterButton
+                                            label="Semua"
+                                            active={activeFilter === "all"}
+                                            onClick={() => applyFilter("all")}
+                                        />
+                                        {Object.keys(hiraganaData).map((group) => (
+                                            <FilterButton
+                                                key={group}
+                                                label={group}
+                                                active={activeFilter === group}
+                                                onClick={() => applyFilter(group)}
+                                            />
+                                        ))}
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </motion.div>
+                </div>
             </div>
-        </div>
+        </>
     );
 }
 
 export default function HiraganaIndex() {
     return (
         <Dashboard>
+            
             <HiraganaContent />
         </Dashboard>
     );
