@@ -1021,10 +1021,10 @@ export default function JapaneseVocabularyIntro() {
                             className="text-center"
                             variants={itemVariants}
                         >
-                            <Link href='/pengenalan-quis-huruf'>
+                            <Link href='/pengenalan-quis-kosakata'>
                                 <button className="bg-purple-600 hover:bg-purple-700 text-white px-12 py-6 rounded-md font-bold text-xl transition-all duration-300 transform hover:scale-105 shadow-2xl flex items-center gap-3 mx-auto">
                                     <Gamepad2 className="w-6 h-6" />
-                                    Lihat Sistem Kuis Huruf
+                                    Lihat Sistem Kuis Kosakata
                                 </button>
                             </Link>
                         </motion.div>
