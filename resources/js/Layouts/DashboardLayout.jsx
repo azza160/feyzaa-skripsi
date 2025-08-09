@@ -141,7 +141,10 @@ export default function Dashboard({ children }) {
   })
   const { theme, toggleTheme } = useTheme()
   const [showBanner, setShowBanner] = useState(true)
- 
+  const [showInfo, setShowInfo] = useState(false);
+  const toggleInfo = () => {
+    setShowInfo(prev => !prev);
+};
   const {currentLevel,currentExp,maxExp,user} = usePage().props
   
   const isMobile = useIsMobile()
@@ -271,7 +274,7 @@ export default function Dashboard({ children }) {
             <div className="px-4 py-6">
               <div className="flex items-center gap-3">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary dark:bg-violet-600 text-white">
-                  <span className="font-bold text-lg">NV</span>
+                  <span className="font-bold text-lg">KB</span>
                 </div>
                 {sidebarOpen && (
                   <div className="overflow-hidden">
@@ -417,13 +420,26 @@ export default function Dashboard({ children }) {
 
                   {/* Level Bar for Mobile */}
                   <div className="px-4 py-3 mt-2 mb-4">
-                    <h3 className="mb-2 text-xs font-semibold uppercase text-muted-foreground dark:text-slate-500">
-                      Your Level
-                    </h3>
-                    <div className="w-full">
-                    <LevelBar currentLevel={currentLevel}  currentExp={currentExp} maxExp={maxExp} />
-                  </div>
-                  </div>
+            <h3 className="mb-2 text-xs font-semibold uppercase text-muted-foreground dark:text-slate-500">
+                Your Level
+            </h3>
+            <div className="w-full">
+                <div onClick={toggleInfo} className="cursor-pointer">
+                    <LevelBar
+                        currentLevel={currentLevel}
+                        currentExp={currentExp}
+                        maxExp={maxExp}
+                    />
+                </div>
+
+                {showInfo && (
+                    <div className="mt-2 p-2 text-sm rounded-md bg-muted">
+                        Level: {currentLevel} <br />
+                        Exp: {currentExp} / {maxExp}
+                    </div>
+                )}
+            </div>
+        </div>
 
                   <h3 className="mb-3 mt-6 px-4 text-xs font-semibold uppercase text-muted-foreground dark:text-slate-500">
                     Uji Kemampuan
@@ -582,14 +598,19 @@ export default function Dashboard({ children }) {
                       </div>
                       <DropdownMenuSeparator className="m-0" />
                       <div className="p-1">
-                        <DropdownMenuItem className="flex items-center gap-2 rounded-md p-2 cursor-pointer hover:bg-primary/10 dark:hover:bg-violet-500/10">
-                          <User className="h-4 w-4 text-primary dark:text-violet-400" />
-                          <Link href={route('profile')}><span>Profile</span></Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="flex items-center gap-2 rounded-md p-2 cursor-pointer hover:bg-primary/10 dark:hover:bg-violet-500/10">
-                          <Settings className="h-4 w-4 text-primary dark:text-violet-400" />
-                          <Link href={route('profile.edit')}><span>Settings</span></Link>
-                        </DropdownMenuItem>
+                        <Link href={route('profile')}>
+                          <DropdownMenuItem className="flex items-center gap-2 rounded-md p-2 cursor-pointer hover:bg-primary/10 dark:hover:bg-violet-500/10">
+                            <User className="h-4 w-4 text-primary dark:text-violet-400" />
+                            <span>Profile</span>
+                          </DropdownMenuItem>
+                        </Link>
+                        <Link href={route('profile.edit')}>
+                          <DropdownMenuItem className="flex items-center gap-2 rounded-md p-2 cursor-pointer hover:bg-primary/10 dark:hover:bg-violet-500/10">
+                            <Settings className="h-4 w-4 text-primary dark:text-violet-400" />
+                            <span>Settings</span>
+                          </DropdownMenuItem>
+                        </Link>
+                  
                         <DropdownMenuSeparator />
                         <button onClick={handleLogout} className="w-full hover:bg-red-100 dark:hover:bg-red-900/20">
                         <DropdownMenuItem className="flex items-center gap-2 rounded-md p-2 cursor-pointer hover:bg-red-100 dark:hover:bg-red-900/20">
@@ -678,7 +699,7 @@ export default function Dashboard({ children }) {
     <div className="container mx-auto px-4">
       <div className="flex flex-col md:flex-row justify-between items-center gap-6">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-primary to-violet-500 dark:from-violet-600 dark:to-indigo-500 flex items-center justify-center text-white font-bold text-sm shadow-md">NV</div>
+          <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-primary to-violet-500 dark:from-violet-600 dark:to-indigo-500 flex items-center justify-center text-white font-bold text-sm shadow-md">KB</div>
           <div>
             <h3 className="font-medium text-foreground dark:text-white">Kotonee</h3>
             <p className="text-xs text-muted-foreground dark:text-slate-400">© 2025 Kotobee. All rights reserved.</p>

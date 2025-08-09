@@ -188,6 +188,19 @@ export default function Home() {
         setOpenFaq(openFaq === index ? null : index);
     };
 
+    // Resolve user photo URL with a safe fallback
+    // const resolveFoto = (foto) => {
+    //     if (!foto) return "/placeholder.svg";
+    //     try {
+    //         if (typeof foto === "string" && foto.includes("googleusercontent.com")) {
+    //             return foto.replace(/=s\d+-c/, "=s200-c");
+    //         }
+    //     } catch (_) {
+    //         // noop
+    //     }
+    //     return foto;
+    // };
+
     const colorData = [
         {
           color: "bg-gradient-to-br from-green-500 to-emerald-600",
@@ -986,6 +999,7 @@ export default function Home() {
                             </div>
                         ) : (
                         (topUsers || []).map((user, index) => {
+                        
                             const rank = index + 1;
                             const badges = rank <= 3 ? ["🔥", "⚡", "💎"] : ["🔥", "⚡"];
                             
@@ -997,13 +1011,18 @@ export default function Home() {
                                 id: user.id || index,
                                 nama_pengguna: user.nama_pengguna || `User ${index + 1}`,
                                 exp: user.exp || 0,
-                                level: user.level || 1
+                                level: user.level || 1,
+                                foto: user.foto || null,
                             };
+
+                           
                             const getMedal = (rank) => {
                                 if (rank === 1) return "🥇";
                                 if (rank === 2) return "🥈";
                                 if (rank === 3) return "🥉";
                                 return null;
+
+                               
                             };
 
                             return (
@@ -1053,9 +1072,10 @@ export default function Home() {
                                                 {/* Avatar with Medal */}
                                                 <div className="relative">
                                                     <img
-                                                        src="/placeholder.svg?height=80&width=80"
+                                                        src={userData.foto}
                                                         alt={userData.nama_pengguna}
                                                         className="w-12 h-12 rounded-md object-cover border-2 border-border"
+                                                       
                                                     />
                                                     {getMedal(rank) && (
                                                         <div className="absolute -top-1 -right-1 text-lg">
@@ -1121,9 +1141,10 @@ export default function Home() {
                                                     {/* Avatar with Medal */}
                                                     <div className="relative">
                                                         <img
-                                                            src="/placeholder.svg?height=80&width=80"
+                                                            src={userData.foto}
                                                             alt={userData.nama_pengguna}
                                                             className="w-16 h-16 rounded-md object-cover border-2 border-border"
+                                                           
                                                         />
                                                         {getMedal(rank) && (
                                                             <div className="absolute -top-2 -right-2 text-2xl">

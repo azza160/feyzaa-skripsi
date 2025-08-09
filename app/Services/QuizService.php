@@ -242,9 +242,9 @@ class QuizService
     {
         // ATURAN_EXP_DAN_TIMER.txt: Beginner=5m(300s), Intermediate=7m(420s), Advanced=10m(600s)
         return match($level) {
-            'beginner' => 300,
-            'intermediate' => 420,
-            'advanced' => 600,
+            'beginner' => 420,
+            'intermediate' => 600,
+            'advanced' => 900,
             default => 300,
         };
     }

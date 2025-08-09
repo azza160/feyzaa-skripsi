@@ -9,7 +9,7 @@ import { CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { CheckIcon, Search, Shuffle, BookOpen, Play, AlertCircle, GraduationCap, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Trophy } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { Link, usePage, router } from "@inertiajs/react"
+import { Link, usePage, router, Head } from "@inertiajs/react"
 import DashboardLayout from "../../Layouts/DashboardLayout"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 // Import SweetAlert2
@@ -544,6 +544,9 @@ export default function VocabularySelector() {
 
   return (
     <DashboardLayout>
+        <Head>
+        <title>Mulai Quis</title>
+      </Head>
       <div className="max-w-7xl mx-auto p-6 space-y-8">
         {/* Header (breadcrumb + motion) */}
         <motion.div

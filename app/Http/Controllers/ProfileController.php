@@ -171,10 +171,13 @@ class ProfileController extends Controller
                     return back()->withErrors(['avatar' => 'Ukuran gambar maksimal 2MB.'])->withInput();
                 }
 
-                // Delete old avatar if exists
-                if ($user->foto && Storage::disk('public')->exists($user->foto)) {
-                    Storage::disk('public')->delete($user->foto);
-                    \Log::info('Deleted old avatar:', ['path' => $user->foto]);
+                if ($user->foto && !preg_match('/^https?:\/\//', $user->foto)) {
+                    $oldPath = str_replace('/storage/', '', $user->foto);
+                
+                    if (Storage::disk('public')->exists($oldPath)) {
+                        Storage::disk('public')->delete($oldPath);
+                        \Log::info('Deleted old avatar:', ['path' => $oldPath]);
+                    }
                 }
 
                 // Store new avatar

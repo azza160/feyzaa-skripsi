@@ -20,7 +20,7 @@ import {
   Lock,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { Link,usePage, router } from "@inertiajs/react"
+import { Link,usePage, router, Head } from "@inertiajs/react"
 import { Loading } from "../../components/Loading"
 
 // Content Loading Component
@@ -121,6 +121,9 @@ const handleStartQuiz = (jenis) => {
 
   return (
     <DashboardLayout>
+      <Head>
+        <title>Pilih Huruf Quis</title>
+      </Head>
       <AnimatePresence>
         {isButtonLoading && <Loading />}
         

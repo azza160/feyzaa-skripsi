@@ -28,7 +28,7 @@ import {
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import DashboardLayout from "../../Layouts/DashboardLayout"
-import { Link, usePage, router } from "@inertiajs/react"
+import { Link, usePage, router, Head } from "@inertiajs/react"
 import { Loading } from "../../components/Loading"
 import { Progress } from "@/components/ui/progress"
 
@@ -503,6 +503,9 @@ export default function QuizLevelSelector() {
 
   return (
     <DashboardLayout>
+        <Head>
+        <title>Pilih LevelQuis</title>
+      </Head>
       <AnimatePresence>
         <div className="text-foreground">
           <div className="max-w-6xl mx-auto px-4">
@@ -996,16 +999,7 @@ export default function QuizLevelSelector() {
                   )}
                 </Button>
                 {/* Tombol untuk menampilkan ulang modal penjelasan quiz/EXP */}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full mt-2"
-                  onClick={() => setShowQuizSystemModal(true)}
-                  disabled={isLoading}
-                >
-                  <Info className="w-4 h-4 mr-2 inline" />
-                  Lihat Penjelasan Sistem Quiz/EXP
-                </Button>
+             
               </motion.div>
             )}
             <div className="flex justify-center mt-6">

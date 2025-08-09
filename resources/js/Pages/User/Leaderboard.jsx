@@ -2,7 +2,7 @@
 import { motion, AnimatePresence } from "framer-motion"
 import { useState, useEffect } from "react"
 import DashboardLayout from "../../Layouts/DashboardLayout"
-import { Link } from "@inertiajs/react"
+import { Head, Link } from "@inertiajs/react"
 import { X, ZoomIn } from "lucide-react"
 import "../../../css/app.css"
 
@@ -39,17 +39,17 @@ const LeaderboardContent = ({ topUsers, currentUser, globalStats, user, currentL
   }, [topUsers, currentUser])
 
   // Helper function untuk menangani URL Google Photos
-  const getImageUrl = (foto) => {
-    if (!foto) return "/placeholder.svg"
+  // const getImageUrl = (foto) => {
+  //   if (!foto) return "/placeholder.svg"
     
-    // Jika URL Google Photos, tambahkan parameter untuk ukuran yang lebih besar
-    if (foto.includes('googleusercontent.com')) {
-      // Ganti s96-c dengan s400-c untuk ukuran yang lebih besar
-      return foto.replace(/=s\d+-c/, '=s400-c')
-    }
+  //   // Jika URL Google Photos, tambahkan parameter untuk ukuran yang lebih besar
+  //   if (foto.includes('googleusercontent.com')) {
+  //     // Ganti s96-c dengan s400-c untuk ukuran yang lebih besar
+  //     return foto.replace(/=s\d+-c/, '=s400-c')
+  //   }
     
-    return foto
-  }
+  //   return foto
+  // }
 
   // Helper function untuk truncate nama
   const truncateName = (name, maxLength = 15) => {
@@ -176,12 +176,10 @@ const LeaderboardContent = ({ topUsers, currentUser, globalStats, user, currentL
                 <X className="w-5 h-5 text-gray-600 dark:text-gray-300" />
               </button>
               <img
-                src={getImageUrl(imageUrl)}
+                src={imageUrl}
                 alt="Profile"
                 className="w-full h-full object-contain rounded-lg shadow-2xl"
-                onError={(e) => {
-                  e.target.src = "/placeholder.svg"
-                }}
+           
               />
             </motion.div>
           </motion.div>
@@ -227,12 +225,10 @@ const LeaderboardContent = ({ topUsers, currentUser, globalStats, user, currentL
             <div className="flex items-center space-x-3">
               <div className="relative">
                 <img
-                  src={getImageUrl(user.foto)}
+                  src={user.foto}
                   alt={user.nama_pengguna}
                   className="w-14 h-14 rounded-2xl border-2 border-border object-cover shadow-lg"
-                  onError={(e) => {
-                    e.target.src = "/placeholder.svg"
-                  }}
+                
                 />
                 {user.rank <= 3 && <div className="absolute -top-1 -right-1 text-lg">{getMedalIcon(user.rank)}</div>}
                 <div className="absolute -bottom-1 -right-1 bg-blue-500 text-white text-xs px-1.5 py-0.5 rounded-full font-bold flex items-center">
@@ -337,12 +333,10 @@ const LeaderboardContent = ({ topUsers, currentUser, globalStats, user, currentL
             {/* Avatar with Level */}
             <div className="relative">
               <img
-                src={getImageUrl(user.foto)}
+                src={user.foto}
                 alt={user.nama_pengguna}
                 className="w-16 h-16 rounded-2xl border-3 border-border object-cover shadow-lg"
-                onError={(e) => {
-                  e.target.src = "/placeholder.svg"
-                }}
+             
               />
               {user.rank <= 3 && <div className="absolute -top-2 -right-2 text-2xl">{getMedalIcon(user.rank)}</div>}
               <div className="absolute -bottom-1 -right-1 bg-blue-500 text-white text-xs px-2 py-1 rounded-full font-bold flex items-center">
@@ -455,7 +449,7 @@ const LeaderboardContent = ({ topUsers, currentUser, globalStats, user, currentL
             <div className="text-center">
               <div className="relative inline-block">
                 <img
-                  src={getImageUrl(user.foto)}
+                  src={user.foto}
                   alt={user.nama_pengguna}
                   className="w-20 sm:w-24 h-20 sm:h-24 rounded-3xl mx-auto mb-4 border-4 border-primary/20 cursor-pointer hover:scale-105 transition-transform"
                   onClick={(e) => {
@@ -464,9 +458,7 @@ const LeaderboardContent = ({ topUsers, currentUser, globalStats, user, currentL
                     console.log('Image clicked in modal, setting selectedImage to:', user.foto) // Debug
                     setSelectedImage(user.foto)
                   }}
-                  onError={(e) => {
-                    e.target.src = "/placeholder.svg"
-                  }}
+             
                 />
                 <div className="absolute inset-0 bg-black/0 hover:bg-black/20 rounded-3xl transition-colors flex items-center justify-center pointer-events-none">
                   <ZoomIn className="w-6 h-6 text-white opacity-0 hover:opacity-100 transition-opacity" />
@@ -823,6 +815,7 @@ const LeaderboardContent = ({ topUsers, currentUser, globalStats, user, currentL
 export default function Leaderboard(props) {
   return (
     <DashboardLayout>
+      <Head title="Leaderboard" />
       <LeaderboardContent {...props} />
     </DashboardLayout>
   )

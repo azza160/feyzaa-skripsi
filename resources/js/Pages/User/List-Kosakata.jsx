@@ -350,6 +350,9 @@ if (sortBy === "a-z") {
 
     return (
         <>
+        <Head>
+            <title>Daftar Kosakata</title>
+        </Head>
             <AnimatePresence>
                 {isPageLoading && <Loading />}
                 {isButtonLoading && <Loading />}

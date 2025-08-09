@@ -10,7 +10,7 @@ import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, A
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { CheckIcon, ChevronRight, AlertCircle, BookOpen, Zap, Volume2, Info, Shuffle, GraduationCap, Star, Clock, Target, Award, Brain, TrendingUp, XCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { Link, usePage,router } from "@inertiajs/react"
+import { Link, usePage,router, Head } from "@inertiajs/react"
 import { Loading } from "../../components/Loading"
 // Import SweetAlert2
 const Swal = window.Swal
@@ -574,6 +574,9 @@ export default function QuizLetterSelect() {
 
   return (
     <DashboardLayout>
+      <Head>
+        <title>Mulai Quis</title>
+      </Head>
       <AnimatePresence>
         <div className="text-foreground">
           <div className="max-w-6xl mx-auto px-4">
@@ -935,18 +938,7 @@ export default function QuizLetterSelect() {
                           )}
                         </Button>
                        
-                        {/* Show explanation button for returning users */}
-                        {hasSeenQuizExplanation() && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={handleShowExplanationAgain}
-                            className="text-sm"
-                          >
-                            <Info className="w-4 h-4 mr-2" />
-                            Lihat Penjelasan Sistem EXP
-                          </Button>
-                        )}
+                      
                        
                         {!isRandomMode && selectedLetters.length !== requiredLetters && (
                           <p className="text-sm text-muted-foreground flex items-center gap-1">

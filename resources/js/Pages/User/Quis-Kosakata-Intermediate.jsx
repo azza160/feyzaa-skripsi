@@ -15,7 +15,7 @@ import {
 import { X, Clock, CheckCircle, XCircle, Eye, EyeOff, ArrowRight, Trophy, BookOpen, GraduationCap } from "lucide-react"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import DashboardLayout from "../../Layouts/DashboardLayout"
-import { router } from "@inertiajs/react"
+import { Head, router } from "@inertiajs/react"
 import { usePage } from "@inertiajs/react"
 
 // Sample vocabulary quiz data
@@ -281,7 +281,7 @@ const QuizCompletion = ({ isTimeUp, reviewResult, reviewLoading, reviewError, on
 }
 
 // 1. Add helper for random blank style
-const blankVariants = ["____", "______", "___", ".....", "???"];
+const blankVariants = ["[____]"];
 function getRandomBlank() {
   return blankVariants[Math.floor(Math.random() * blankVariants.length)];
 }
@@ -570,6 +570,9 @@ export default function VocabularyQuizPage() {
 
   return (
     <DashboardLayout>
+        <Head>
+        <title>Quis</title>
+      </Head>
       {/* Cek jika data quiz tidak ada */}
       {(!quizData || !Array.isArray(quizData) || quizData.length === 0) ? (
         <div className="text-center text-red-500 p-10">

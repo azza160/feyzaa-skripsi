@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { ChevronRight, Sparkles, Star, Zap, Egg, Flame, Crown, Clock, Target, Award, GraduationCap, ArrowRight } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { Link, usePage, router } from "@inertiajs/react"
+import { Link, usePage, router, Head } from "@inertiajs/react"
 import { Loading } from "../../components/Loading"
 
 // Content Loading Component
@@ -305,6 +305,9 @@ export default function QuizLevelSelect() {
 
   return (
     <DashboardLayout>
+      <Head>
+        <title>Pilih Level Quis</title>
+      </Head>
       <AnimatePresence>
         {isButtonLoading && <Loading />}
         

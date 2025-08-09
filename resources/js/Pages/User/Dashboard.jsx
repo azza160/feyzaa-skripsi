@@ -819,7 +819,14 @@ export default function DashboardUser() {
                                 </Card>
                             </motion.div>
                         </motion.div>
+                        
+                        <div className="flex justify-center mb-5">
+                            <p className="bg-green-300/40 border-2 border-green-300 py-2 px-5 rounded">
+                            untuk saat ini fitur grafik masih belum berfungsi
 
+                            </p>
+                            
+                        </div>
                         {/* Learning Chart - Enhanced */}
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}

@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { CheckCircle, XCircle, Trophy, Star, Home, Target, Clock, Zap, Award, Eye, Brain, Calendar, AlertCircle, List, TrendingUp } from "lucide-react"
-import { Link, router,usePage } from "@inertiajs/react"
+import { Head, Link, router,usePage } from "@inertiajs/react"
 import DashboardLayout from "../../Layouts/DashboardLayout"
 import LevelUpAlert from "@/components/LevelUpAlert"
 import ExpAlert from "@/components/ExpAlert"
@@ -237,6 +237,9 @@ export default function ReviewQuisPage() {
 
   return (
     <DashboardLayout>
+        <Head>
+        <title>Review Quis</title>
+      </Head>
       <div className="text-foreground">
         <div className="max-w-6xl mx-auto px-4">
           <motion.div

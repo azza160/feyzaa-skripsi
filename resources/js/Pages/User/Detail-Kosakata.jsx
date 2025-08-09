@@ -50,7 +50,7 @@ import {
 import Dashboard from "../../Layouts/DashboardLayout";
 import { cn } from "@/lib/utils";
 import { useLayout } from "../../Layouts/DashboardLayout";
-import { Link, usePage } from "@inertiajs/react";
+import { Head, Link, usePage } from "@inertiajs/react";
 import {
     AlertDialog,
     AlertDialogContent,
@@ -1404,6 +1404,9 @@ export default function VocabularyDetailIndex() {
     console.log(kosakata);
     return (
         <Dashboard>
+            <Head>
+                <title>Detail Kosakata</title>
+            </Head>
             <VocabularyDetailContent vocabularyData={kosakata} />
         </Dashboard>
     );

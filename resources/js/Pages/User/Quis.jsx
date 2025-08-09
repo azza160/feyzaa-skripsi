@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dialog"
 import { X, Clock, CheckCircle, XCircle, Volume2, VolumeX, Pause, Play, Trophy, Eye, ArrowRight } from "lucide-react"
 import DashboardLayout from "../../Layouts/DashboardLayout"
-import { Link, router } from "@inertiajs/react"
+import { Head, Link, router } from "@inertiajs/react"
 import {
   Accordion,
   AccordionContent,
@@ -277,6 +277,9 @@ export default function QuizHurufPage() {
   if (showCompletion || currentQuestion >= quizData.length) {
     return (
       <DashboardLayout>
+          <Head>
+        <title>Quis</title>
+      </Head>
         <QuizCompletion
           isTimeUp={isTimeUp}
           answers={answers}
@@ -290,6 +293,9 @@ export default function QuizHurufPage() {
 
   return (
     <DashboardLayout>
+      <Head>
+        <title>Quis</title>
+      </Head>
       <div className="text-foreground">
         <div className="max-w-6xl mx-auto px-4">
          
