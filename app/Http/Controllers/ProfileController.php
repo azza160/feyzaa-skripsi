@@ -116,8 +116,8 @@ class ProfileController extends Controller
             $file = $request->file('avatar');
     
             // Hapus foto lama kalau ada
-            if ($user->foto && filter_var($user->foto, FILTER_VALIDATE_URL)) {
-                $oldFilePath = public_path(parse_url($user->foto, PHP_URL_PATH));
+            if ($user->foto) {
+                $oldFilePath = public_path(str_replace('/public/', '', $user->foto));
                 if (file_exists($oldFilePath)) {
                     unlink($oldFilePath);
                 }
@@ -127,8 +127,8 @@ class ProfileController extends Controller
             $filename = uniqid() . '.' . $file->getClientOriginalExtension();
             $file->move(public_path('avatars'), $filename);
     
-            // Simpan URL lengkap ke database
-            $user->foto = url('avatars/' . $filename);
+            // Simpan path relatif dengan prefix /public/avatars
+            $user->foto = '/public/avatars/' . $filename;
         }
     
         $user->save();
@@ -138,6 +138,7 @@ class ProfileController extends Controller
             'message' => 'Profil berhasil diperbarui!'
         ]);
     }
+    
     
     
 
