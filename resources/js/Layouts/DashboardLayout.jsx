@@ -329,6 +329,19 @@ export default function Dashboard({ children }) {
 
                 
               </nav>
+
+              {sidebarOpen && (
+                <h3 className="mb-3 mt-6 px-4 text-xs font-semibold uppercase text-muted-foreground dark:text-slate-500">
+                  Tambahan
+                </h3>
+              )}
+                            {!sidebarOpen && <div className="my-6 border-t border-border dark:border-slate-800"></div>}
+
+
+              <nav className="space-y-1">
+                <SidebarLink icon={<LayoutDashboard className="h-5 w-5" />} label="Kembali Ke Beranda" isOpen={sidebarOpen}  href={route('beranda')} disabled={isQuizPage} />
+
+              </nav>
             </div>
             <div className="mt-auto p-4 border-t border-border dark:border-slate-800 sidebar-element">
   <div className={cn(
@@ -452,6 +465,13 @@ export default function Dashboard({ children }) {
                 <SidebarLink icon={<Trophy className="h-5 w-5" />} label="Leaderboard" isOpen={true} isActive={route().current('leaderboard')} href={route('leaderboard')} />
            
                   
+                  </nav>
+
+                  <h3 className="mb-3 mt-6 px-4 text-xs font-semibold uppercase text-muted-foreground dark:text-slate-500">
+                    Tambahan
+                  </h3>
+                  <nav className="space-y-1">
+                  <SidebarLink icon={<LayoutDashboard className="h-5 w-5" />} label="Kembali Ke Beranda" isOpen={true}  href={route('beranda')} />
                   </nav>
                 </div>
                 <div className="mt-4 px-4 mb-4">

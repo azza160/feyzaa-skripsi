@@ -189,12 +189,10 @@ class AuthController extends Controller
     {
         try {
             $googleUser = Socialite::driver('google')->user();
-            
+    
             // Cari user berdasarkan email
             $user = User::where('email', $googleUser->email)->first();
-
-            
-            
+    
             // Jika user tidak ditemukan, buat baru
             if (!$user) {
                 $user = User::create([
@@ -208,26 +206,23 @@ class AuthController extends Controller
                     'foto' => $googleUser->avatar,
                     'email_verified_at' => now(),
                 ]);
-
+    
                 Auth::login($user);
-                // Set session flag untuk welcome alert
                 session()->flash('show_welcome_alert', true);
-
-                //check login streak
+    
+                // Login streak pertama kali
                 $today = Carbon::today();
-               
-                // Set streak ke 1 untuk login pertama kali
                 $user->login_streak = 1;
                 $user->last_login_date = $today;
                 $user->save();
-                
+    
                 return redirect()->intended('/dashboard')->with([
                     'success' => true,
                     'message' => 'Login dengan Google berhasil!'
                 ]);
-            } 
-            
-            // Jika user ditemukan
+            }
+    
+            // Jika user ditemukan tapi bukan akun Google
             if ($user->password && !$user->google_id) {
                 return redirect()->route('login')->with([
                     'success' => false,
@@ -235,7 +230,8 @@ class AuthController extends Controller
                     'alertType' => 'warning'
                 ]);
             }
-
+    
+            // Jika status akun pending
             if ($user->status === 'pending') {
                 return redirect()->route('login')->with([
                     'success' => false,
@@ -243,47 +239,45 @@ class AuthController extends Controller
                     'alertType' => 'warning'
                 ]);
             }
-            
-            // Update data google jika user sebelumnya login dengan google
-            $user->update([
-                'google_id' => $googleUser->id,
-                'foto' => $googleUser->avatar,
-            ]);
-
+    
+            // Update google_id, tapi foto hanya diupdate kalau masih default atau sama dengan avatar Google
+            $user->google_id = $googleUser->id;
+            if (empty($user->foto) || $user->foto === $googleUser->avatar) {
+                $user->foto = $googleUser->avatar;
+            }
+            $user->save();
+    
             Auth::login($user);
-
-            // Set session flag untuk welcome alert
             session()->flash('show_welcome_alert', true);
-
-            // Update login streak untuk user yang sudah ada
+    
+            // Update login streak
             $today = Carbon::today();
             if (!$user->last_login_date) {
-                // Pertama kali login
                 $user->login_streak = 1;
             } else {
                 $lastLogin = Carbon::parse($user->last_login_date);
                 if ($lastLogin->isYesterday()) {
                     $user->login_streak += 1;
                 } elseif (!$lastLogin->isToday()) {
-                    // Login sebelumnya bukan hari ini, reset streak
                     $user->login_streak = 1;
                 }
             }
             $user->last_login_date = $today;
             $user->save();
-
+    
+            // Redirect sesuai peran
             if ($user->peran === 'admin') {
                 return redirect()->intended('/admin/dashboard')->with([
                     'success' => true,
                     'message' => 'Selamat datang kembali, Admin!'
                 ]);
             }
-
+    
             return redirect()->intended('/dashboard')->with([
                 'success' => true,
                 'message' => 'Login dengan Google berhasil!'
             ]);
-
+    
         } catch (\Exception $e) {
             Log::error('Error saat login dengan Google: ' . $e->getMessage());
             Log::error('Stack trace: ' . $e->getTraceAsString());
@@ -294,6 +288,7 @@ class AuthController extends Controller
             ]);
         }
     }
+    
 
     public function verifyEmail(Request $request, $id, $hash)
     {
