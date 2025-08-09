@@ -99,19 +99,6 @@ class ProfileController extends Controller
     {
         $user = auth()->user();
     
-        \Log::info('Profile update request:', [
-            'has_file' => $request->hasFile('avatar'),
-            'file_name' => $request->file('avatar')?->getClientOriginalName(),
-            'file_size' => $request->file('avatar')?->getSize(),
-            'name' => $request->name,
-            'full_name' => $request->full_name,
-            'all_data' => $request->all(),
-            'files' => $request->allFiles(),
-            'content_type' => $request->header('Content-Type'),
-            'method' => $request->method(),
-            'url' => $request->url(),
-        ]);
-    
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'full_name' => 'required|string|max:255',
@@ -119,74 +106,39 @@ class ProfileController extends Controller
         ]);
     
         if ($validator->fails()) {
-            \Log::error('Validation failed:', $validator->errors()->toArray());
             return back()->withErrors($validator)->withInput();
         }
     
-        try {
-            // Update basic fields
-            $user->nama_pengguna = $request->name;
-            $user->nama_lengkap = $request->full_name;
+        $user->nama_pengguna = $request->name;
+        $user->nama_lengkap = $request->full_name;
     
-            // Handle avatar upload
-            if ($request->hasFile('avatar')) {
-                $file = $request->file('avatar');
+        if ($request->hasFile('avatar')) {
+            $file = $request->file('avatar');
     
-                \Log::info('Processing avatar upload:', [
-                    'original_name' => $file->getClientOriginalName(),
-                    'size' => $file->getSize(),
-                    'mime_type' => $file->getMimeType(),
-                    'is_valid' => $file->isValid(),
-                    'error' => $file->getError(),
-                ]);
-    
-                if (!$file->isValid()) {
-                    \Log::error('File upload invalid', ['error' => $file->getError()]);
-                    return back()->withErrors(['avatar' => 'File upload gagal.'])->withInput();
+            // Hapus foto lama kalau ada
+            if ($user->foto && filter_var($user->foto, FILTER_VALIDATE_URL)) {
+                $oldFilePath = public_path(parse_url($user->foto, PHP_URL_PATH));
+                if (file_exists($oldFilePath)) {
+                    unlink($oldFilePath);
                 }
-    
-                // Hapus avatar lama (jika ada dan bukan URL eksternal)
-                if ($user->foto && !preg_match('/^https?:\/\//', $user->foto)) {
-                    // user->foto biasanya '/storage/avatars/xxx.jpg' => kita ubah ke 'avatars/xxx.jpg'
-                    $oldPath = preg_replace('#^/storage/#', '', $user->foto);
-    
-                    if ($oldPath && Storage::disk('public')->exists($oldPath)) {
-                        Storage::disk('public')->delete($oldPath);
-                        \Log::info('Deleted old avatar:', ['path' => $oldPath]);
-                    }
-                }
-    
-                // Simpan file langsung ke disk "public" (yang root-nya adalah public/storage)
-                // Akan menyimpan ke public/storage/avatars/xxxx.jpg
-                $storedPath = $file->store('avatars', 'public'); // returns "avatars/xxxx.jpg"
-    
-                // Simpan URL relatif ke DB: /storage/avatars/xxxx.jpg
-                $user->foto = '/storage/' . ltrim($storedPath, '/');
-    
-                \Log::info('Avatar uploaded successfully:', [
-                    'stored_path' => $storedPath,
-                    'public_url' => $user->foto,
-                ]);
-            } else {
-                \Log::info('No avatar file uploaded');
             }
     
-            $user->save();
+            // Simpan ke public/avatars
+            $filename = uniqid() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('avatars'), $filename);
     
-            \Log::info('Profile updated successfully for user:', ['user_id' => $user->id]);
-    
-            return redirect()->route('profile')->with([
-                'success' => true,
-                'message' => 'Profil berhasil diperbarui!'
-            ]);
-        } catch (\Exception $e) {
-            \Log::error('Profile update failed:', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-            return back()->withErrors(['error' => 'Terjadi kesalahan saat memperbarui profil.'])->withInput();
+            // Simpan URL lengkap ke database
+            $user->foto = url('avatars/' . $filename);
         }
+    
+        $user->save();
+    
+        return redirect()->route('profile')->with([
+            'success' => true,
+            'message' => 'Profil berhasil diperbarui!'
+        ]);
     }
+    
     
 
 
