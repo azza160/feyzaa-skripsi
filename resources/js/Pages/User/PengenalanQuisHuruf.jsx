@@ -691,35 +691,7 @@ export default function Component() {
                 ))}
             </motion.div>
 
-            {/* Quiz Limit Warning */}
-            <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6, type: "spring", bounce: 0.3 }}
-                viewport={{ once: true }}
-            >
-                <Card className="bg-orange-50 border-2 border-orange-200">
-                <CardContent className="p-8">
-                    <div className="flex items-start gap-4">
-                    <div className="p-2 bg-orange-100 rounded-lg flex-shrink-0">
-                        <Clock className="w-6 h-6 text-orange-600" />
-                    </div>
-                    <div>
-                        <h3 className="text-xl font-semibold text-orange-800 mb-2">Batasan Kuis Harian</h3>
-                        <p className="text-orange-700 leading-relaxed mb-4">
-                        Untuk menjaga kualitas pembelajaran dan mencegah kelelahan, setiap pengguna hanya dapat melakukan
-                        <span className="font-semibold"> maksimal 10 kuis dalam 1 jam</span>. Setelah batas tercapai, Anda
-                        perlu menunggu hingga jam berikutnya untuk melanjutkan.
-                        </p>
-                        <div className="flex items-center gap-2 text-sm text-orange-600">
-                        <RotateCcw className="w-4 h-4" />
-                        <span>Reset setiap jam untuk sesi pembelajaran yang optimal</span>
-                        </div>
-                    </div>
-                    </div>
-                </CardContent>
-                </Card>
-            </motion.div>
+        
             </div>
         </motion.section>
 
