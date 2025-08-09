@@ -98,8 +98,7 @@ class ProfileController extends Controller
     public function updateProfile(Request $request)
     {
         $user = auth()->user();
-
-        // Debug: Log request data
+    
         \Log::info('Profile update request:', [
             'has_file' => $request->hasFile('avatar'),
             'file_name' => $request->file('avatar')?->getClientOriginalName(),
@@ -109,48 +108,30 @@ class ProfileController extends Controller
             'all_data' => $request->all(),
             'files' => $request->allFiles(),
             'content_type' => $request->header('Content-Type'),
-            'content_length' => $request->header('Content-Length'),
             'method' => $request->method(),
             'url' => $request->url(),
         ]);
-
+    
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'full_name' => 'required|string|max:255',
-            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Max 2MB
-        ], [
-            'name.required' => 'Nama pengguna harus diisi.',
-            'name.string' => 'Nama pengguna harus berupa teks.',
-            'name.max' => 'Nama pengguna maksimal 255 karakter.',
-            'full_name.required' => 'Nama lengkap harus diisi.',
-            'full_name.string' => 'Nama lengkap harus berupa teks.',
-            'full_name.max' => 'Nama lengkap maksimal 255 karakter.',
-            'avatar.image' => 'File harus berupa gambar.',
-            'avatar.mimes' => 'Format gambar harus jpeg, png, jpg, atau gif.',
-            'avatar.max' => 'Ukuran gambar maksimal 2MB.',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
-
-        // Debug: Log validation data
-        \Log::info('Validation data:', [
-            'request_all' => $request->all(),
-            'request_files' => $request->allFiles(),
-            'has_avatar' => $request->hasFile('avatar'),
-        ]);
-
+    
         if ($validator->fails()) {
             \Log::error('Validation failed:', $validator->errors()->toArray());
             return back()->withErrors($validator)->withInput();
         }
-
+    
         try {
-            // Update user data
+            // Update basic fields
             $user->nama_pengguna = $request->name;
             $user->nama_lengkap = $request->full_name;
-
+    
             // Handle avatar upload
             if ($request->hasFile('avatar')) {
                 $file = $request->file('avatar');
-                
+    
                 \Log::info('Processing avatar upload:', [
                     'original_name' => $file->getClientOriginalName(),
                     'size' => $file->getSize(),
@@ -158,57 +139,55 @@ class ProfileController extends Controller
                     'is_valid' => $file->isValid(),
                     'error' => $file->getError(),
                 ]);
-                
-                // Check if file is valid
+    
                 if (!$file->isValid()) {
-                    \Log::error('File upload error:', ['error' => $file->getError()]);
-                    return back()->withErrors(['avatar' => 'File upload gagal. Silakan coba lagi.'])->withInput();
+                    \Log::error('File upload invalid', ['error' => $file->getError()]);
+                    return back()->withErrors(['avatar' => 'File upload gagal.'])->withInput();
                 }
-                
-                // Check file size (2MB = 2 * 1024 * 1024 bytes)
-                if ($file->getSize() > 2 * 1024 * 1024) {
-                    \Log::warning('File too large:', ['size' => $file->getSize()]);
-                    return back()->withErrors(['avatar' => 'Ukuran gambar maksimal 2MB.'])->withInput();
-                }
-
+    
+                // Hapus avatar lama (jika ada dan bukan URL eksternal)
                 if ($user->foto && !preg_match('/^https?:\/\//', $user->foto)) {
-                    $oldPath = str_replace('/storage/', '', $user->foto);
-                
-                    if (Storage::disk('public')->exists($oldPath)) {
+                    // user->foto biasanya '/storage/avatars/xxx.jpg' => kita ubah ke 'avatars/xxx.jpg'
+                    $oldPath = preg_replace('#^/storage/#', '', $user->foto);
+    
+                    if ($oldPath && Storage::disk('public')->exists($oldPath)) {
                         Storage::disk('public')->delete($oldPath);
                         \Log::info('Deleted old avatar:', ['path' => $oldPath]);
                     }
                 }
-
-                // Store new avatar
-                $path = $file->store('avatars', 'public');
-                $user->foto = Storage::url($path); // Simpan langsung path URL publik (/storage/avatars/namafile.jpg)
-
-                
+    
+                // Simpan file langsung ke disk "public" (yang root-nya adalah public/storage)
+                // Akan menyimpan ke public/storage/avatars/xxxx.jpg
+                $storedPath = $file->store('avatars', 'public'); // returns "avatars/xxxx.jpg"
+    
+                // Simpan URL relatif ke DB: /storage/avatars/xxxx.jpg
+                $user->foto = '/storage/' . ltrim($storedPath, '/');
+    
                 \Log::info('Avatar uploaded successfully:', [
-                    'new_path' => $path,
-                    'full_path' => Storage::disk('public')->url($path)
+                    'stored_path' => $storedPath,
+                    'public_url' => $user->foto,
                 ]);
             } else {
                 \Log::info('No avatar file uploaded');
             }
-
+    
             $user->save();
+    
             \Log::info('Profile updated successfully for user:', ['user_id' => $user->id]);
-
+    
             return redirect()->route('profile')->with([
                 'success' => true,
                 'message' => 'Profil berhasil diperbarui!'
             ]);
-
         } catch (\Exception $e) {
             \Log::error('Profile update failed:', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
-            return back()->withErrors(['error' => 'Terjadi kesalahan saat memperbarui profil. Silakan coba lagi.'])->withInput();
+            return back()->withErrors(['error' => 'Terjadi kesalahan saat memperbarui profil.'])->withInput();
         }
     }
+    
 
 
 } 
