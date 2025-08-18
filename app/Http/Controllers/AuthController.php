@@ -325,4 +325,23 @@ class AuthController extends Controller
             ]);
         }
     }
+
+    public function adminLogin(Request $request)
+{
+    $credentials = $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+    ]);
+
+    $user = \App\Models\User::where('email', $credentials['email'])->where('peran', 'admin')->first();
+    if (!$user) {
+        return back()->withErrors(['message' => 'Akun admin tidak ditemukan atau bukan admin.']);
+    }
+    if (\Illuminate\Support\Facades\Auth::attempt($credentials)) {
+        return redirect()->route('admin.dashboard');
+    }
+    return back()->withErrors(['message' => 'Email atau password salah.']);
+}
+
+
 } 

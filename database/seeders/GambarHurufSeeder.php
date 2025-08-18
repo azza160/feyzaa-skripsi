@@ -15,7 +15,7 @@ class GambarHurufSeeder extends Seeder
     {
         //a
         Gambar_Huruf::create([
-            'link' => 'https://res.cloudinary.com/dzozxilf6/image/upload/v1747055786/a_1_fyyian.png', // Link gambar
+            'link' => 'https://res.cloudinary.com/dzozxilf6/image/upload/v1748771455/a_1_crwtoc.png', 
             'urutan' => 1,
             'huruf_id' => 'H-GO-A', // Sesuaikan dengan id huruf
         ]);
@@ -181,6 +181,72 @@ class GambarHurufSeeder extends Seeder
             'huruf_id' => 'H-GO-KO',
         ]);
         //end ko
+
+        //sa
+         Gambar_Huruf::create([
+            'link' => 'https://res.cloudinary.com/dzozxilf6/image/upload/v1754789209/sa-1-removebg-preview_zivoxo.png',
+            'urutan' => 1,
+            'huruf_id' => 'H-GO-SA',
+        ]);
+          Gambar_Huruf::create([
+            'link' => 'https://res.cloudinary.com/dzozxilf6/image/upload/v1754789383/sa-2-removebg-preview_lskcoe.png',
+            'urutan' => 2,
+            'huruf_id' => 'H-GO-SA',
+        ]);
+           Gambar_Huruf::create([
+            'link' => 'https://res.cloudinary.com/dzozxilf6/image/upload/v1754789428/Screenshot__101_-removebg-preview_mwmbgu.png',
+            'urutan' => 3,
+            'huruf_id' => 'H-GO-SA',
+        ]);
+        //end sa
+
+        //shi
+          Gambar_Huruf::create([
+            'link' => 'https://res.cloudinary.com/dzozxilf6/image/upload/v1754790102/Screenshot__102_-removebg-preview_nt2adb.png',
+            'urutan' => 1,
+            'huruf_id' => 'H-GO-SHI',
+        ]);
+        //end shi
+
+        //su
+        Gambar_Huruf::create([
+            'link' => 'https://res.cloudinary.com/dzozxilf6/image/upload/v1754790496/Screenshot__103_-removebg-preview_iro4il.png',
+            'urutan' => 1,
+            'huruf_id' => 'H-GO-SU',
+        ]);
+        Gambar_Huruf::create([
+            'link' => 'https://res.cloudinary.com/dzozxilf6/image/upload/v1754790556/Screenshot__104_-removebg-preview_xrkakp.png',
+            'urutan' => 2,
+            'huruf_id' => 'H-GO-SU',
+        ]);
+        //end shu
+
+        //se
+         Gambar_Huruf::create([
+            'link' => 'https://res.cloudinary.com/dzozxilf6/image/upload/v1754791003/Screenshot__105_-removebg-preview_s4lj7q.png',
+            'urutan' => 1,
+            'huruf_id' => 'H-GO-SE',
+        ]);
+          Gambar_Huruf::create([
+            'link' => 'https://res.cloudinary.com/dzozxilf6/image/upload/v1754791103/Screenshot__106_-removebg-preview_gmkiuf.png',
+            'urutan' => 2,
+            'huruf_id' => 'H-GO-SE',
+        ]);
+          Gambar_Huruf::create([
+            'link' => 'https://res.cloudinary.com/dzozxilf6/image/upload/v1754791178/Screenshot__107_-removebg-preview_vclgq7.png',
+            'urutan' => 3,
+            'huruf_id' => 'H-GO-SE',
+        ]);
+        //end se
+
+        //so
+          Gambar_Huruf::create([
+            'link' => 'https://res.cloudinary.com/dzozxilf6/image/upload/v1754791518/Screenshot__108_-removebg-preview_b9ilcy.png',
+            'urutan' => 1,
+            'huruf_id' => 'H-GO-SO',
+        ]);
+
+        //end so
         
         
 
